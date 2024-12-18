@@ -6,7 +6,9 @@ authors = ["denver <denver@semiotic.ai>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.13"
+python = "3.11.8"
+jupyter = "^1.1.1"
+ipykernel = "^6.29.5"
 
 
 [build-system]
