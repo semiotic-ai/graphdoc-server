@@ -1,3 +1,10 @@
+# system packages
+import asyncio
+import logging
+
+# internal packages
+
+# external packages
 import pytest
 
 class TestEntityComparison:
@@ -17,14 +24,28 @@ class TestEntityComparison:
         assert response["correctness"] in [1, 2, 3, 4]
         assert isinstance(response["reasoning"], str)
 
-    # def test_graphdoc_fixture(self, gd: GraphDoc):
-    #     assert gd.language_model != None
+    @pytest.mark.asyncio
+    @pytest.mark.skipif("not config.getoption('--fire')")
+    async def test_instantiate_entity_comparison_revision_prompt(self, gd, entity_comparison_assets):
+        test_assets = [
+            entity_comparison_assets["four_entity_comparison"],
+            entity_comparison_assets["three_entity_comparison"],
+            entity_comparison_assets["two_entity_comparison"],
+            entity_comparison_assets["one_entity_comparison"]
+        ]
 
-    # def test_entity_comparison_assets_fixture(self, entity_comparison_assets):
-    #     assert entity_comparison_assets["gold_entity_comparison"] != None
-    #     assert entity_comparison_assets["four_entity_comparison"] != None
-    #     assert entity_comparison_assets["three_entity_comparison"] != None
-    #     assert entity_comparison_assets["two_entity_comparison"] != None
-    #     assert entity_comparison_assets["one_entity_comparison"] != None
+        tasks = [
+            asyncio.to_thread(
+                gd.prompt_entity_comparison,
+                entity_comparison_assets["gold_entity_comparison"],
+                test_asset
+            )
+            for test_asset in test_assets
+        ]
 
-    
+        responses = await asyncio.gather(*tasks)
+        parsed_responses = [gd.language_model.parse_response(r) for r in responses]
+
+        for response in parsed_responses:
+            assert response["correctness"] in [1, 2, 3, 4], f"Unexpected correctness: {response['correctness']}"
+            assert isinstance(response["reasoning"], str), "Reasoning should be a string"
