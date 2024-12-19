@@ -40,7 +40,7 @@ class GraphDoc:
     def __init__(
             self, 
             language_model,
-            prompt_templates_dir,
+            prompt_templates_dir = "../prompts",
         ):
         
         # set the language model
