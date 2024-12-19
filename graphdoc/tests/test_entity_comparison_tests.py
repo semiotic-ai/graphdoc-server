@@ -59,39 +59,66 @@ class TestEntityComparison:
         assert response["correctness"] in [1, 2, 3, 4]
         assert isinstance(response["reasoning"], str)
 
-    # @pytest.mark.asyncio
-    # @pytest.mark.skipif("not config.getoption('--fire')")
-    # async def test_instantiate_entity_comparison_revision_prompt(self, gd, entity_comparison_assets):
-    #     test_assets = [
-    #         entity_comparison_assets["four_entity_comparison"],
-    #         entity_comparison_assets["three_entity_comparison"],
-    #         entity_comparison_assets["two_entity_comparison"],
-    #         entity_comparison_assets["one_entity_comparison"]
-    #     ]
+    @pytest.mark.asyncio
+    @pytest.mark.skipif("not config.getoption('--fire')")
+    async def test_instantiate_entity_comparison_revision_prompt(self, gd, entity_comparison_assets, request):
+        """
+        file_name = "test_instantiate_entity_comparison_revision_prompt.pkl"
+        cache_pick_file = {
+            test_asset_comparisons: "test_prompt_entity_comparison.pkl",
+        }
+        """
+        #################### caching ####################
+        # TODO: we should break out this caching to a fixture, but for now we just want to get the test working
+        fire = request.config.getoption("--fire")
+        dry_fire = request.config.getoption("--dry-fire")
+        test_cache_file_path = CACHE_DIR / "test_instantiate_entity_comparison_revision_prompt.pkl"
 
-    #     tasks = [
-    #         asyncio.to_thread(
-    #             gd.prompt_entity_comparison,
-    #             entity_comparison_assets["gold_entity_comparison"],
-    #             test_asset
-    #         )
-    #         for test_asset in test_assets
-    #     ]
+        if fire and dry_fire:
+            raise ValueError("Cannot use --fire and --dry-fire simultaneously")
 
-    #     responses = await asyncio.gather(*tasks)
-    #     parsed_responses = [gd.language_model.parse_response(r) for r in responses]
+        if os.path.exists(test_cache_file_path) and dry_fire:
+            with open(test_cache_file_path, "rb") as f:
+                response = pickle.load(f)
+                test_asset_comparisons = response["test_asset_comparisons"]
 
-    #     for response in parsed_responses:
-    #         assert response["correctness"] in [1, 2, 3, 4], f"Unexpected correctness: {response['correctness']}"
-    #         assert isinstance(response["reasoning"], str), "Reasoning should be a string"
+        #################### testing ####################
+        if os.path.exists(CACHE_DIR) and fire:
+            test_assets = [
+                entity_comparison_assets["four_entity_comparison"],
+                entity_comparison_assets["three_entity_comparison"],
+                entity_comparison_assets["two_entity_comparison"],
+                entity_comparison_assets["one_entity_comparison"]
+            ]
 
-    #     # revised_prompt = gd.prompt_entity_comparison_revision(
-    #     #     original_prompt_template = gd.entity_comparison_prompt_template,
-    #     #     four_comparison = parsed_responses[0],
-    #     #     three_comparison = parsed_responses[1],
-    #     #     two_comparison = parsed_responses[2],
-    #     #     one_comparison = parsed_responses[3],
-    #     # )
+            tasks = [
+                asyncio.to_thread(
+                    gd.prompt_entity_comparison,
+                    entity_comparison_assets["gold_entity_comparison"],
+                    test_asset
+                )
+                for test_asset in test_assets
+            ]
 
-    #     # assert isinstance(revised_prompt["reasoning"], str)
-    #     # assert isinstance(revised_prompt["modified_prompt"], int)
+            test_asset_comparisons = await asyncio.gather(*tasks)
+            
+            cache = { "test_asset_comparisons" : test_asset_comparisons }
+            with open(test_cache_file_path, "wb") as f:
+                pickle.dump(cache, f)
+        
+        parsed_test_asset_comparisons = [gd.language_model.parse_response(r) for r in test_asset_comparisons]
+
+        for test_asset_comparison in parsed_test_asset_comparisons:
+            assert test_asset_comparison["correctness"] in [1, 2, 3, 4], f"Unexpected correctness: {test_asset_comparison['correctness']}"
+            assert isinstance(test_asset_comparison["reasoning"], str), "Reasoning should be a string"
+
+        # revised_prompt = gd.prompt_entity_comparison_revision(
+        #     original_prompt_template = gd.entity_comparison_prompt_template,
+        #     four_comparison = parsed_test_asset_comparisons[0],
+        #     three_comparison = parsed_test_asset_comparisons[1],
+        #     two_comparison = parsed_test_asset_comparisons[2],
+        #     one_comparison = parsed_test_asset_comparisons[3],
+        # )
+
+        # assert isinstance(revised_prompt["reasoning"], str)
+        # assert isinstance(revised_prompt["modified_prompt"], int)
