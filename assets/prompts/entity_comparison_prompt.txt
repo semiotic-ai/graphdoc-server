@@ -23,7 +23,7 @@ Matching the gold description, but failing to meet the criteria set by perfect c
 Column descriptions are somewhat correct, but there is room for improvement due to missing or misleading information. It could still contain correct information, but any incorrect information automatically leads to a somewhat correct rating.
 
 1: Incorrect  ( Invalid based upon the GOLD documentation )
-The column descriptions are missing or completely misleading. The documentation not only fails to accurately describe the table and it's columns, it is completely incorrect. 
+The column descriptions are missing or completely misleading. The documentation not only fails to accurately describe the table and it's columns, it is completely incorrect. An incorrect column clearly has a description that does not align with the column naming.
 
 ***
 [ END DATA ]
