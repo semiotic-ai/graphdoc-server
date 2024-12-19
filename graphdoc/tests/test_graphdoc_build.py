@@ -8,9 +8,5 @@ import pytest
 
 class TestGraphDocBuild:
     
-    def test_language_model(self):
-        language_model = LanguageModel(api_key="test")
-        assert language_model.api_key == "test"
-
-    def test_run(self):
-        assert 1 == 1
+    def test_language_model_fixture(self, lm: LanguageModel):
+        assert lm.api_key != None
