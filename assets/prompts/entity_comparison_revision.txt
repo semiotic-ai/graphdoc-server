@@ -4,13 +4,29 @@ It is important that the prompt addresses that the comparison should label the E
 ***
 [ORIGINAL PROMPT]: {{ original_prompt }}
 ***
-[Expected Output of 4]: {{ four_result }}
+{% if four_result_correct == "True" %} 
+[Expected Output of 4 Was Incorrect]: {{ four_result }}
+{% else %}
+[Expected Output of 4 Was Correct]
+{% endif %}
 ***
-[Expected Output of 3]: {{ three_result }}
+{% if three_result_correct == "True" %} 
+[Expected Output of 3 Was Incorrect]: {{ three_result }}
+{% else %}
+[Expected Output of 3 Was Correct]
+{% endif %}
 ***
-[Expected Output of 2]: {{ two_result }}
+{% if two_result_correct == "True" %} 
+[Expected Output of 2 Was Incorrect]: {{ two_result }}
+{% else %}
+[Expected Output of 2 Was Correct]
+{% endif %}
 ***
-[Expected Output of 1]: {{ one_result }}
+{% if one_result_correct == "True" %} 
+[Expected Output of 1 Was Incorrect]: {{ one_result }}
+{% else %}
+[Expected Output of 1 Was Correct]
+{% endif %}
 ***
 [OBJECTIVE]: Based upon the results above, provide an updated prompt that will better align with the outputs we expect and those we are getting. 
 ***
