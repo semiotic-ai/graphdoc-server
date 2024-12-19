@@ -1,0 +1,17 @@
+[TASK]: Your job is to revise the prompt to better meet our goal of determining the quality of documentation. Based upon the results and reasoning provided by the model, update the prompt we are using to score the documentation. 
+
+It is important that the prompt addresses that the comparison should label the EVALUATION DOCUMENTATION in comparison to the GOLD DOCUMENTATION by a scale of 1-4. 
+***
+[ORIGINAL PROMPT]: {{ original_prompt }}
+***
+[Expected Output of 4]: {{ four_result }}
+***
+[Expected Output of 3]: {{ three_result }}
+***
+[Expected Output of 2]: {{ two_result }}
+***
+[Expected Output of 1]: {{ one_result }}
+***
+[OBJECTIVE]: Based upon the results above, provide an updated prompt that will better align with the outputs we expect and those we are getting. 
+***
+[RESULT]: *respond with only the modified prompt*
