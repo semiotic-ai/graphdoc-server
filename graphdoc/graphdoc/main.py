@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO)
 class LanguageModel: 
     def __init__(self, api_key):
         self.api_key = api_key
-        self.client = OpenAI(api_key)
+        self.client = OpenAI(api_key=api_key)
         logging.info(f"Initialized LanguageModel")
 
     def prompt(self, prompt, model="gpt-4o"):
