@@ -5,7 +5,7 @@ from typing import List
 # external packages
 from pytest import fixture
 from dotenv import load_dotenv
-load_dotenv("../.env")
+load_dotenv(".env")
 
 # internal packages
 from graphdoc import GraphDoc, LanguageModel
@@ -14,4 +14,10 @@ from graphdoc import GraphDoc, LanguageModel
 def lm() -> LanguageModel:
     return LanguageModel(
         api_key = os.getenv("OPENAI_API_KEY"),
+    )
+
+@fixture
+def gd(lm: LanguageModel) -> GraphDoc:
+    return GraphDoc(
+        language_model = lm,
     )
