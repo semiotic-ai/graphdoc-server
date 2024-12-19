@@ -71,6 +71,12 @@ class GraphDoc:
     def instantiate_entity_comparison_prompt(self, entity_gold, entity_pred):
         return self.entity_comparison_prompt_template.render({"entity_gold": {entity_gold}, "entity_pred": {entity_pred}})
     
+    def prompt_entity_comparison(self, entity_gold, entity_pred):
+        prompt = self.instantiate_entity_comparison_prompt(entity_gold, entity_pred)
+        response = self.language_model.prompt(prompt)
+        extracted_response = self.language_model.parse_response(response)
+        return extracted_response
+
     def format_entity_comparison_revision_prompt(self, response): 
         response = self.language_model.parse_response(response)
         revised_prompt = response["modified_prompt"]
@@ -112,9 +118,3 @@ class GraphDoc:
                 "one_result": {one_comparison["reasoning"]},
             }
         )
-    
-    def prompt_entity_comparison(self, entity_gold, entity_pred):
-        prompt = self.instantiate_entity_comparison_prompt(entity_gold, entity_pred)
-        response = self.language_model.prompt(prompt)
-        extracted_response = self.language_model.parse_response(response)
-        return extracted_response
