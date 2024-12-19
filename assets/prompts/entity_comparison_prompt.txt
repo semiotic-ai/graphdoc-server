@@ -30,8 +30,8 @@ The column descriptions are missing or completely misleading. The documentation 
 
 Does the submission meet the criterion? First, write out in a step by step manner your reasoning about the criterion to be sure that your conclusion is correct. Avoid simply stating the correct answers at the outset.
 
-Your response must be RFC8259 compliant JSON following this schema:
+Your response must be a JSON object following this schema:  
 
-{" reasoning ": str , " correctness ": int }
+{ "reasoning": str, "correctness": int }  
 
-Make sure your output is a valid json string in the format provided above.
+Make sure your output is a valid JSON object in the format provided above.
