@@ -12,6 +12,25 @@ load_dotenv(".env")
 # internal packages
 from graphdoc import GraphDoc, LanguageModel
 
+####################
+# Config Fixtures
+####################
+def pytest_addoption(parser):
+    parser.addoption(
+        "--fire",
+        action="store_true",
+        default=False,
+        help="run tests with fire flag"
+    )
+
+@fixture
+def fire(request):
+    return request.config.getoption("--fire")
+
+#################### 
+# Object Fixtures
+####################
+
 @fixture
 def lm() -> LanguageModel:
     return LanguageModel(
