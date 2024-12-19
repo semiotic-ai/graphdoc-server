@@ -20,12 +20,23 @@ def pytest_addoption(parser):
         "--fire",
         action="store_true",
         default=False,
-        help="run tests with fire flag"
+        help="Make external API calls and save responses locally",
+    )
+
+    parser.addoption(
+        "--dry-fire", 
+        action="store_true", 
+        default=False, 
+        help="Load locally saved data instead of making API calls"
     )
 
 @fixture
 def fire(request):
     return request.config.getoption("--fire")
+
+@fixture
+def dry_fire(request):
+    return request.config.getoption("--dry-fire")
 
 #################### 
 # Object Fixtures
