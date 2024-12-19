@@ -59,9 +59,3 @@ class GraphDoc:
         response = self.language_model.prompt(prompt)
         extracted_response = response.choices[0].message.content
         return extracted_response
-
-def main():
-    load_dotenv("../.env")
-    open_ai_api_key = os.getenv("OPENAI_API_KEY")
-    # once we have this more cemented, let's move this to a config file to allow people to pass in the prompts we need
-    prompt_templates_dir = "../prompts"
