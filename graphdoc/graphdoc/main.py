@@ -85,11 +85,11 @@ class GraphDoc:
         revised_prompt = revised_prompt.replace(r"{entity_pred}", r"{{ entity_pred }}")
         revised_prompt = revised_prompt.replace(r"{entity_gold}", r"{{ entity_gold }}")
         return revised_prompt
-    
+
     # TODO: we could refactor this to either be more generic or take a more specific configuration
     def instantiate_entity_comparison_revision_prompt( 
             self, 
-            original_prompt, 
+            original_prompt_template, 
             four_comparison,
             three_comparison,
             two_comparison,
@@ -103,7 +103,7 @@ class GraphDoc:
         """
         return self.entity_comparison_prompt_revision_template.render(
             {
-                "original_prompt": {original_prompt}, 
+                "original_prompt": {original_prompt_template}, 
 
                 "four_result_correct": {"True" if four_comparison["correctness"] == 4 else "False"},
                 "four_result": {four_comparison["reasoning"]},
@@ -118,3 +118,9 @@ class GraphDoc:
                 "one_result": {one_comparison["reasoning"]},
             }
         )
+    
+    def prompt_entity_comparison_revision(self, original_prompt_template, four_comparison, three_comparison, two_comparison, one_comparison):
+        prompt = self.instantiate_entity_comparison_revision_prompt(original_prompt_template, four_comparison, three_comparison, two_comparison, one_comparison)
+        response = self.language_model.prompt(prompt)
+        response = self.format_entity_comparison_revision_prompt(response)
+        return response
