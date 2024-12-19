@@ -37,7 +37,8 @@ class LanguageModel:
         except Exception as e:
             logging.error(f"Prompt failed: {e}")
     
-    def parse_response(self, response): 
+    @staticmethod
+    def parse_response(response): 
         response = response.choices[0].message.content
         response = response.strip('```json').strip('```').strip()
         response = json.loads(response)
@@ -74,8 +75,7 @@ class GraphDoc:
     def prompt_entity_comparison(self, entity_gold, entity_pred):
         prompt = self.instantiate_entity_comparison_prompt(entity_gold, entity_pred)
         response = self.language_model.prompt(prompt)
-        extracted_response = self.language_model.parse_response(response)
-        return extracted_response
+        return response
 
     def format_entity_comparison_revision_prompt(self, response): 
         response = self.language_model.parse_response(response)
