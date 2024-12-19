@@ -28,6 +28,13 @@ It is important that the prompt addresses that the comparison should label the E
 [Expected Output of 1 Was Correct]
 {% endif %}
 ***
-[OBJECTIVE]: Based upon the results above, provide an updated prompt that will better align with the outputs we expect and those we are getting. 
+[OBJECTIVE]: First, based upon the results above, write out in a step by step manner your reasoning about the criterion to be sure that your conclusion is correct. Avoid simply stating the correct answers at the outset. Provide an updated prompt that will better align with the output with what we expect compared to what we are getting. 
+
+Do Not Lose The Jinja Input Formatting For Variables: { entity_pred } and  { entity_gold }
 ***
-[RESULT]: *respond with only the modified prompt*
+
+Your response must be a JSON object following this schema:  
+
+{ "reasoning": str, "modified_prompt": str }  
+
+Make sure your output is a valid JSON object in the format provided above.
