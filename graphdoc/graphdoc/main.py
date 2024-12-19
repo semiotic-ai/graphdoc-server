@@ -122,5 +122,4 @@ class GraphDoc:
     def prompt_entity_comparison_revision(self, original_prompt_template, four_comparison, three_comparison, two_comparison, one_comparison):
         prompt = self.instantiate_entity_comparison_revision_prompt(original_prompt_template, four_comparison, three_comparison, two_comparison, one_comparison)
         response = self.language_model.prompt(prompt)
-        response = self.format_entity_comparison_revision_prompt(response)
         return response
