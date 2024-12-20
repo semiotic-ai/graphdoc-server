@@ -1,1 +1,2 @@
-from .main import GraphDoc, LanguageModel
+from .main import *
+from .prompt import *
