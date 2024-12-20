@@ -3,6 +3,7 @@ import os
 import json
 from typing import Dict
 from pathlib import Path
+from datetime import datetime
 
 # external packages
 from pytest import fixture
@@ -11,6 +12,7 @@ load_dotenv(".env")
 
 # internal packages
 from graphdoc import GraphDoc, LanguageModel
+from graphdoc import Prompt, PromptRevision, RequestObject 
 
 ####################
 # Config Fixtures
@@ -77,3 +79,24 @@ def entity_comparison_assets() -> Dict:
         "two_entity_comparison": two_entity_comparison,
         "one_entity_comparison": one_entity_comparison,
     }
+
+@fixture
+def sample_request_object() -> RequestObject:
+    return RequestObject(
+        prompt="Test prompt",
+        response="Test response",
+        model="gpt-4",
+        prompt_tokens=10,
+        response_tokens=20,
+        request_time=int(datetime.now().timestamp()),
+        request_id="test_123",
+        request_object=None
+    )
+
+@fixture
+def sample_prompt() -> Prompt:
+    return Prompt(
+        title="Test Prompt",
+        base_content="This is a base prompt content",
+        metadata={"type": "test"}
+    )
