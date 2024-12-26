@@ -96,3 +96,61 @@ class PromptExecutor(ABC):
     def execute_prompt(self, template_name: str, **template_variables):
         instantiated_prompt = self.instantiate_prompt(template_name, **template_variables)
         return self.language_model.prompt(instantiated_prompt)
+
+class EntityComparisonPromptExecutor(PromptExecutor): 
+
+    def format_entity_comparison_revision_prompt(self, response): 
+        response = self.language_model.parse_response(response)
+        revised_prompt = response["modified_prompt"]
+
+        # Replace the placeholder with Jinja syntax
+        revised_prompt = revised_prompt.replace(r"{entity_pred}", r"{{ entity_pred }}")
+        revised_prompt = revised_prompt.replace(r"{entity_gold}", r"{{ entity_gold }}")
+        return revised_prompt
+    
+    def template_variablest_from_four_comparisons(self,
+                                                original_prompt_template, 
+                                                four_comparison,
+                                                three_comparison,
+                                                two_comparison,
+                                                one_comparison,
+        ): 
+        """
+        This is function is intended to help with rendering the template in scenarios where four comparisons were made (intended for help with prompt optimization). 
+        _comparison = {
+            "reasoning": "the reasoning behind the score of the comparison between the gold and predicted entity",
+            "correctness": "a score from 1-4, where 4 is the best and 1 is the worst",
+        }
+        """
+        return {
+                "original_prompt": {original_prompt_template}, 
+
+                "four_result_correct": {"True" if four_comparison["correctness"] == 4 else "False"},
+                "four_result": {four_comparison["reasoning"]},
+                
+                "three_result_correct": {"True" if three_comparison["correctness"] == 3 else "False"},
+                "three_result": {three_comparison["reasoning"]},
+                
+                "two_result_correct": {"True" if two_comparison["correctness"] == 2 else "False"},
+                "two_result": {two_comparison["reasoning"]},
+                
+                "one_result_correct": {"True" if one_comparison["correctness"] == 1 else "False"},
+                "one_result": {one_comparison["reasoning"]},
+            }
+    
+    def execute_four_comparison_prompt(self,
+                                        original_prompt_template, 
+                                        four_comparison,
+                                        three_comparison,
+                                        two_comparison,
+                                        one_comparison,
+                                        template_name = "entity_comparison_revision.txt"
+    ): 
+        template_variables = self.template_variablest_from_four_comparisons(
+                                        original_prompt_template, 
+                                        four_comparison,
+                                        three_comparison,
+                                        two_comparison,
+                                        one_comparison,
+                                )
+        return self.execute_prompt(template_name, **template_variables)
