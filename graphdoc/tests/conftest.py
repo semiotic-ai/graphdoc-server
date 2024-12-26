@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv(".env")
 
 # internal packages
-from graphdoc import GraphDoc, LanguageModel, OpenAILanguageModel
+from graphdoc import LanguageModel, OpenAILanguageModel
 from graphdoc import Prompt, PromptRevision, RequestObject 
 from graphdoc import PromptExecutor, EntityComparisonPromptExecutor
 
@@ -49,12 +49,6 @@ def dry_fire(request):
 def lm() -> OpenAILanguageModel:
     return OpenAILanguageModel(
         api_key = os.getenv("OPENAI_API_KEY"),
-    )
-
-@fixture
-def gd(lm: OpenAILanguageModel) -> GraphDoc:
-    return GraphDoc(
-        language_model = lm,
     )
 
 @fixture 
