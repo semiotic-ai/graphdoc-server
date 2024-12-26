@@ -64,11 +64,12 @@ class TestEntityComparison:
         assert response["correctness"] in [1, 2, 3, 4]
         assert isinstance(response["reasoning"], str)
 
+
     @pytest.mark.asyncio
     @pytest.mark.skipif("not (config.getoption('--fire') or config.getoption('--dry-fire'))")
-    async def test_instantiate_entity_comparison_revision_prompt(self, gd, entity_comparison_assets, request):
+    async def test_ecpe_entity_comparison_revision_prompt(self, ecpe, entity_comparison_assets, request):
         """
-        file_name = "test_instantiate_entity_comparison_revision_prompt.pkl"
+        file_name = "test_ecpe_entity_comparison_revision_prompt.pkl"
         cache_pick_file = {
             test_asset_comparisons: test_asset_comparisons,
             revised_prompt: revised_prompt
@@ -78,7 +79,7 @@ class TestEntityComparison:
         # TODO: we should break out this caching to a fixture, but for now we just want to get the test working
         fire = request.config.getoption("--fire")
         dry_fire = request.config.getoption("--dry-fire")
-        test_cache_file_path = CACHE_DIR / "test_instantiate_entity_comparison_revision_prompt.pkl"
+        test_cache_file_path = CACHE_DIR / "test_ecpe_entity_comparison_revision_prompt.pkl"
 
         if fire and dry_fire:
             raise ValueError("Cannot use --fire and --dry-fire simultaneously")
@@ -100,18 +101,20 @@ class TestEntityComparison:
 
             tasks = [
                 asyncio.to_thread(
-                    gd.prompt_entity_comparison,
-                    entity_comparison_assets["gold_entity_comparison"],
-                    test_asset
-                )
+                    ecpe.execute_prompt,
+                    template_name = "entity_comparison_prompt.txt",
+                    template_variables = {
+                        "entity_pred": entity_comparison_assets["gold_entity_comparison"], 
+                        "entity_gold": test_asset
+                    },)
                 for test_asset in test_assets
             ]
 
             test_asset_comparisons = await asyncio.gather(*tasks)
-            parsed_test_asset_comparisons = [gd.language_model.parse_response(r) for r in test_asset_comparisons]
+            parsed_test_asset_comparisons = [ecpe.language_model.parse_response(r) for r in test_asset_comparisons]
             
-            revised_prompt = gd.prompt_entity_comparison_revision(
-                original_prompt_template = gd.entity_comparison_prompt_template,
+            revised_prompt = ecpe.execute_four_comparison_prompt(
+                original_prompt_template = ecpe.get_prompt_template(template_name = "entity_comparison_prompt.txt",),
                 four_comparison = parsed_test_asset_comparisons[0],
                 three_comparison = parsed_test_asset_comparisons[1],
                 two_comparison = parsed_test_asset_comparisons[2],
@@ -125,14 +128,14 @@ class TestEntityComparison:
             with open(test_cache_file_path, "wb") as f:
                 pickle.dump(cache, f)
 
-        parsed_test_asset_comparisons = [gd.language_model.parse_response(r) for r in test_asset_comparisons]
+        parsed_test_asset_comparisons = [ecpe.language_model.parse_response(r) for r in test_asset_comparisons]
 
         for test_asset_comparison in parsed_test_asset_comparisons:
             assert test_asset_comparison["correctness"] in [1, 2, 3, 4], f"Unexpected correctness: {test_asset_comparison['correctness']}"
             assert isinstance(test_asset_comparison["reasoning"], str), "Reasoning should be a string"
 
-        parsed_revised_prompt = gd.language_model.parse_response(revised_prompt)
-        formatted_revised_prompt = gd.format_entity_comparison_revision_prompt(revised_prompt)
+        parsed_revised_prompt = ecpe.language_model.parse_response(revised_prompt)
+        formatted_revised_prompt = ecpe.format_entity_comparison_revision_prompt(revised_prompt)
 
         assert isinstance(parsed_revised_prompt["reasoning"], str)
         assert isinstance(parsed_revised_prompt["modified_prompt"], str)
