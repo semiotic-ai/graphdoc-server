@@ -13,7 +13,7 @@ load_dotenv(".env")
 # internal packages
 from graphdoc import GraphDoc, LanguageModel, OpenAILanguageModel
 from graphdoc import Prompt, PromptRevision, RequestObject 
-from graphdoc import PromptExecutor
+from graphdoc import PromptExecutor, EntityComparisonPromptExecutor
 
 ####################
 # Config Fixtures
@@ -60,6 +60,12 @@ def gd(lm: OpenAILanguageModel) -> GraphDoc:
 @fixture 
 def pe(lm: OpenAILanguageModel) -> PromptExecutor: 
     return PromptExecutor(
+        language_model = lm,
+    )
+
+@fixture
+def ecpe(lm: OpenAILanguageModel) -> EntityComparisonPromptExecutor: 
+    return EntityComparisonPromptExecutor(
         language_model = lm,
     )
 
