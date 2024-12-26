@@ -94,9 +94,9 @@ class PromptExecutor(ABC):
         prompt_template = self.get_prompt_template(template_name)
         return prompt_template.render(template_variables)
     
-    def execute_prompt(self, template_name: str, **template_variables):
+    def execute_prompt(self, template_name: str, temperature=0.7, **template_variables):
         instantiated_prompt = self.instantiate_prompt(template_name, **template_variables)
-        return self.language_model.prompt(instantiated_prompt)
+        return self.language_model.prompt(instantiated_prompt, temperature=temperature)
 
 class EntityComparisonPromptExecutor(PromptExecutor): 
 
@@ -145,7 +145,8 @@ class EntityComparisonPromptExecutor(PromptExecutor):
                                         three_comparison,
                                         two_comparison,
                                         one_comparison,
-                                        template_name = "entity_comparison_revision.txt"
+                                        template_name = "entity_comparison_revision.txt",
+                                        temperature=0.7,
     ): 
         template_variables = self.template_variablest_from_four_comparisons(
                                         original_prompt_template, 
@@ -154,4 +155,4 @@ class EntityComparisonPromptExecutor(PromptExecutor):
                                         two_comparison,
                                         one_comparison,
                                 )
-        return self.execute_prompt(template_name, **template_variables)
+        return self.execute_prompt(template_name, temperature=temperature, **template_variables)
