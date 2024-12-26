@@ -15,35 +15,6 @@ from jinja2 import Environment, FileSystemLoader
 # configure logging
 logging.basicConfig(level=logging.INFO)
 
-class LanguageModel: 
-    def __init__(self, api_key):
-        self.api_key = api_key
-        self.client = OpenAI(api_key=api_key)
-        logging.info(f"Initialized LanguageModel")
-
-    def prompt(self, prompt, model="gpt-4o"):
-        try: 
-            response = self.client.chat.completions.create(
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt,
-                    }
-                ],
-                model=model,
-            )
-            logging.info(f"Prompt successful")
-            return response
-        except Exception as e:
-            logging.error(f"Prompt failed: {e}")
-    
-    @staticmethod
-    def parse_response(response): 
-        response = response.choices[0].message.content
-        response = response.strip('```json').strip('```').strip()
-        response = json.loads(response)
-        return response
-
 class GraphDoc:
     def __init__(
             self, 
