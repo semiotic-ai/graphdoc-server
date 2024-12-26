@@ -90,12 +90,12 @@ class PromptExecutor(ABC):
         except:
             raise FileNotFoundError(f"Prompt template not found for: {Path(__file__).parent / 'prompts/' / {template_name}}")
 
-    def instantiate_prompt(self, template_name: str, **template_variables):
+    def instantiate_prompt(self, template_name: str, template_variables: dict):
         prompt_template = self.get_prompt_template(template_name)
         return prompt_template.render(template_variables)
     
-    def execute_prompt(self, template_name: str, temperature=0.7, **template_variables):
-        instantiated_prompt = self.instantiate_prompt(template_name, **template_variables)
+    def execute_prompt(self, template_name: str, template_variables: dict, temperature=0.7):
+        instantiated_prompt = self.instantiate_prompt(template_name, template_variables)
         return self.language_model.prompt(instantiated_prompt, temperature=temperature)
 
 class EntityComparisonPromptExecutor(PromptExecutor): 
@@ -155,4 +155,4 @@ class EntityComparisonPromptExecutor(PromptExecutor):
                                         two_comparison,
                                         one_comparison,
                                 )
-        return self.execute_prompt(template_name, temperature=temperature, **template_variables)
+        return self.execute_prompt(template_name, template_variables=template_variables, temperature=temperature)
