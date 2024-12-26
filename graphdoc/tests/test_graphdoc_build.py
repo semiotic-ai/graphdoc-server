@@ -1,7 +1,7 @@
 # system packages
 
 # internal packages
-from graphdoc import GraphDoc, LanguageModel, PromptExecutor, EntityComparisonPromptExecutor
+from graphdoc import LanguageModel, PromptExecutor, EntityComparisonPromptExecutor
 
 # external packages
 import pytest
@@ -10,9 +10,6 @@ class TestGraphDocBuild:
     
     def test_language_model_fixture(self, lm: LanguageModel):
         assert lm.api_key != None
-
-    def test_graphdoc_fixture(self, gd: GraphDoc):
-        assert gd.language_model != None
 
     def test_prompt_executor_fixture(self, pe: PromptExecutor):
         assert pe.language_model != None
