@@ -26,7 +26,7 @@ class TestEntityComparison:
         assert True
 
     @pytest.mark.skipif("not (config.getoption('--fire') or config.getoption('--dry-fire'))")
-    def test_prompt_entity_comparison(self, gd, entity_comparison_assets, request):
+    def test_pe_prompt_entity_comparison(self, pe, entity_comparison_assets, request):
         """
         file_name = "test_prompt_entity_comparison.pkl"
         cache_pick_file = {
@@ -49,12 +49,17 @@ class TestEntityComparison:
 
         #################### testing ####################
         if os.path.exists(CACHE_DIR) and fire: 
-            response = gd.prompt_entity_comparison(entity_comparison_assets["gold_entity_comparison"], entity_comparison_assets["gold_entity_comparison"])
+            response = pe.execute_prompt(
+                template_name = "entity_comparison_prompt.txt",
+                template_variables = {
+                "entity_pred": entity_comparison_assets["gold_entity_comparison"], 
+                "entity_gold": entity_comparison_assets["gold_entity_comparison"]
+                },)
             cache = { "gold_entity_comparison" : response }
             with open(test_cache_file_path, "wb") as f:
                 pickle.dump(cache, f)
   
-        response = gd.language_model.parse_response(response)
+        response = pe.language_model.parse_response(response)
         
         assert response["correctness"] in [1, 2, 3, 4]
         assert isinstance(response["reasoning"], str)
