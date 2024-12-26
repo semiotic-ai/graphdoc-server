@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO)
 
 class LanguageModel(ABC): 
     @abstractmethod
-    def prompt(self, prompt, model): 
+    def prompt(self, prompt, model, temperature): 
         pass
 
     @abstractmethod 
@@ -32,7 +32,7 @@ class OpenAILanguageModel(LanguageModel):
         self.client = OpenAI(api_key=api_key)
         logging.info(f"Initialized LanguageModel")
 
-    def prompt(self, prompt, model="gpt-4o"):
+    def prompt(self, prompt, model="gpt-4o", temperature=0.7):
         try: 
             response = self.client.chat.completions.create(
                 messages=[
@@ -42,6 +42,7 @@ class OpenAILanguageModel(LanguageModel):
                     }
                 ],
                 model=model,
+                temperature=temperature,
             )
             logging.info(f"Prompt successful")
             return response
