@@ -26,8 +26,15 @@ class Parser:
                 raise ValueError(f"The provided schema directory path '{schema_directory_path}' is not a valid directory.")
         self.schema_directory_path = schema_directory_path
 
-    def parse(self, schema_file: str, schema_directory_path: Optional[str] = None):
-        schema_path = Path(schema_directory_path) / schema_file
+    def parse_schema(self, schema_file: str, schema_directory_path: Optional[str] = None):
+        if schema_directory_path:
+            schema_directory_path = Path(schema_directory_path).resolve()
+            if not schema_directory_path.is_dir():
+                raise ValueError(f"The provided schema directory path '{schema_directory_path}' is not a valid directory.")
+            else:
+                self.schema_directory_path = schema_directory_path
+
+        schema_path = Path(self.schema_directory_path) / schema_file
         schema = schema_path.read_text()
         schema_ast = parse(schema)
-        return schema
+        return schema_ast
