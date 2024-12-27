@@ -4,13 +4,13 @@ import logging
 from pathlib import Path
 from abc import ABC, abstractmethod
 from typing import Optional
+import importlib.resources as pkg_resources
 
 # internal packages 
 
 # external packages
 from tokencost import count_string_tokens
 from graphql import build_schema, parse, build_ast_schema, validate_schema, print_ast
-
 
 from openai import OpenAI
 from jinja2 import Environment, FileSystemLoader
@@ -26,6 +26,16 @@ class Parser:
                 raise ValueError(f"The provided schema directory path '{schema_directory_path}' is not a valid directory.")
         self.schema_directory_path = schema_directory_path
 
+        # load the model token details from tokencost
+        package_name = "tokencost"
+        resource_name = "model_prices.json"
+
+        try:
+            with pkg_resources.files(package_name).joinpath(resource_name).open('r') as file:
+                self.model_data = json.load(file)
+        except FileNotFoundError:
+            raise ValueError(f"{resource_name} not found in the package {package_name}.")
+
     def parse_schema(self, schema_file: str, schema_directory_path: Optional[str] = None):
         if schema_directory_path:
             schema_directory_path = Path(schema_directory_path).resolve()
@@ -38,3 +48,14 @@ class Parser:
         schema = schema_path.read_text()
         schema_ast = parse(schema)
         return schema_ast
+    
+    def check_schema_token_count(self, schema_ast, model: str = "gpt-4o"):
+        schema_str = print_ast(schema_ast)
+        token_count = count_string_tokens(schema_str, model)
+        return token_count
+    
+    def get_model_max_input_tokens(self, model: str = "gpt-4o"):
+        if model in self.model_data:
+            return self.model_data[model]["max_input_tokens"]
+        else:
+            raise ValueError(f"Model {model} not found in the model data.")
