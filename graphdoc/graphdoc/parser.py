@@ -36,7 +36,11 @@ class Parser:
         except FileNotFoundError:
             raise ValueError(f"{resource_name} not found in the package {package_name}.")
 
-    def parse_schema(self, schema_file: str, schema_directory_path: Optional[str] = None):
+    def parse_schema_from_text(self, schema_text: str):
+        schema_ast = parse(schema_text)
+        return schema_ast
+
+    def parse_schema_from_file(self, schema_file: str, schema_directory_path: Optional[str] = None):
         if schema_directory_path:
             schema_directory_path = Path(schema_directory_path).resolve()
             if not schema_directory_path.is_dir():
@@ -46,8 +50,7 @@ class Parser:
 
         schema_path = Path(self.schema_directory_path) / schema_file
         schema = schema_path.read_text()
-        schema_ast = parse(schema)
-        return schema_ast
+        return self.parse_schema_from_text(schema)
     
     def check_schema_token_count(self, schema_ast, model: str = "gpt-4o"):
         schema_str = print_ast(schema_ast)
@@ -68,3 +71,31 @@ class Parser:
             logging.warning(f"Prompt token count {prompt_token_count} exceeds the maximum input tokens {max_input_tokens} for model {model}.")
             return False
         return True
+    
+    def format_text_schema_to_json(self, schema_text, label="gold", version="1.0.0"): 
+        lines = schema_text.strip().split('\n')
+        formatted_lines = []
+    
+        for line in lines:
+            cleaned_line = line.replace('"', '\"').rstrip()
+        
+            if not cleaned_line:
+                formatted_lines.append("\n")
+                continue
+            
+        formatted_lines.append(cleaned_line + " \n")
+        json_output = {
+            f"{label}": {
+                "version": f"{version}",
+                "prompt": formatted_lines
+            }
+        }
+        return json_output
+    
+    def format_schema_ast_to_json(self, schema_ast, label="gold", version="1.0.0"):
+        schema_str = print_ast(schema_ast)
+        return self.format_text_schema_to_json(schema_str, label, version)
+    
+    def format_schema_file_to_json(self, schema_file, label="gold", version="1.0.0"):
+        schema_ast = self.parse_schema_from_file(schema_file)
+        return self.format_schema_ast_to_json(schema_ast, label, version)
