@@ -82,6 +82,7 @@ class PromptExecutor(ABC):
             raise FileNotFoundError(f"Prompts directory not found at: {prompt_templates_dir}")
         
         # load in our jinja based prompt templates
+        self.prompt_templates_dir_path = prompt_templates_dir
         self.prompt_templates_dir = Environment(loader=FileSystemLoader(prompt_templates_dir))
 
     def get_prompt_template(self, template_name: str): 
@@ -105,7 +106,9 @@ class EntityComparisonPromptExecutor(PromptExecutor):
         revised_prompt = response["modified_prompt"]
 
         # Replace the placeholder with Jinja syntax
+        revised_prompt = revised_prompt.replace(r"{ entity_pred }", r"{{ entity_pred }}")
         revised_prompt = revised_prompt.replace(r"{entity_pred}", r"{{ entity_pred }}")
+        revised_prompt = revised_prompt.replace(r"{ entity_gold }", r"{{ entity_gold }}")
         revised_prompt = revised_prompt.replace(r"{entity_gold}", r"{{ entity_gold }}")
         return revised_prompt
     
