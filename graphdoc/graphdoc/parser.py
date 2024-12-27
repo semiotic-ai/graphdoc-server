@@ -59,3 +59,12 @@ class Parser:
             return self.model_data[model]["max_input_tokens"]
         else:
             raise ValueError(f"Model {model} not found in the model data.")
+        
+    def check_prompt_validity(self, prompt: str, model: str = "gpt-4o"):
+        """Check to see if the prompt for a model is too long."""
+        prompt_token_count = count_string_tokens(prompt, model)
+        max_input_tokens = self.get_model_max_input_tokens(model)
+        if prompt_token_count > max_input_tokens:
+            logging.warning(f"Prompt token count {prompt_token_count} exceeds the maximum input tokens {max_input_tokens} for model {model}.")
+            return False
+        return True
