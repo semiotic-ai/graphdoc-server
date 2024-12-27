@@ -34,3 +34,8 @@ class TestParser:
     def test_get_model_max_input_tokens(self, par: Parser):
         max_tokens = par.get_model_max_input_tokens()
         assert max_tokens == 128000
+
+    def test_check_prompt_validity(self, par: Parser):
+        prompt = "This is a test prompt"
+        valid_prompt = par.check_prompt_validity(prompt)
+        assert valid_prompt
