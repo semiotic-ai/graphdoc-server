@@ -114,7 +114,7 @@ class TestEntityComparison:
             parsed_test_asset_comparisons = [ecpe.language_model.parse_response(r) for r in test_asset_comparisons]
             
             revised_prompt = ecpe.execute_four_comparison_prompt(
-                original_prompt_template = ecpe.get_prompt_template(template_name = "entity_comparison_prompt.txt",),
+                original_prompt_template = ecpe.get_prompt_template(template_name = "entity_comparison_prompt.txt",).render({"entity_pred": "entity_pred", "entity_gold": "entity_gold"}),
                 four_comparison = parsed_test_asset_comparisons[0],
                 three_comparison = parsed_test_asset_comparisons[1],
                 two_comparison = parsed_test_asset_comparisons[2],
