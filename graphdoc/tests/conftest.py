@@ -14,6 +14,10 @@ load_dotenv(".env")
 from graphdoc import LanguageModel, OpenAILanguageModel
 from graphdoc import Prompt, PromptRevision, RequestObject 
 from graphdoc import PromptExecutor, EntityComparisonPromptExecutor
+from graphdoc import Parser
+
+# Define the base directory (project root)
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 ####################
 # Config Fixtures
@@ -64,10 +68,14 @@ def ecpe(lm: OpenAILanguageModel) -> EntityComparisonPromptExecutor:
     )
 
 @fixture
+def par() -> Parser:
+    schema_directory_path = BASE_DIR / "graphdoc" / "tests" / "assets" / "schemas"
+    return Parser(schema_directory_path=str(schema_directory_path))
+
+@fixture
 def entity_comparison_assets() -> Dict: 
     # Set the absolute or relative path for the assets directory
-    assets_dir = Path(__file__).parent/ 'assets/'
-    assets_dir = Path(assets_dir)
+    assets_dir = BASE_DIR / "graphdoc" / "tests" / "assets"
     if not assets_dir.exists():
         raise FileNotFoundError(f"assets directory not found at: {assets_dir}")
     
