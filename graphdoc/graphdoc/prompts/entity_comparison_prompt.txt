@@ -3,7 +3,7 @@ You are evaluating the quality of documentation between two representations of t
 ***
 [TASK]: The task is to determine the quality of documentation for one table schema, given access only to a table definition and two different documentation implementations. 
 
-The goal is to create informative descriptions which reduces ambiguity and increases understanding for users of the database .
+The goal is to create informative descriptions which reduces ambiguity and increases understanding for users of the database.
 
 ***
 [EVALUATION DOCUMENTATION]: {{ entity_pred }}
