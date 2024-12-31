@@ -1,0 +1,46 @@
+# Subgraph Schema: NFT Marketplace
+# Version: 1.0.0
+
+type MarketplaceDailySnapshot @entity @dailySnapshot {
+  " { Contract address }-{# of days since Unix epoch time} "
+  id: ID!
+
+  " The marketplace. "
+  marketplace: Marketplace!
+
+  " Block number. "
+  blockNumber: BigInt!
+
+  " Block timestamp. "
+  timestamp: BigInt!
+
+  " Number of collections. "
+  collectionCount: Int!
+
+  " Cumulative trade volume "
+  cumulativeTradeVolumeETH: BigDecimal!
+
+  " Revenue that goes to the marketplace protocol. "
+  marketplaceRevenueETH: BigDecimal!
+
+  " Revenue that goes to creator. "
+  creatorRevenueETH: BigDecimal!
+
+  " Sum of marketplaceRevenueETH and creatorRevenueETH. "
+  totalRevenueETH: BigDecimal!
+
+  " Trade count of collections. "
+  tradeCount: Int!
+
+  " Cumulative unique traders "
+  cumulativeUniqueTraders: Int!
+
+  " Daily active traders "
+  dailyActiveTraders: Int!
+
+  " Number of traded collections "
+  dailyTradedCollectionCount: Int!
+
+  " Number of traded items "
+  dailyTradedItemCount: Int!
+}
