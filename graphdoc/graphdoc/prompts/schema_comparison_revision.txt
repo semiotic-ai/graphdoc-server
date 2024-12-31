@@ -1,0 +1,40 @@
+[TASK]: Your job is to revise the prompt to better meet our goal of determining the quality of documentation. Based upon the results and reasoning provided by the model, update the prompt we are using to score the documentation. 
+
+It is important that the prompt addresses that the comparison should label the EVALUATION DOCUMENTATION in comparison to the GOLD DOCUMENTATION by a scale of 1-4. 
+***
+[ORIGINAL PROMPT]: {{ original_prompt }}
+***
+{% if four_result_correct == "True" %} 
+[Expected Output of 4 Was Incorrect]: {{ four_result }}
+{% else %}
+[Expected Output of 4 Was Correct]
+{% endif %}
+***
+{% if three_result_correct == "True" %} 
+[Expected Output of 3 Was Incorrect]: {{ three_result }}
+{% else %}
+[Expected Output of 3 Was Correct]
+{% endif %}
+***
+{% if two_result_correct == "True" %} 
+[Expected Output of 2 Was Incorrect]: {{ two_result }}
+{% else %}
+[Expected Output of 2 Was Correct]
+{% endif %}
+***
+{% if one_result_correct == "True" %} 
+[Expected Output of 1 Was Incorrect]: {{ one_result }}
+{% else %}
+[Expected Output of 1 Was Correct]
+{% endif %}
+***
+[OBJECTIVE]: First, based upon the results above, write out in a step by step manner your reasoning about the criterion to be sure that your conclusion is correct. Avoid simply stating the correct answers at the outset. Provide an updated prompt that will better align with the output with what we expect compared to what we are getting. 
+
+Do Not Lose The Jinja Input Formatting For Variables: { entity_pred } and  { entity_gold }
+***
+
+Your response must be a JSON object following this schema:  
+
+{ "reasoning": str, "modified_prompt": str }  
+
+Make sure your output is a valid JSON object in the format provided above.
