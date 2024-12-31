@@ -1,0 +1,7 @@
+# Subgraph Schema: NFT Marketplace
+# Version: 1.0.0
+
+type Marketplace @entity @regularPolling {
+  " Revenue that goes to the NFT creator, aka royalty fee. "
+  marketplaceRevenueETH: BigDecimal!
+}
