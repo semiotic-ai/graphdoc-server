@@ -22,6 +22,9 @@ class TestGraphDocBuild:
     def test_parser_fixture(self, par):
         assert par.schema_directory_path != None
 
+    def test_graph_network_arbitrum_fixture(self, sg):
+        assert sg.subgraph != None 
+
     def test_entity_comparison_assets_fixture(self, entity_comparison_assets):
         assert entity_comparison_assets["gold_entity_comparison"] != None
         assert entity_comparison_assets["four_entity_comparison"] != None

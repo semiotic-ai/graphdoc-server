@@ -15,6 +15,7 @@ from graphdoc import LanguageModel, OpenAILanguageModel
 from graphdoc import Prompt, PromptRevision, RequestObject 
 from graphdoc import PromptExecutor, EntityComparisonPromptExecutor
 from graphdoc import Parser
+from graphdoc import GraphNetworkArbitrum
 
 # Define the base directory (project root)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -71,6 +72,12 @@ def ecpe(lm: OpenAILanguageModel) -> EntityComparisonPromptExecutor:
 def par() -> Parser:
     schema_directory_path = BASE_DIR / "graphdoc" / "tests" / "assets" / "schemas"
     return Parser(schema_directory_path=str(schema_directory_path))
+
+@fixture
+def sg() -> GraphNetworkArbitrum:
+    return GraphNetworkArbitrum(
+        api_key = os.getenv("GRAPH_API_KEY")
+    )
 
 @fixture
 def entity_comparison_assets() -> Dict: 
