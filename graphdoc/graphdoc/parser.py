@@ -97,5 +97,5 @@ class Parser:
         return self.format_text_schema_to_json(schema_str, label, version)
     
     def format_schema_file_to_json(self, schema_file, schema_directory_path=None, label="gold", version="1.0.0"):
-        schema_ast = self.parse_schema_from_file(schema_file)
+        schema_ast = self.parse_schema_from_file(schema_file, schema_directory_path)
         return self.format_schema_ast_to_json(schema_ast, label, version)
