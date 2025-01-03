@@ -176,3 +176,14 @@ class Parser:
         # build the query with the entity name directly
         query = f"""{{{query_name}(first: 5) {{{fields_str}}}}}"""
         return query
+    
+    def get_all_select_queries(self, schema_ast: DocumentNode):
+        select_queries = {}
+        
+        for definition in schema_ast.definitions:
+            if isinstance(definition, ObjectTypeDefinitionNode):
+                type_name = definition.name.value
+                select_query = self.build_entity_select_all_query(schema_ast, type_name)
+                select_queries[type_name] = select_query
+                
+        return select_queries
