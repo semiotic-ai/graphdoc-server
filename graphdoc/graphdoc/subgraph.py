@@ -2,6 +2,7 @@
 import os
 import yaml
 import json
+import logging
 import requests 
 from typing import Optional, List, Dict, Any
 
@@ -11,6 +12,8 @@ from typing import Optional, List, Dict, Any
 from dotenv import load_dotenv
 from subgrounds.pagination import ShallowStrategy
 from subgrounds import Subgrounds
+
+logging.basicConfig(level=logging.INFO) 
 
 class Subgraph: 
     def __init__(self,
@@ -131,13 +134,19 @@ class GraphNetworkArbitrum(Subgraph):
                                  ipfs_url: Optional[str] = "https://api.thegraph.com/ipfs/api/v0/cat?arg={ipfs_hash}"
                                  ): 
         abis_hashes = self.get_abis_hashes_from_manifest(subgraph_id, ipfs_url)
-        
+
         abis = {}
         for abi in abis_hashes: 
-            path = abi["file"]["/"].strip("/ipfs/")
+            abi = abi[0]
+            logging.info(abi)
+            path = abi["file"]["/"].removeprefix("/ipfs/")
             name = abi["name"]
             
-            response = requests.get(ipfs_url.format(path))
+            if f"{name}-{path}" in abis:
+                continue
+
+            response = requests.get(ipfs_url.format(ipfs_hash=path))
+            logging.info("Trying to get ABI for %s. Path: %s", name, path)
             if response.status_code == 200:
                 abis[f"{name}-{path}"] = json.loads(response.text)  
             else:
