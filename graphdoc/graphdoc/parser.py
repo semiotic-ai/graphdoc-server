@@ -12,6 +12,8 @@ import importlib.resources as pkg_resources
 from tokencost import count_string_tokens
 from graphql import build_schema, parse, build_ast_schema, validate_schema, print_ast
 from graphql import Node, StringValueNode
+from graphql import parse
+from graphql.language.ast import DocumentNode, ObjectTypeDefinitionNode, FieldDefinitionNode
 
 from openai import OpenAI
 from jinja2 import Environment, FileSystemLoader
@@ -120,7 +122,57 @@ class Parser:
             elif isinstance(child, Node):
                 self.update_node_descriptions(child, new_value)
         return node
-
-
     
+    def build_entity_select_all_query(self, ast: DocumentNode, type_name: str) -> str:
+        """
+        Builds a GraphQL query string from an AST for a given type, including all fields.
+        Works directly with the AST to avoid schema validation issues.
+        
+        Args:
+            ast: The parsed GraphQL AST
+            type_name: Name of the type to query (e.g., "CollectionDailySnapshot")
+            
+        Returns:
+            A GraphQL query string
+        """
+        query_name = f"{type_name}s"
+        query_name = query_name[0].lower() + query_name[1:]
 
+        # Find the type definition in the AST
+        type_def = None
+        for definition in ast.definitions:
+            if (isinstance(definition, ObjectTypeDefinitionNode) and 
+                definition.name.value == type_name):
+                type_def = definition
+                break
+                
+        if not type_def:
+            raise ValueError(f"Type {type_name} not found in AST")
+            
+        # build query parts for each field
+        field_queries = []
+        
+        for field in type_def.fields:
+            field_name = field.name.value
+            field_type = field.type
+            
+            # iterate through NonNull or List wrappers
+            while hasattr(field_type, 'type'):
+                field_type = field_type.type
+                
+            # if it's a named type (potentially an entity), just get its id
+            if hasattr(field_type, 'name'):
+                type_name = field_type.name.value
+                if type_name not in ['ID', 'String', 'Int', 'Float', 'Boolean', 'BigInt', 'BigDecimal']:
+                    field_queries.append(f"{field_name} {{ id }}")
+                else:
+                    field_queries.append(field_name)
+            else:
+                field_queries.append(field_name)
+        
+        # combine all field queries=
+        fields_str = "\n    ".join(field_queries)
+        
+        # build the query with the entity name directly
+        query = f"""{{{query_name}(first: 5) {{{fields_str}}}}}"""
+        return query
