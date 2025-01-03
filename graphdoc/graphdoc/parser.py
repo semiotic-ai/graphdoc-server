@@ -11,6 +11,7 @@ import importlib.resources as pkg_resources
 # external packages
 from tokencost import count_string_tokens
 from graphql import build_schema, parse, build_ast_schema, validate_schema, print_ast
+from graphql import Node, StringValueNode
 
 from openai import OpenAI
 from jinja2 import Environment, FileSystemLoader
@@ -99,3 +100,27 @@ class Parser:
     def format_schema_file_to_json(self, schema_file, schema_directory_path=None, label="gold", version="1.0.0"):
         schema_ast = self.parse_schema_from_file(schema_file, schema_directory_path)
         return self.format_schema_ast_to_json(schema_ast, label, version)
+    
+    def update_node_descriptions(self, node, new_value=None):
+        """Update the descriptions of the nodes in the schema. If new_value is None, the description nodes will be removed."""
+        if hasattr(node, 'description') and isinstance(node.description, StringValueNode):
+            if new_value:
+                node.description.value = new_value
+            else:
+                node.description = None
+
+        for attr in dir(node):
+            if attr.startswith('__') or attr == 'description':
+                continue
+            child = getattr(node, attr, None)
+            if isinstance(child, (list, tuple)):
+                for item in child:
+                    if isinstance(item, Node):
+                        self.update_node_descriptions(item, new_value)
+            elif isinstance(child, Node):
+                self.update_node_descriptions(child, new_value)
+        return node
+
+
+    
+
