@@ -8,17 +8,19 @@ from datetime import datetime
 # external packages
 from pytest import fixture
 from dotenv import load_dotenv
+
 load_dotenv(".env")
 
 # internal packages
 from graphdoc import LanguageModel, OpenAILanguageModel
-from graphdoc import Prompt, PromptRevision, RequestObject 
+from graphdoc import Prompt, PromptRevision, RequestObject
 from graphdoc import PromptExecutor, EntityComparisonPromptExecutor
 from graphdoc import Parser
 from graphdoc import GraphNetworkArbitrum
 
 # Define the base directory (project root)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
 
 ####################
 # Config Fixtures
@@ -32,61 +34,68 @@ def pytest_addoption(parser):
     )
 
     parser.addoption(
-        "--dry-fire", 
-        action="store_true", 
-        default=False, 
-        help="Load locally saved data instead of making API calls"
+        "--dry-fire",
+        action="store_true",
+        default=False,
+        help="Load locally saved data instead of making API calls",
     )
+
 
 @fixture
 def fire(request):
     return request.config.getoption("--fire")
 
+
 @fixture
 def dry_fire(request):
     return request.config.getoption("--dry-fire")
 
-#################### 
+
+####################
 # Object Fixtures
 ####################
+
 
 @fixture
 def lm() -> OpenAILanguageModel:
     return OpenAILanguageModel(
-        api_key = os.getenv("OPENAI_API_KEY"),
+        api_key=os.getenv("OPENAI_API_KEY"),
     )
 
-@fixture 
-def pe(lm: OpenAILanguageModel) -> PromptExecutor: 
-    return PromptExecutor(
-        language_model = lm,
-    )
 
 @fixture
-def ecpe(lm: OpenAILanguageModel) -> EntityComparisonPromptExecutor: 
-    return EntityComparisonPromptExecutor(
-        language_model = lm,
+def pe(lm: OpenAILanguageModel) -> PromptExecutor:
+    return PromptExecutor(
+        language_model=lm,
     )
+
+
+@fixture
+def ecpe(lm: OpenAILanguageModel) -> EntityComparisonPromptExecutor:
+    return EntityComparisonPromptExecutor(
+        language_model=lm,
+    )
+
 
 @fixture
 def par() -> Parser:
     schema_directory_path = BASE_DIR / "graphdoc" / "tests" / "assets" / "schemas"
     return Parser(schema_directory_path=str(schema_directory_path))
 
-@fixture
-def sg() -> GraphNetworkArbitrum:
-    return GraphNetworkArbitrum(
-        api_key = os.getenv("GRAPH_API_KEY")
-    )
 
 @fixture
-def entity_comparison_assets() -> Dict: 
+def sg() -> GraphNetworkArbitrum:
+    return GraphNetworkArbitrum(api_key=os.getenv("GRAPH_API_KEY"))
+
+
+@fixture
+def entity_comparison_assets() -> Dict:
     # Set the absolute or relative path for the assets directory
     assets_dir = BASE_DIR / "graphdoc" / "tests" / "assets"
     if not assets_dir.exists():
         raise FileNotFoundError(f"assets directory not found at: {assets_dir}")
-    
-    with open(Path(assets_dir / 'entity_comparison_assets.json'), 'r') as f:
+
+    with open(Path(assets_dir / "entity_comparison_assets.json"), "r") as f:
         entity_comparison_assets = json.load(f)
 
     gold_entity_comparison = "".join(entity_comparison_assets["gold"]["prompt"])
@@ -102,6 +111,7 @@ def entity_comparison_assets() -> Dict:
         "one_entity_comparison": one_entity_comparison,
     }
 
+
 @fixture
 def sample_request_object() -> RequestObject:
     return RequestObject(
@@ -112,13 +122,14 @@ def sample_request_object() -> RequestObject:
         response_tokens=20,
         request_time=int(datetime.now().timestamp()),
         request_id="test_123",
-        request_object=None
+        request_object=None,
     )
+
 
 @fixture
 def sample_prompt() -> Prompt:
     return Prompt(
         title="Test Prompt",
         base_content="This is a base prompt content",
-        metadata={"type": "test"}
+        metadata={"type": "test"},
     )

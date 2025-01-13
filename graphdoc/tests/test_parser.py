@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Dict, Any
 
 # internal packages
-from graphdoc import Prompt, PromptRevision, RequestObject 
+from graphdoc import Prompt, PromptRevision, RequestObject
 from graphdoc import Parser
 
 # external packages
@@ -12,21 +12,22 @@ import pytest
 
 logging.basicConfig(level=logging.INFO)
 
-class TestParser: 
-    def test_parse_schema_from_file(self, par: Parser): 
+
+class TestParser:
+    def test_parse_schema_from_file(self, par: Parser):
         schema_file = "opensea_original_schema.graphql"
         schema = par.parse_schema_from_file(schema_file)
         assert schema != None
         assert len(schema.definitions) == 9
-    
-    def test_check_schema_token_count(self, par: Parser): 
+
+    def test_check_schema_token_count(self, par: Parser):
         schema_file = "opensea_original_schema.graphql"
         schema = par.parse_schema_from_file(schema_file)
         token_count = par.check_schema_token_count(schema)
         logging.info(f"Token count: {token_count}")
         assert token_count == 1774
 
-    def test_check_model_data(self, par: Parser): 
+    def test_check_model_data(self, par: Parser):
         assert par.model_data != None
         assert "gpt-4o" in par.model_data
         assert par.model_data["gpt-4o"]["max_input_tokens"] == 128000

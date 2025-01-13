@@ -13,18 +13,21 @@ import pickle
 from pandas import DataFrame
 from subgrounds import Subgraph as SubgroundsSubgraph
 
-logging.basicConfig(level=logging.INFO) 
+logging.basicConfig(level=logging.INFO)
 
 # set global variables
 SUBGRAPH_ID = "DZz4kDTdmzWLWsV373w2bSmoar3umKKH9y82SUKr5qmp"
-CACHE_DIR = Path(__file__).parent / 'assets/cache/'
+CACHE_DIR = Path(__file__).parent / "assets/cache/"
+
 
 class TestSubgraph:
 
     def test_subgraph_init(self, sg: GraphNetworkArbitrum):
         assert isinstance(sg.subgraph, SubgroundsSubgraph)
 
-    @pytest.mark.skipif("not (config.getoption('--fire') or config.getoption('--dry-fire'))")
+    @pytest.mark.skipif(
+        "not (config.getoption('--fire') or config.getoption('--dry-fire'))"
+    )
     def test_query_subgraph_ipfs(self, sg: GraphNetworkArbitrum, request):
         """
         file_name = "test_query_subgraph_ipfs.pkl"
@@ -48,7 +51,9 @@ class TestSubgraph:
                     cache = pickle.load(f)
                     subgraph_ipfs_response = cache.get("subgraph_ipfs_response")
             else:
-                raise FileNotFoundError(f"Cache file not found at {test_cache_file_path} for --dry-fire mode")
+                raise FileNotFoundError(
+                    f"Cache file not found at {test_cache_file_path} for --dry-fire mode"
+                )
 
         if fire:
             subgraph_ipfs_response = sg.query_subgraph_ipfs(SUBGRAPH_ID)
@@ -60,7 +65,9 @@ class TestSubgraph:
         assert subgraph_ipfs_response is not None, "subgraph_ipfs_response is not set"
         assert isinstance(subgraph_ipfs_response, DataFrame)
 
-    @pytest.mark.skipif("not (config.getoption('--fire') or config.getoption('--dry-fire'))")
+    @pytest.mark.skipif(
+        "not (config.getoption('--fire') or config.getoption('--dry-fire'))"
+    )
     def test_get_subgraph_ipfs_hash(self, sg: GraphNetworkArbitrum, request):
         """
         file_name = "test_get_subgraph_ipfs_hash.pkl"
@@ -84,7 +91,9 @@ class TestSubgraph:
                     cache = pickle.load(f)
                     subgraph_ipfs_hash = cache.get("subgraph_ipfs_hash")
             else:
-                raise FileNotFoundError(f"Cache file not found at {test_cache_file_path} for --dry-fire mode")
+                raise FileNotFoundError(
+                    f"Cache file not found at {test_cache_file_path} for --dry-fire mode"
+                )
 
         if fire:
             subgraph_ipfs_hash = sg.get_subgraph_ipfs_hash(SUBGRAPH_ID)
@@ -96,7 +105,9 @@ class TestSubgraph:
         assert subgraph_ipfs_hash is not None, "subgraph_ipfs_hash is not set"
         assert isinstance(subgraph_ipfs_hash, str)
 
-    @pytest.mark.skipif("not (config.getoption('--fire') or config.getoption('--dry-fire'))")
+    @pytest.mark.skipif(
+        "not (config.getoption('--fire') or config.getoption('--dry-fire'))"
+    )
     def test_get_subgraph_ipfs_manifest(self, sg: GraphNetworkArbitrum, request):
         """
         file_name = "test_get_subgraph_ipfs_manifest.pkl"
@@ -120,7 +131,9 @@ class TestSubgraph:
                     cache = pickle.load(f)
                     subgraph_ipfs_manifest = cache.get("subgraph_ipfs_manifest")
             else:
-                raise FileNotFoundError(f"Cache file not found at {test_cache_file_path} for --dry-fire mode")
+                raise FileNotFoundError(
+                    f"Cache file not found at {test_cache_file_path} for --dry-fire mode"
+                )
 
         if fire:
             subgraph_ipfs_manifest = sg.get_subgraph_ipfs_manifest(SUBGRAPH_ID)
@@ -131,8 +144,10 @@ class TestSubgraph:
         #################### testing ####################
         assert subgraph_ipfs_manifest is not None, "subgraph_ipfs_manifest is not set"
         assert isinstance(subgraph_ipfs_manifest, dict)
-    
-    @pytest.mark.skipif("not (config.getoption('--fire') or config.getoption('--dry-fire'))")
+
+    @pytest.mark.skipif(
+        "not (config.getoption('--fire') or config.getoption('--dry-fire'))"
+    )
     def test_find_matching_values(self, sg: GraphNetworkArbitrum, request):
         """
         file_name = "test_find_matching_values.pkl"
@@ -156,7 +171,9 @@ class TestSubgraph:
                     cache = pickle.load(f)
                     matching_values = cache.get("matching_values")
             else:
-                raise FileNotFoundError(f"Cache file not found at {test_cache_file_path} for --dry-fire mode")
+                raise FileNotFoundError(
+                    f"Cache file not found at {test_cache_file_path} for --dry-fire mode"
+                )
 
         if fire:
             subgraph_ipfs_manifest = sg.get_subgraph_ipfs_manifest(SUBGRAPH_ID)
@@ -170,7 +187,9 @@ class TestSubgraph:
         assert isinstance(matching_values, list)
         assert len(matching_values) > 0
 
-    @pytest.mark.skipif("not (config.getoption('--fire') or config.getoption('--dry-fire'))")
+    @pytest.mark.skipif(
+        "not (config.getoption('--fire') or config.getoption('--dry-fire'))"
+    )
     def test_get_abis_hashes_from_manifest(self, sg: GraphNetworkArbitrum, request):
         """
         file_name = "test_get_abis_hashes_from_manifest.pkl"
@@ -194,7 +213,9 @@ class TestSubgraph:
                     cache = pickle.load(f)
                     abis_hashes = cache.get("abis_hashes")
             else:
-                raise FileNotFoundError(f"Cache file not found at {test_cache_file_path} for --dry-fire mode")
+                raise FileNotFoundError(
+                    f"Cache file not found at {test_cache_file_path} for --dry-fire mode"
+                )
 
         if fire:
             abis_hashes = sg.get_abis_hashes_from_manifest(SUBGRAPH_ID)
@@ -207,7 +228,9 @@ class TestSubgraph:
         assert isinstance(abis_hashes, list)
         assert len(abis_hashes) > 0
 
-    @pytest.mark.skipif("not (config.getoption('--fire') or config.getoption('--dry-fire'))")
+    @pytest.mark.skipif(
+        "not (config.getoption('--fire') or config.getoption('--dry-fire'))"
+    )
     def test_get_abis_from_manifest(self, sg: GraphNetworkArbitrum, request):
         """
         file_name = "test_get_abis_from_manifest.pkl"
@@ -231,7 +254,9 @@ class TestSubgraph:
                     cache = pickle.load(f)
                     abis = cache.get("abis")
             else:
-                raise FileNotFoundError(f"Cache file not found at {test_cache_file_path} for --dry-fire mode")
+                raise FileNotFoundError(
+                    f"Cache file not found at {test_cache_file_path} for --dry-fire mode"
+                )
 
         if fire:
             abis = sg.get_abis_from_manifest(SUBGRAPH_ID)

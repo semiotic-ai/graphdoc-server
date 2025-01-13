@@ -6,8 +6,9 @@ from graphdoc import LanguageModel, PromptExecutor, EntityComparisonPromptExecut
 # external packages
 import pytest
 
+
 class TestGraphDocBuild:
-    
+
     def test_language_model_fixture(self, lm: LanguageModel):
         assert lm.api_key != None
 
@@ -15,7 +16,9 @@ class TestGraphDocBuild:
         assert pe.language_model != None
         assert pe.prompt_templates_dir != None
 
-    def test_entity_comparison_prompt_executor(self, ecpe: EntityComparisonPromptExecutor): 
+    def test_entity_comparison_prompt_executor(
+        self, ecpe: EntityComparisonPromptExecutor
+    ):
         assert ecpe.language_model != None
         assert ecpe.prompt_templates_dir != None
 
@@ -23,7 +26,7 @@ class TestGraphDocBuild:
         assert par.schema_directory_path != None
 
     def test_graph_network_arbitrum_fixture(self, sg):
-        assert sg.subgraph != None 
+        assert sg.subgraph != None
 
     def test_entity_comparison_assets_fixture(self, entity_comparison_assets):
         assert entity_comparison_assets["gold_entity_comparison"] != None
