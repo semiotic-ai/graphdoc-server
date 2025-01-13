@@ -9,6 +9,7 @@ from typing import Optional, List, Dict, Any
 # local packages
 
 # external packages
+import pandas as pd
 from dotenv import load_dotenv
 from subgrounds.pagination import ShallowStrategy
 from subgrounds import Subgrounds
@@ -152,4 +153,27 @@ class GraphNetworkArbitrum(Subgraph):
             else:
                 raise ValueError(f"Failed to get ABI for {name}.")
         return abis
+    
+    def send_graphql_request(self, endpoint, query):
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        payload = {
+            "query": query,
+            "operationName": "Subgraphs",
+            "variables": {}
+        }
+
+        response = requests.post(endpoint, json=payload, headers=headers)
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            response.raise_for_status()
+
+    def single_query_to_df(self, endpoint, query):
+        response = self.send_graphql_request(endpoint, query)
+        keys = list(response["data"].keys())
+        return pd.DataFrame(response["data"][keys[0]])
         
