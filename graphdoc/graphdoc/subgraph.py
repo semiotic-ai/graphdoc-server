@@ -37,11 +37,8 @@ class GraphNetworkArbitrum(Subgraph):
         subgraph_url="https://gateway.thegraph.com/api/{api_key}/subgraphs/id/DZz4kDTdmzWLWsV373w2bSmoar3umKKH9y82SUKr5qmp",
         api_key=None,
     ):
-
         if api_key is None:
             try:
-                from dotenv import load_dotenv
-
                 load_dotenv()
             except ImportError:
                 pass
