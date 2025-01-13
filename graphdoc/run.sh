@@ -22,6 +22,19 @@ test_dry_command() {
     poetry run pytest --dry-fire
 }
 
+install_command() {
+    poetry install --without dev
+}
+
+dev_command() {
+    poetry install --with dev
+}
+
+commit_ci_command() {
+    format_command
+    test_dry_command
+}
+
 show_help() {
     echo "Usage: ./nli [option]"
     echo "Options:"
@@ -31,6 +44,9 @@ show_help() {
     # echo "  lint                   Lint the code"
     echo "  test-fire              Run tests with external calls"
     echo "  test-dry               Run tests without external calls"
+    echo "  commit-ci              Run format and test-dry"
+    echo "  install                Install dependencies"
+    echo "  dev                    Install development dependencies"
 }
 
 if [ -z "$1" ]; then
@@ -43,6 +59,9 @@ else
         # "lint") lint_command ;;
         "test-fire") test_fire_command ;;
         "test-dry") test_dry_command ;;
+        "commit-ci") commit_ci_command ;;
+        "install") install_command ;;
+        "dev") dev_command ;;
         *) show_help ;;
     esac
 fi
