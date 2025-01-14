@@ -10,7 +10,7 @@ import importlib.resources as pkg_resources
 
 # external packages
 from tokencost import count_string_tokens
-from graphql import build_schema, parse, build_ast_schema, validate_schema, print_ast
+from graphql import EnumValueDefinitionNode, FieldNode, build_schema, parse, build_ast_schema, validate_schema, print_ast
 from graphql import Node, StringValueNode
 from graphql import parse
 from graphql.language.ast import (
@@ -23,7 +23,8 @@ from openai import OpenAI
 from jinja2 import Environment, FileSystemLoader
 
 # configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
 
 class Parser:
@@ -137,6 +138,36 @@ class Parser:
                         self.update_node_descriptions(item, new_value)
             elif isinstance(child, Node):
                 self.update_node_descriptions(child, new_value)
+        return node
+    
+    def fill_empty_descriptions(self, node, new_value="Description for column: {}", use_column_name=True, column_name=None):
+        """Fill empty descriptions in the schema."""
+        log.debug(f"Node: {node}")  
+        if hasattr(node, "description") and node.description == None:
+            log.debug(f"The column name is: {column_name}")
+            log.debug(f"We are attempting to update a missing description: {node}")
+            if new_value: 
+                if use_column_name: 
+                    new_value = new_value.format(column_name)
+                    log.debug(f"The new value to update is: {new_value} (column name: {column_name})")
+                    node.description = StringValueNode(value=new_value)
+
+        for attr in dir(node):
+            if attr.startswith("__") or attr == "description":
+                continue
+            child = getattr(node, attr, None)
+            if isinstance(child, (list, tuple)):
+                for item in child:
+                    if isinstance(item, Node):
+                        if isinstance(item, FieldDefinitionNode) or isinstance(item, EnumValueDefinitionNode): 
+                            column_name = item.name.value
+                            log.debug(f"Column name: {column_name}")
+                        self.fill_empty_descriptions(item, new_value, use_column_name, column_name)
+            elif isinstance(child, Node):
+                if isinstance(child, FieldDefinitionNode) or isinstance(child, EnumValueDefinitionNode):
+                    column_name = child.name.value
+                    log.debug(f"Column name: {column_name}")
+                self.fill_empty_descriptions(child, new_value, use_column_name, column_name)
         return node
 
     def build_entity_select_all_query(self, ast: DocumentNode, type_name: str) -> str:
