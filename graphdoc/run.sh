@@ -19,7 +19,7 @@ test_fire_command() {
 }
 
 test_dry_command() {
-    poetry run pytest --dry-fire
+    poetry run pytest --dry-fire -k "not test_subgraph.py"
 }
 
 install_command() {

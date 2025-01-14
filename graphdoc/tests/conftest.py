@@ -85,7 +85,13 @@ def par() -> Parser:
 
 @fixture
 def sg() -> GraphNetworkArbitrum:
-    return GraphNetworkArbitrum(api_key=os.getenv("GRAPH_API_KEY"))
+    graph_api_key = os.getenv("GRAPH_API_KEY")
+    if graph_api_key is None:
+        raise ValueError(
+            "API key not found. Please provide one or set GRAPH_API_KEY in your environment or .env file."
+        )
+    else:
+        return GraphNetworkArbitrum(api_key=graph_api_key)
 
 
 @fixture
