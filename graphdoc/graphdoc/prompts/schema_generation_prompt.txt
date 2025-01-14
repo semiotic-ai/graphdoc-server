@@ -1,0 +1,18 @@
+### TASK:
+Context - Generate Column Description for the Database to help users have an easier time understanding what data is present in the column.
+
+Database Schema Details:
+{{ database_shema }}
+
+### Task 
+Generate a precise description for the columns of the tables in the database. Your description should include: 
+- Primary purpose of the column. If the details in the schema do not suffice to ascertain what the data is, return : " Not enough information to make a valid prediction."
+
+### Requirements
+- Focus solely on confirmed details from the provided schema.
+- Keep the description concise and factual.
+- Exclude any speculative or additional commentary.
+- DO NOT return the phrase "in the { table } table " in your description.
+
+### Return
+Return the documented schema without modifying the schema structure.
