@@ -148,9 +148,9 @@ class Parser:
             log.debug(f"We are attempting to update a missing description: {node}")
             if new_value: 
                 if use_column_name: 
-                    new_value = new_value.format(column_name)
-                    log.debug(f"The new value to update is: {new_value} (column name: {column_name})")
-                    node.description = StringValueNode(value=new_value)
+                    update_value = new_value.format(column_name)
+                    log.debug(f"The new value to update is: {update_value} (column name: {column_name})")
+                    node.description = StringValueNode(value=update_value)
 
         for attr in dir(node):
             if attr.startswith("__") or attr == "description":
