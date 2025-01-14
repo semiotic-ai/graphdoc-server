@@ -10,7 +10,8 @@ from graphdoc import Parser
 # external packages
 import pytest
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
 
 class TestParser:
@@ -40,3 +41,14 @@ class TestParser:
         prompt = "This is a test prompt"
         valid_prompt = par.check_prompt_validity(prompt)
         assert valid_prompt
+
+    def test_update_node_descriptions(self, par: Parser): 
+        schema_file = "opensea_original_schema.graphql"
+        schema = par.parse_schema_from_file(schema_file)
+        log.debug(f"Schema definitions: {schema}")
+        updated_schema = par.update_node_descriptions(
+            node=schema, 
+            new_value="This is a test description"    
+        )
+        test_node_definition = updated_schema.definitions[4].fields[0].description.value
+        assert test_node_definition == "This is a test description"
