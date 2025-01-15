@@ -60,8 +60,7 @@ class Parser:
             )
 
     def parse_schema_from_str(self, schema_text: str):
-        schema_ast = parse(schema_text)
-        return schema_ast
+        return parse(schema_text)
 
     def parse_schema_from_file(
         self, schema_file: str, schema_directory_path: Optional[str] = None
