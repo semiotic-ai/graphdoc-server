@@ -17,6 +17,7 @@ from graphdoc import Prompt, PromptRevision, RequestObject
 from graphdoc import PromptExecutor, EntityComparisonPromptExecutor
 from graphdoc import Parser
 from graphdoc import GraphNetworkArbitrum
+from graphdoc import GraphDoc
 
 # Define the base directory (project root)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -92,6 +93,16 @@ def sg() -> GraphNetworkArbitrum:
         )
     else:
         return GraphNetworkArbitrum(api_key=graph_api_key)
+
+
+@fixture
+def gd() -> GraphDoc:
+    return GraphDoc(
+        openai_api_key=os.getenv("OPENAI_API_KEY"),
+        schema_directory_path=str(
+            BASE_DIR / "graphdoc" / "tests" / "assets" / "schemas"
+        ),
+    )
 
 
 @fixture

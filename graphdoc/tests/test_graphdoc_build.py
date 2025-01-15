@@ -4,6 +4,7 @@
 from graphdoc import LanguageModel, PromptExecutor, EntityComparisonPromptExecutor
 
 # external packages
+from graphdoc.main import GraphDoc
 import pytest
 
 
@@ -27,6 +28,12 @@ class TestGraphDocBuild:
 
     # def test_graph_network_arbitrum_fixture(self, sg):
     #     assert sg.subgraph != None
+
+    def test_graphdoc_fixture(self, gd: GraphDoc):
+        assert gd.openai_api_key != None
+        assert gd.openai_lm != None
+        assert gd.openai_ex != None
+        assert gd.parser != None
 
     def test_entity_comparison_assets_fixture(self, entity_comparison_assets):
         assert entity_comparison_assets["gold_entity_comparison"] != None

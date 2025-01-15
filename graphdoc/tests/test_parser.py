@@ -54,14 +54,6 @@ class TestParser:
         test_node_definition = updated_schema.definitions[4].fields[0].description.value
         assert test_node_definition == "This is a test description"
 
-    def test_temp(self, par: Parser):
-        schema_file = "opensea_original_schema.graphql"
-        schema = par.parse_schema_from_file(schema_file)
-        up = par.update_node_descriptions(schema)
-        sch = print_ast(up)
-        with open("test.graphql", "w") as f:
-            f.write(sch)
-
     def test_fill_empty_descriptions(self, par: Parser):
         schema_file = "opensea_original_schema_sparse.graphql"
         schema = par.parse_schema_from_file(schema_file)
