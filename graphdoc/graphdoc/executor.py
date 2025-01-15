@@ -12,10 +12,15 @@ from openai import OpenAI
 from openai.types.chat.chat_completion import ChatCompletion
 
 from jinja2 import Environment, FileSystemLoader
-from tokencost import calculate_prompt_cost, calculate_completion_cost, count_string_tokens
+from tokencost import (
+    calculate_prompt_cost,
+    calculate_completion_cost,
+    count_string_tokens,
+)
 
 # configure logging
 logging.basicConfig(level=logging.INFO)
+
 
 #######################################
 ### Data Structures                 ###
@@ -31,9 +36,11 @@ class PromptCost:
     def total_cost(self) -> float:
         return self.prompt_cost + self.response_cost
 
+
 #######################################
 ### Language Models                 ###
 #######################################
+
 
 class LanguageModel(ABC):
     @abstractmethod
@@ -77,7 +84,7 @@ class OpenAILanguageModel(LanguageModel):
         response = response.strip("```json").strip("```").strip()
         response = json.loads(response)
         return response
-    
+
     def return_prompt_cost(self, prompt: str, response: ChatCompletion) -> PromptCost:
         """
         Attempts to calculate the cost of the prompt and response.
@@ -85,20 +92,26 @@ class OpenAILanguageModel(LanguageModel):
         :param prompt: The prompt to be calculated.
         :type prompt: str
         :param response: The response to be calculated.
-        :type response: ChatCompletion  
-        :return: The cost of the prompt and response (in USD).   
+        :type response: ChatCompletion
+        :return: The cost of the prompt and response (in USD).
         :rtype: PromptCost
         """
-        try: 
+        try:
             model = response.model
             prompt_tokens = count_string_tokens(prompt, model)
             prompt_cost = calculate_prompt_cost(prompt, model)
-            response_tokens = count_string_tokens(response.choices[0].message.content, model)
-            response_cost = calculate_completion_cost(response.choices[0].message.content, model)
-            return PromptCost(model, prompt_tokens, prompt_cost, response_tokens, response_cost)    
+            response_tokens = count_string_tokens(
+                response.choices[0].message.content, model
+            )
+            response_cost = calculate_completion_cost(
+                response.choices[0].message.content, model
+            )
+            return PromptCost(
+                model, prompt_tokens, prompt_cost, response_tokens, response_cost
+            )
         except Exception as e:
             logging.error(f"Cost calculation failed: {e}")
-        
+
 
 #######################################
 ### Prompt Executors                ###
