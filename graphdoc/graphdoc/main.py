@@ -25,7 +25,8 @@ from graphql import build_schema, parse, print_ast
 from jinja2 import Environment, FileSystemLoader
 
 # configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
 
 class GraphDoc:
@@ -117,3 +118,57 @@ class GraphDoc:
             temperature=temperature,
             with_cost=with_cost,
         )
+
+    def schema_doc_prompt_with_equality(
+        self,
+        database_schema: str,
+        template_name: str = "schema_generation_prompt.txt",
+        retries: int = 3,
+        temperature: float = 0.7,
+        with_cost: bool = True,
+    ):
+        """
+        Given a database schema string, request that the llm generate a schema documentation. Check for schema equality. Retry if not equal (until retry limit is hit).
+
+        :param database_schema: The database schema to be documented.
+        :type database_schema: str
+        :param template_name: The name of the template to be used for the prompt.
+        :type template_name: str
+        :param retries: The number of times to retry if the schema is not equal.
+        :type retries: int
+        :param temperature: The temperature to be used for the prompt.
+        :type temperature: float
+        :param with_cost: Whether to return the cost of the prompt.
+        :type with_cost: bool
+        """
+        gold_schema = parse(database_schema)
+
+        for i in range(retries):
+            log.debug(f"Retrying. Iteration: {i}")
+            response = self.schema_doc_prompt(
+                database_schema=database_schema,
+                template_name=template_name,
+                temperature=temperature,
+                with_cost=with_cost,
+            )
+            response_str = self.openai_lm.parse_response(response)
+
+            try:
+                log.debug("Attempting to parse response schema.")
+                response_schema = parse(response_str)
+            except:
+                log.debug(
+                    f"Failed to parse response schema. Retries: {i}. Response: {response_str}"
+                )
+                continue
+
+            if self.parser.schema_equality_check(gold_schema, response_schema):
+                log.debug(f"Schema equal. Retries: {i}")
+                return response
+            else:
+                log.debug(f"Schema not equal. Retries: {i}")
+                log.debug(f"Gold schema: {print_ast(gold_schema)}")
+                log.debug(f"Response schema: {response_str}")
+                continue
+
+        return "Retries exceeded. Schema not equal."
