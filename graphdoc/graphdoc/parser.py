@@ -10,7 +10,15 @@ import importlib.resources as pkg_resources
 
 # external packages
 from tokencost import count_string_tokens
-from graphql import EnumValueDefinitionNode, FieldNode, build_schema, parse, build_ast_schema, validate_schema, print_ast
+from graphql import (
+    EnumValueDefinitionNode,
+    FieldNode,
+    build_schema,
+    parse,
+    build_ast_schema,
+    validate_schema,
+    print_ast,
+)
 from graphql import Node, StringValueNode
 from graphql import parse
 from graphql.language.ast import (
@@ -139,16 +147,23 @@ class Parser:
             elif isinstance(child, Node):
                 self.update_node_descriptions(child, new_value)
         return node
-    
-    def fill_empty_descriptions(self, node, new_column_value="Description for column: {}", new_table_value="Description for table: {}", use_column_name=True, column_name=None):
+
+    def fill_empty_descriptions(
+        self,
+        node,
+        new_column_value="Description for column: {}",
+        new_table_value="Description for table: {}",
+        use_column_name=True,
+        column_name=None,
+    ):
         """Fill empty descriptions in the schema."""
         if hasattr(node, "description") and node.description == None:
             if isinstance(node, ObjectTypeDefinitionNode):
                 new_value = new_table_value
-            else: 
+            else:
                 new_value = new_column_value
-            if new_value: 
-                if use_column_name: 
+            if new_value:
+                if use_column_name:
                     update_value = new_value.format(column_name)
                     node.description = StringValueNode(value=update_value)
 
@@ -159,18 +174,58 @@ class Parser:
             if isinstance(child, (list, tuple)):
                 for item in child:
                     if isinstance(item, Node):
-                        if isinstance(item, FieldDefinitionNode) or isinstance(item, EnumValueDefinitionNode) or isinstance(item, ObjectTypeDefinitionNode): 
+                        if (
+                            isinstance(item, FieldDefinitionNode)
+                            or isinstance(item, EnumValueDefinitionNode)
+                            or isinstance(item, ObjectTypeDefinitionNode)
+                        ):
                             if isinstance(child, ObjectTypeDefinitionNode):
-                                log.debug(f"found an instance of a ObjectTypeDefinitionNode: {item.name.value}")
+                                log.debug(
+                                    f"found an instance of a ObjectTypeDefinitionNode: {item.name.value}"
+                                )
                             column_name = item.name.value
-                        self.fill_empty_descriptions(item, new_column_value, new_table_value, use_column_name, column_name)
+                        self.fill_empty_descriptions(
+                            item,
+                            new_column_value,
+                            new_table_value,
+                            use_column_name,
+                            column_name,
+                        )
             elif isinstance(child, Node):
-                if isinstance(child, FieldDefinitionNode) or isinstance(child, EnumValueDefinitionNode) or isinstance(child, ObjectTypeDefinitionNode):
+                if (
+                    isinstance(child, FieldDefinitionNode)
+                    or isinstance(child, EnumValueDefinitionNode)
+                    or isinstance(child, ObjectTypeDefinitionNode)
+                ):
                     if isinstance(child, ObjectTypeDefinitionNode):
-                        log.debug(f"found an instance of a ObjectTypeDefinitionNode: {child.name.value}")
+                        log.debug(
+                            f"found an instance of a ObjectTypeDefinitionNode: {child.name.value}"
+                        )
                     column_name = child.name.value
-                self.fill_empty_descriptions(child, new_column_value, new_table_value, use_column_name, column_name)
+                self.fill_empty_descriptions(
+                    child,
+                    new_column_value,
+                    new_table_value,
+                    use_column_name,
+                    column_name,
+                )
         return node
+
+    def schema_equality_check(self, gold_node, check_node):
+        if gold_node == check_node:
+            return True
+        else:
+            gold_node = self.update_node_descriptions(gold_node)
+            check_node = self.update_node_descriptions(check_node)
+
+            if len(gold_node.definitions) != len(check_node.definitions):
+                log.debug("document lengths differ")
+                return False
+
+            if print_ast(gold_node) != print_ast(check_node):
+                return False
+            else:
+                return True
 
     def build_entity_select_all_query(self, ast: DocumentNode, type_name: str) -> str:
         """
