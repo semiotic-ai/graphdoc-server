@@ -2,7 +2,7 @@
 Context - Generate Column Description for the Database to help users have an easier time understanding what data is present in the column.
 
 Database Schema Details:
-{{ database_shema }}
+{{ database_schema }}
 
 ### Task 
 Generate a precise description for the columns of the tables in the database. Your description should include: 
