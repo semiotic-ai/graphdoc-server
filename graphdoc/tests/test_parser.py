@@ -1,4 +1,5 @@
 # system packages
+import copy
 import logging
 from datetime import datetime
 from typing import Dict, Any
@@ -52,3 +53,22 @@ class TestParser:
         )
         test_node_definition = updated_schema.definitions[4].fields[0].description.value
         assert test_node_definition == "This is a test description"
+
+    def test_fill_empty_descriptions(self, par: Parser):
+        schema_file = "opensea_original_schema_sparse.graphql"
+        schema = par.parse_schema_from_file(schema_file)
+        updated_schema = par.fill_empty_descriptions(schema)
+
+        test_entity_definition_updated = updated_schema.definitions[3].fields[0].description.value
+        test_entity_definition_updated_column = updated_schema.definitions[3].fields[0].name.value
+        log.debug(f"Test entity node ({test_entity_definition_updated_column}) definition content: {test_entity_definition_updated}")
+        assert test_entity_definition_updated == "Description for column: id"
+
+        test_enum_definition_content = updated_schema.definitions[2].values[0].description.value
+        test_enum_definition_content_column = updated_schema.definitions[2].values[0].name.value
+        log.debug(f"Test enum node ({test_enum_definition_content_column}) definition updated: {test_enum_definition_content}")
+        assert test_enum_definition_content == " Strategy that executes an order at a fixed price that can be taken either by a bid or an ask. "
+
+        test_entity_description = updated_schema.definitions[3].description.value
+        log.debug(f"Test entity description: {test_entity_description}")
+        assert test_entity_description == "Description for table: Marketplace"
