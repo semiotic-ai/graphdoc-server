@@ -56,7 +56,7 @@ class GraphDoc:
     ####################
     def schema_doc_prompt(
         self,
-        database_shema: str,
+        database_schema: str,
         template_name: str = "schema_generation_prompt.txt",
         temperature: float = 0.7,
         with_cost: bool = True,
@@ -73,7 +73,7 @@ class GraphDoc:
         response = self.openai_ex.execute_prompt(
             template_name=template_name,
             template_variables={
-                "database_schema": database_shema,
+                "database_schema": database_schema,
             },
             temperature=temperature,
         )
@@ -82,7 +82,7 @@ class GraphDoc:
                 prompt=self.openai_ex.instantiate_prompt(
                     template_name=template_name,
                     template_variables={
-                        "database_schema": database_shema,
+                        "database_schema": database_schema,
                     },
                 ),
                 response=response,
@@ -107,15 +107,13 @@ class GraphDoc:
         :param temperature: The temperature to be used for the prompt.
         :type temperature: float
         """
-        schema = self.parser.parse_schema_file(
+        schema = self.parser.parse_schema_from_file(
             schema_file=schema_file, schema_directory_path=schema_directory_path
         )
+        schema_str = print_ast(schema)
         return self.schema_doc_prompt(
-            database_shema=print_ast(schema),
+            database_schema=schema_str,
             template_name=template_name,
             temperature=temperature,
             with_cost=with_cost,
         )
-
-    def test(self):
-        print("Hello, worlds!")
