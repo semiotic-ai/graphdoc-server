@@ -7,8 +7,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # internal packages
-from executor import LanguageModel, OpenAILanguageModel, EntityComparisonPromptExecutor
-from prompt import Prompt, PromptRevision, RequestObject
+from .executor import LanguageModel, OpenAILanguageModel, EntityComparisonPromptExecutor, PromptExecutor, PromptCost
+from .prompt import Prompt, PromptRevision, RequestObject
 
 # external packages
 from openai import OpenAI
@@ -21,169 +21,51 @@ logging.basicConfig(level=logging.INFO)
 
 
 class GraphDoc:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, openai_api_key: str):
+        """
+        Initialize the GraphDoc class. This is the main class for the GraphDoc package.
 
+        :param openai_api_key: The OpenAI API key to be used for the language model.
+        :type openai_api_key: str
+        """
 
-async def main():
-    print("hello, world!")
+        # set up the openai language model
+        self.openai_api_key = openai_api_key
+        self.openai_lm = OpenAILanguageModel(api_key=openai_api_key)
+        self.openai_ex = PromptExecutor(language_model=self.openai_lm) # prompt_templates_dir defaults to prompts/
 
-    # set up required classes
-    load_dotenv(".env")
-    lm = OpenAILanguageModel(
-        api_key=os.getenv("OPENAI_API_KEY"),
-    )
-    ecpe = EntityComparisonPromptExecutor(
-        language_model=lm,
-    )
-
-    # get the test set
-    assets_dir = Path(__file__).parent.parent.parent / "assets" / "tests"
-    assets_dir = Path(assets_dir)
-    if not assets_dir.exists():
-        raise FileNotFoundError(f"assets directory not found at: {assets_dir}")
-
-    with open(Path(assets_dir / "entity_comparison_assets.json"), "r") as f:
-        entity_comparison_assets = json.load(f)
-
-    gold_entity_comparison = "".join(entity_comparison_assets["gold"]["prompt"])
-    four_entity_comparison = "".join(entity_comparison_assets["four"]["prompt"])
-    three_entity_comparison = "".join(entity_comparison_assets["three"]["prompt"])
-    two_entity_comparison = "".join(entity_comparison_assets["two"]["prompt"])
-    one_entity_comparison = "".join(entity_comparison_assets["one"]["prompt"])
-    test_assets = {
-        "gold_entity_comparison": gold_entity_comparison,
-        "four_entity_comparison": four_entity_comparison,
-        "three_entity_comparison": three_entity_comparison,
-        "two_entity_comparison": two_entity_comparison,
-        "one_entity_comparison": one_entity_comparison,
-    }
-
-    # set the base prompt
-    prompt = Prompt(
-        title="Entity comparison prompt",
-        base_content=ecpe.instantiate_prompt(
-            template_name="entity_comparison_prompt.txt",
+    ####################
+    # LLM Methods      #
+    ####################
+    def schema_doc_prompt(self, database_shema: str, template_name: str = "schema_generation_prompt.txt", temperature: float = 0.7, with_cost: bool = True):
+        """Given a database schema, request that the llm generate a schema documentation.
+        
+        :param database_schema: The database schema to be documented.
+        :type database_schema: str
+        :param template_name: The name of the template to be used for the prompt.
+        :type template_name: str
+        :param temperature: The temperature to be used for the prompt.
+        :type temperature: float
+        """
+        response = self.openai_ex.execute_prompt(
+            template_name=template_name,
             template_variables={
-                "entity_pred": "tests",
-                "entity_gold": "tests",
+                "database_schema": database_shema,
             },
-        ),
-        metadata={"score": 0},
-    )
-
-    # temperature range to check
-    temps = [0.6, 0.7, 0.8]
-
-    for i in range(3):
-        template_iteration_name = f"entity_comparison_prompt_{i}.txt"
-
-        print(f"Iteration: {i}")
-        score = 0
-
-        four_comparison = None
-        three_comparison = None
-        two_comparison = None
-        one_comparison = None
-
-        for t in temps:
-            tasks = [
-                asyncio.to_thread(
-                    ecpe.execute_prompt,
-                    template_name=template_iteration_name,
+            temperature=temperature,
+        )
+        if with_cost:
+            cost = self.openai_lm.return_prompt_cost(
+                prompt=self.openai_ex.instantiate_prompt(
+                    template_name=template_name,
                     template_variables={
-                        "entity_pred": test_assets["gold_entity_comparison"],
-                        "entity_gold": test_asset,
+                        "database_schema": database_shema,
                     },
-                )
-                for test_asset in test_assets
-            ]
-
-            test_asset_comparisons = await asyncio.gather(*tasks)
-            try:
-                parsed_test_asset_comparisons = [
-                    ecpe.language_model.parse_response(r)
-                    for r in test_asset_comparisons
-                ]
-            except:
-                continue
-
-            four_comparison_score = abs(
-                4 - parsed_test_asset_comparisons[0]["correctness"]
+                ),
+                response=response,
             )
-            three_comparison_score = abs(
-                3 - parsed_test_asset_comparisons[1]["correctness"]
-            )
-            two_comparison_score = abs(
-                2 - parsed_test_asset_comparisons[2]["correctness"]
-            )
-            one_comparison_score = abs(
-                1 - parsed_test_asset_comparisons[3]["correctness"]
-            )
+            response.prompt_cost = cost 
+        return response
 
-            if four_comparison_score != 0:
-                four_comparison = parsed_test_asset_comparisons[0]
-            if three_comparison_score != 0:
-                three_comparison = parsed_test_asset_comparisons[1]
-            if two_comparison_score != 0:
-                two_comparison = parsed_test_asset_comparisons[2]
-            if one_comparison_score != 0:
-                one_comparison = parsed_test_asset_comparisons[3]
-
-            score += (
-                four_comparison_score
-                + three_comparison_score
-                + two_comparison_score
-                + one_comparison_score
-            ) / 4
-            print(f"updated score: {score}")
-        iteration_score = score / 3
-        print(f"iteration score: {iteration_score}")
-
-        revised_prompt = ecpe.execute_four_comparison_prompt(
-            original_prompt_template=ecpe.get_prompt_template(
-                template_name=template_iteration_name,
-            ).render({"entity_pred": "entity_pred", "entity_gold": "entity_gold"}),
-            four_comparison=four_comparison,
-            three_comparison=three_comparison,
-            two_comparison=two_comparison,
-            one_comparison=one_comparison,
-        )
-        try:
-            parsed_revised_prompt = ecpe.language_model.parse_response(revised_prompt)
-        except:
-            try:
-                revised_prompt = ecpe.execute_four_comparison_prompt(
-                    original_prompt_template=ecpe.get_prompt_template(
-                        template_name=template_iteration_name,
-                    ).render(
-                        {"entity_pred": "entity_pred", "entity_gold": "entity_gold"}
-                    ),
-                    four_comparison=four_comparison,
-                    three_comparison=three_comparison,
-                    two_comparison=two_comparison,
-                    one_comparison=one_comparison,
-                )
-                parsed_revised_prompt = ecpe.language_model.parse_response(
-                    revised_prompt
-                )
-            except:
-                continue
-        formatted_revised_prompt = ecpe.format_entity_comparison_revision_prompt(
-            revised_prompt
-        )
-        print("new prompt written to file")
-        new_file = (
-            Path(ecpe.prompt_templates_dir_path)
-            / f"entity_comparison_prompt_{i + 1}.txt"
-        )
-        with open(new_file, "w") as file:
-            file.write(formatted_revised_prompt)
-
-    # for a given prompt, against each temperature, get the abs dif from the gold and pred and average that value
-    # then, iterate the prompt and try again
-    # do this for a set number of iterations
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
+    def test(self): 
+        print("Hello, worlds!")
