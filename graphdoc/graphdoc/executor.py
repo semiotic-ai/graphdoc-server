@@ -19,7 +19,8 @@ from tokencost import (
 )
 
 # configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
 
 #######################################
@@ -52,7 +53,7 @@ class LanguageModel(ABC):
         pass
 
     @abstractmethod
-    def parse_json_format_response(self, response): 
+    def parse_json_format_response(self, response):
         pass
 
     @abstractmethod
@@ -84,9 +85,8 @@ class OpenAILanguageModel(LanguageModel):
             logging.error(f"Prompt failed: {e}")
 
     def parse_response(self, response):
-        response = response.choices[0].message.content
-        return response
-    
+        return response.choices[0].message.content
+
     def parse_json_format_response(self, response):
         response = response.choices[0].message.content
         response = response.strip("```json").strip("```").strip()
@@ -172,6 +172,7 @@ class PromptExecutor(ABC):
         self, template_name: str, template_variables: dict, temperature=0.7
     ):
         instantiated_prompt = self.instantiate_prompt(template_name, template_variables)
+        log.debug(f"Instantiated prompt: {instantiated_prompt}")
         return self.language_model.prompt(instantiated_prompt, temperature=temperature)
 
 
