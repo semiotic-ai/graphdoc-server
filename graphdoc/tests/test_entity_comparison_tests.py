@@ -124,7 +124,8 @@ class TestEntityComparison:
 
             test_asset_comparisons = await asyncio.gather(*tasks)
             parsed_test_asset_comparisons = [
-                ecpe.language_model.parse_json_format_response(r) for r in test_asset_comparisons
+                ecpe.language_model.parse_json_format_response(r)
+                for r in test_asset_comparisons
             ]
 
             revised_prompt = ecpe.execute_four_comparison_prompt(
@@ -145,7 +146,8 @@ class TestEntityComparison:
                 pickle.dump(cache, f)
 
         parsed_test_asset_comparisons = [
-            ecpe.language_model.parse_json_format_response(r) for r in test_asset_comparisons
+            ecpe.language_model.parse_json_format_response(r)
+            for r in test_asset_comparisons
         ]
 
         for test_asset_comparison in parsed_test_asset_comparisons:
@@ -159,7 +161,9 @@ class TestEntityComparison:
                 test_asset_comparison["reasoning"], str
             ), "Reasoning should be a string"
 
-        parsed_revised_prompt = ecpe.language_model.parse_json_format_response(revised_prompt)
+        parsed_revised_prompt = ecpe.language_model.parse_json_format_response(
+            revised_prompt
+        )
         formatted_revised_prompt = ecpe.format_entity_comparison_revision_prompt(
             revised_prompt
         )

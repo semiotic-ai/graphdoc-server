@@ -8,6 +8,7 @@ from graphdoc import LanguageModel, PromptExecutor, EntityComparisonPromptExecut
 
 # external packages
 import pickle
+from graphql import print_ast
 import pytest
 from graphdoc.main import GraphDoc
 
@@ -91,3 +92,19 @@ class TestGraphDoc:
         log.debug(f"before parsing: {response}")
         assert response != None
         assert response.prompt_cost != None
+
+    @pytest.mark.skipif("not config.getoption('--fire')")
+    def test_schema_doc_prompt_with_equality(self, gd: GraphDoc, request):
+        """
+        this is for us to be able to run the schema_doc_prompt_with_equality easily, but we will not include explicity tests for now.
+        """
+        database_schema = gd.parser.parse_schema_from_file(
+            schema_file="opensea_original_schema.graphql"
+        )
+
+        database_schema = gd.parser.fill_empty_descriptions(database_schema)
+
+        response = gd.schema_doc_prompt_with_equality(
+            database_schema=print_ast(database_schema),
+        )
+        log.debug(f"The returned object is: {response}")
