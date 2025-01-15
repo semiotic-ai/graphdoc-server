@@ -151,7 +151,7 @@ class GraphDoc:
                 temperature=temperature,
                 with_cost=with_cost,
             )
-            response_str = self.openai_lm.parse_response(response)
+            response_str = self.openai_lm.parse_graphql_format_response(response)
 
             try:
                 log.debug("Attempting to parse response schema.")
