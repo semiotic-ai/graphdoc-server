@@ -140,16 +140,16 @@ class Parser:
                 self.update_node_descriptions(child, new_value)
         return node
     
-    def fill_empty_descriptions(self, node, new_value="Description for column: {}", use_column_name=True, column_name=None):
+    def fill_empty_descriptions(self, node, new_column_value="Description for column: {}", new_table_value="Description for table: {}", use_column_name=True, column_name=None):
         """Fill empty descriptions in the schema."""
-        log.debug(f"Node: {node}")  
         if hasattr(node, "description") and node.description == None:
-            log.debug(f"The column name is: {column_name}")
-            log.debug(f"We are attempting to update a missing description: {node}")
+            if isinstance(node, ObjectTypeDefinitionNode):
+                new_value = new_table_value
+            else: 
+                new_value = new_column_value
             if new_value: 
                 if use_column_name: 
                     update_value = new_value.format(column_name)
-                    log.debug(f"The new value to update is: {update_value} (column name: {column_name})")
                     node.description = StringValueNode(value=update_value)
 
         for attr in dir(node):
@@ -159,15 +159,17 @@ class Parser:
             if isinstance(child, (list, tuple)):
                 for item in child:
                     if isinstance(item, Node):
-                        if isinstance(item, FieldDefinitionNode) or isinstance(item, EnumValueDefinitionNode): 
+                        if isinstance(item, FieldDefinitionNode) or isinstance(item, EnumValueDefinitionNode) or isinstance(item, ObjectTypeDefinitionNode): 
+                            if isinstance(child, ObjectTypeDefinitionNode):
+                                log.debug(f"found an instance of a ObjectTypeDefinitionNode: {item.name.value}")
                             column_name = item.name.value
-                            log.debug(f"Column name: {column_name}")
-                        self.fill_empty_descriptions(item, new_value, use_column_name, column_name)
+                        self.fill_empty_descriptions(item, new_column_value, new_table_value, use_column_name, column_name)
             elif isinstance(child, Node):
-                if isinstance(child, FieldDefinitionNode) or isinstance(child, EnumValueDefinitionNode):
+                if isinstance(child, FieldDefinitionNode) or isinstance(child, EnumValueDefinitionNode) or isinstance(child, ObjectTypeDefinitionNode):
+                    if isinstance(child, ObjectTypeDefinitionNode):
+                        log.debug(f"found an instance of a ObjectTypeDefinitionNode: {child.name.value}")
                     column_name = child.name.value
-                    log.debug(f"Column name: {column_name}")
-                self.fill_empty_descriptions(child, new_value, use_column_name, column_name)
+                self.fill_empty_descriptions(child, new_column_value, new_table_value, use_column_name, column_name)
         return node
 
     def build_entity_select_all_query(self, ast: DocumentNode, type_name: str) -> str:
