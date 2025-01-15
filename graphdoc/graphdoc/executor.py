@@ -57,6 +57,10 @@ class LanguageModel(ABC):
         pass
 
     @abstractmethod
+    def parse_graphql_format_response(self, response):
+        pass    
+
+    @abstractmethod
     def return_prompt_cost(self, response):
         pass
 
@@ -91,6 +95,11 @@ class OpenAILanguageModel(LanguageModel):
         response = response.choices[0].message.content
         response = response.strip("```json").strip("```").strip()
         response = json.loads(response)
+        return response
+    
+    def parse_graphql_format_response(self, response):
+        response = response.choices[0].message.content
+        response = response.strip("```graphql").strip("```").strip()
         return response
 
     def return_prompt_cost(self, prompt: str, response: ChatCompletion) -> PromptCost:
