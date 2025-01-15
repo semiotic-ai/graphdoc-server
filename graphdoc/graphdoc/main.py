@@ -128,7 +128,7 @@ class GraphDoc:
         with_cost: bool = True,
     ):
         """
-        Given a database schema string, request that the llm generate a schema documentation. Check for schema equality. Retry if not equal (until retry limit is hit).
+        Given a database schema string, request that the llm generate a schema documentation. Check for schema equality. Retry if not equal (until retry limit is hit). response.schema_equivalence will be set to True if the schema is structurally equal to the input schema, False otherwise.
 
         :param database_schema: The database schema to be documented.
         :type database_schema: str
@@ -164,11 +164,13 @@ class GraphDoc:
 
             if self.parser.schema_equality_check(gold_schema, response_schema):
                 log.debug(f"Schema equal. Retries: {i}")
+                response.schema_equivalence = True
                 return response
             else:
                 log.debug(f"Schema not equal. Retries: {i}")
                 log.debug(f"Gold schema: {print_ast(gold_schema)}")
                 log.debug(f"Response schema: {response_str}")
                 continue
-
-        return "Retries exceeded. Schema not equal."
+        
+        response.schema_equivalence = False
+        return response
