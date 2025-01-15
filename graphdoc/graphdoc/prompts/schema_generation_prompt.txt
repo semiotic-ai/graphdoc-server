@@ -12,7 +12,10 @@ Generate a precise description for the columns of the tables in the database. Yo
 - Focus solely on confirmed details from the provided schema.
 - Keep the description concise and factual.
 - Exclude any speculative or additional commentary.
-- DO NOT return the phrase "in the { table } table " in your description.
+- DO NOT return the phrase "in the { table } table" in your description.
+
+### Formatting 
+- Ensure that the schema maintains proper documentation formatting, as is provided. 
 
 ### Return
 Return the documented schema without modifying the schema structure.
