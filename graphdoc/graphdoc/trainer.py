@@ -137,7 +137,9 @@ async def main():
             one_comparison=one_comparison,
         )
         try:
-            parsed_revised_prompt = ecpe.language_model.parse_json_format_response(revised_prompt)
+            parsed_revised_prompt = ecpe.language_model.parse_json_format_response(
+                revised_prompt
+            )
         except:
             try:
                 revised_prompt = ecpe.execute_four_comparison_prompt(
