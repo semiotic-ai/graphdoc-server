@@ -15,6 +15,7 @@ from subgrounds import Subgrounds
 
 logging.basicConfig(level=logging.INFO)
 
+
 class Subgraph:
     def __init__(
         self,
@@ -28,6 +29,7 @@ class Subgraph:
         except:
             raise ValueError("Invalid subgraph URL")
 
+
 class GraphNetworkArbitrum(Subgraph):
     def __init__(
         self,
@@ -40,7 +42,7 @@ class GraphNetworkArbitrum(Subgraph):
                 raise ValueError(
                     "API key not found. Please provide one or set GRAPH_API_KEY in your environment or .env file."
                 )
-        
+
         formatted_subgraph_url = subgraph_url.format(api_key=api_key)
 
         super().__init__(formatted_subgraph_url)
