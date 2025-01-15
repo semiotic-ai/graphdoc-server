@@ -59,7 +59,7 @@ class Parser:
                 f"{resource_name} not found in the package {package_name}."
             )
 
-    def parse_schema_from_text(self, schema_text: str):
+    def parse_schema_from_str(self, schema_text: str):
         schema_ast = parse(schema_text)
         return schema_ast
 
@@ -77,7 +77,7 @@ class Parser:
 
         schema_path = Path(self.schema_directory_path) / schema_file
         schema = schema_path.read_text()
-        return self.parse_schema_from_text(schema)
+        return self.parse_schema_from_str(schema)
 
     def check_schema_token_count(self, schema_ast, model: str = "gpt-4o"):
         schema_str = print_ast(schema_ast)

@@ -89,7 +89,7 @@ async def main():
             test_asset_comparisons = await asyncio.gather(*tasks)
             try:
                 parsed_test_asset_comparisons = [
-                    ecpe.language_model.parse_response(r)
+                    ecpe.language_model.parse_json_format_response(r)
                     for r in test_asset_comparisons
                 ]
             except:
@@ -137,7 +137,7 @@ async def main():
             one_comparison=one_comparison,
         )
         try:
-            parsed_revised_prompt = ecpe.language_model.parse_response(revised_prompt)
+            parsed_revised_prompt = ecpe.language_model.parse_json_format_response(revised_prompt)
         except:
             try:
                 revised_prompt = ecpe.execute_four_comparison_prompt(
@@ -151,7 +151,7 @@ async def main():
                     two_comparison=two_comparison,
                     one_comparison=one_comparison,
                 )
-                parsed_revised_prompt = ecpe.language_model.parse_response(
+                parsed_revised_prompt = ecpe.language_model.parse_json_format_response(
                     revised_prompt
                 )
             except:

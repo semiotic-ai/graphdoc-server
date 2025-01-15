@@ -52,6 +52,10 @@ class LanguageModel(ABC):
         pass
 
     @abstractmethod
+    def parse_json_format_response(self, response): 
+        pass
+
+    @abstractmethod
     def return_prompt_cost(self, response):
         pass
 
@@ -80,6 +84,10 @@ class OpenAILanguageModel(LanguageModel):
             logging.error(f"Prompt failed: {e}")
 
     def parse_response(self, response):
+        response = response.choices[0].message.content
+        return response
+    
+    def parse_json_format_response(self, response):
         response = response.choices[0].message.content
         response = response.strip("```json").strip("```").strip()
         response = json.loads(response)
@@ -170,7 +178,7 @@ class PromptExecutor(ABC):
 class EntityComparisonPromptExecutor(PromptExecutor):
 
     def format_entity_comparison_revision_prompt(self, response):
-        response = self.language_model.parse_response(response)
+        response = self.language_model.parse_json_format_response(response)
         revised_prompt = response["modified_prompt"]
 
         # Replace the placeholder with Jinja syntax
