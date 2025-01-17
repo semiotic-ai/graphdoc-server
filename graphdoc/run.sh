@@ -51,6 +51,7 @@ show_help() {
     echo "  shell                  Run a shell in the virtual environment"
     echo "  format                 Format the code"
     echo "  lint                   Lint the code"
+    echo "  test                   Run tests"
     echo "  test-fire              Run tests with external calls"
     echo "  test-dry               Run tests without external calls"
     echo "  commit-ci              Run format and test-dry"
@@ -66,6 +67,7 @@ else
         "shell") shell_command ;;
         "format") format_command ;;
         "lint") lint_command ;;
+        "test") test_command ;;
         "test-fire") test_fire_command ;;
         "test-dry") test_dry_command ;;
         "commit") commit_command ;;
