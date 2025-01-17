@@ -1,9 +1,9 @@
-# system packages 
+# system packages
 import logging
 
-# internal packages 
+# internal packages
 
-# external packages 
+# external packages
 
 # logging
 logging.basicConfig(level=logging.INFO)
