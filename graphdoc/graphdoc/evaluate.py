@@ -19,7 +19,7 @@ class DocQualityEval:
     def __init__(self) -> None:
         pass
 
-    def validate_category(example: Example, prediction: Example, trace=None) -> bool:
+    def validate_category(self, example: Example, prediction: Example, trace=None) -> bool:
         try:
             return prediction.category == example.category
         except Exception as e: 
@@ -27,7 +27,7 @@ class DocQualityEval:
             return False
 
     
-    def validate_rating(example: Example, prediction: Example, trace=None):
+    def validate_rating(self, example: Example, prediction: Example, trace=None):
         try:
             return prediction.rating == example.rating
         except Exception as e: 
