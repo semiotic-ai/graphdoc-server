@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "graphdoc"
+version = "0.1.0"
+description = ""
+authors = ["denver <denver@semiotic.ai>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.11.8"
+dspy = {version = "^2.6.0rc8", allow-prereleases = true}
+
+
+[tool.poetry.group.dev.dependencies]
+jupyter = "1.1.1"
+ipykernel = "^6.29.5"
+pytest = "^8.3.4"
+pytest-asyncio = "^0.25.2"
+black = "^24.10.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
