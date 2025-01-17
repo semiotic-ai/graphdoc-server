@@ -1,13 +1,42 @@
 # system packages
+import logging
 from typing import Literal
 
 # internal packages
 
 # external packages
 import dspy
-from dspy import Signature, InputField, OutputField
+from dspy import Signature, InputField, OutputField, Example
 
+# logging
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
+class DocQualityEval: 
+    """
+    A helper class for dealing with evaluation of DocQuality
+    """
+    def __init__(self) -> None:
+        pass
+
+    def validate_category(example: Example, prediction: Example, trace=None) -> bool:
+        try:
+            return prediction.category == example.category
+        except Exception as e: 
+            log.warning(f"Category validation failed due to error: {e}")
+            return False
+
+    
+    def validate_rating(example: Example, prediction: Example, trace=None):
+        try:
+            return prediction.rating == example.rating
+        except Exception as e: 
+            log.warning(f"Rating validation failed due to error: {e}")
+            return False
+
+#################
+# DSPy Modules  #
+#################
 class DocQuality(Signature):
     """
     Given a GraphQL Schema, evaluate the quality of documentation for that schema and provide a category rating.
