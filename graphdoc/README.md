@@ -2,6 +2,14 @@
 
 This project is aimed at generating documentation given a graphql schema. 
 
+## .env
+
+Your `.env` file should look like the following: 
+
+```
+OPENAI_API_KEY=<your openai api key>
+```
+
 ## Installation 
 
 Ensure you have `pyenv` and `poetry` installed on your local machine. The instructions below are for `macOs`
