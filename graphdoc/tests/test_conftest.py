@@ -22,5 +22,5 @@ class TestConftest:
         assert isinstance(gd.doc_eval, Predict)
         # assert isinstance(gd.doc_eval.signature, DocQuality) # TODO: this fails...
 
-    def test_par(self, par: Parser):    
+    def test_par(self, par: Parser):
         assert par.schema_directory_path is not None

@@ -23,6 +23,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 # Define the base directory (project root)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+
 #############################
 # Internal Package Fixtures #
 #############################
@@ -33,8 +34,9 @@ def gd() -> GraphDoc:
     else:
         log.warning("Missing OPENAI_API_KEY. Ensure .env is properly set.")
         return GraphDoc(model="openai/gpt-4o-mini", api_key="filler api key")
-    
-@fixture 
+
+
+@fixture
 def par() -> Parser:
     schema_directory_path = BASE_DIR / "graphdoc" / "tests" / "assets" / "schemas"
     return Parser(schema_directory_path=str(schema_directory_path))
