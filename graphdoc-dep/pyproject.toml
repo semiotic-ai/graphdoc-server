@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "graphdoc"
+name = "graphdoc-dep"
 version = "0.1.0"
 description = ""
 authors = ["denver <denver@semiotic.ai>"]
