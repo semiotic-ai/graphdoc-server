@@ -30,6 +30,11 @@ dev_command() {
     poetry install --with dev
 }
 
+commit_command() {
+    format_command
+    lint_command
+}
+
 commit_ci_command() {
     format_command
     test_dry_command
@@ -59,6 +64,7 @@ else
         "lint") lint_command ;;
         "test-fire") test_fire_command ;;
         "test-dry") test_dry_command ;;
+        "commit") commit_command ;;
         "commit-ci") commit_ci_command ;;
         "install") install_command ;;
         "dev") dev_command ;;
