@@ -22,6 +22,10 @@ test_dry_command() {
     poetry run pytest --dry-fire 
 }
 
+test_command() {
+    poetry run pytest
+}
+
 install_command() {
     poetry install --without dev
 }
