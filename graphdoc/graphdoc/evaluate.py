@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 class DocQualityEval: 
     """
-    A helper class for dealing with evaluation of DocQuality
+    A helper class for dealing with evaluation of DocQuality.
     """
     def __init__(self) -> None:
         pass
