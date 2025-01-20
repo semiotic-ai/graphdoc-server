@@ -98,6 +98,8 @@ class DataHelper:
         features = self._get_graph_doc_columns()
         if data is None:
             data = self._get_empty_graphdoc_data()
+        else:
+            self._check_graph_doc_data_dict(data)
         return Dataset.from_dict(data, features=features)
 
     # pull down a dataset from huggingface
