@@ -1,5 +1,6 @@
 # system packages
 from pathlib import Path
+from typing import Union
 
 # internal packages
 
@@ -14,7 +15,7 @@ def check_directory_path(directory_path: str) -> None:
         )
 
 
-def check_file_path(file_path: str) -> None:
+def check_file_path(file_path: Union[str, Path]) -> None:
     _file_path = Path(file_path).resolve()
     if not _file_path.is_file():
         raise ValueError(
