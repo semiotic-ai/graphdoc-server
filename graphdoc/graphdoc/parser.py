@@ -42,6 +42,10 @@ class Parser:
     ###################
     # def parse_schema_from_str
 
+    # def build_entity_select_all_query
+
+    # def get_all_select_queries
+
     def parse_schema_from_file(
         self, schema_file: Union[str, Path], schema_directory_path: Optional[str] = None
     ) -> DocumentNode:
