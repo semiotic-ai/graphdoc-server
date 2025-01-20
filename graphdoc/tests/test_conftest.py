@@ -1,5 +1,6 @@
 # system packages
 import logging
+import os
 
 # internal packages
 from graphdoc import GraphDoc
@@ -10,6 +11,7 @@ from graphdoc import DataHelper
 # external packages
 import pytest
 from dspy import LM, Predict
+from dotenv import load_dotenv
 
 # logging
 logging.basicConfig(level=logging.INFO)
@@ -28,3 +30,4 @@ class TestConftest:
 
     def test_dh(self, dh: DataHelper):
         assert isinstance(dh, DataHelper)
+        assert dh.hf_api_key is not None

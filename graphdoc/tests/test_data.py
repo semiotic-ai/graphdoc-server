@@ -8,6 +8,7 @@ from graphdoc import Parser
 from graphdoc import DataHelper
 
 # external packages
+import pandas as pd
 import pytest
 from dspy import LM, Predict
 from datasets import Features, Dataset
@@ -71,8 +72,12 @@ class TestDataHelper:
         empty_ds = dh._create_graph_doc_dataset()
         passing_ds = dh._create_graph_doc_dataset(passing_dict)
         type_ds = dh._create_graph_doc_dataset(wrong_type_dict)
+        type_df = type_ds.to_pandas()
 
         assert isinstance(empty_ds, Dataset)
         assert isinstance(passing_ds, Dataset)
         assert isinstance(type_ds, Dataset)
-        assert isinstance(type_ds.to_pandas().iloc[0]["category"], str)
+
+        # add for type checking as to_pandas() can yield an iterable
+        if isinstance(type_df, pd.DataFrame):
+            assert isinstance(type_df.at[0, "category"], str)

@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 # Global Variables
 load_dotenv("../.env")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+HF_DATASET_KEY = os.getenv("HF_DATASET_KEY")
 
 # Define the base directory (project root)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -45,4 +46,5 @@ def par() -> Parser:
 
 @fixture
 def dh() -> DataHelper:
-    return DataHelper()
+    log.debug(f"HF_DATASET_KEY: {HF_DATASET_KEY}")
+    return DataHelper(hf_api_key=HF_DATASET_KEY)
