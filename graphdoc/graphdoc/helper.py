@@ -7,7 +7,7 @@ from typing import Union
 # external packages
 
 
-def check_directory_path(directory_path: str) -> None:
+def check_directory_path(directory_path: Union[str, Path]) -> None:
     _directory_path = Path(directory_path).resolve()
     if not _directory_path.is_dir():
         raise ValueError(
