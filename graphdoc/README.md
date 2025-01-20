@@ -57,3 +57,11 @@ To utilize the Jupyter notebook, we will need to initialize a kernel.
 ```bash
 poetry run python -m ipykernel install --user --name=graphdoc
 ```
+
+## Dataset 
+
+We have one primary dataset for the `GraphDoc` program, which contains schemas and an associated rating. The table is as follows: 
+
+| category | rating | schema_name | schema_type | schema_str | 
+|----------|--------|-------------|-------------|------------|
+| [ Perfect, Almost Perfect, Somewhat Correct, Incorrect ] | [4, 3, 2, 1] | str | [Full Schema, Table Schema] | str |
