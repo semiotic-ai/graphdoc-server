@@ -43,3 +43,22 @@ class TestParser:
                 if definitions:
                     test_node_definition = definitions[i].fields[x].description.value
                     assert test_node_definition == "This is a test description"
+
+    def test_fill_empty_descriptions(self, par: Parser):
+        schema_file = "opensea_original_schema_sparse.graphql"
+        schema = par.parse_schema_from_file(schema_file)
+        updated_schema = par.fill_empty_descriptions(schema)
+        definitions = getattr(updated_schema, "definitions", None)
+
+        if definitions:
+            test_entity_definition_updated = definitions[3].fields[0].description.value
+            assert test_entity_definition_updated == "Description for column: id"
+
+            test_enum_definition_content = definitions[2].values[0].description.value
+            assert (
+                test_enum_definition_content
+                == " Strategy that executes an order at a fixed price that can be taken either by a bid or an ask. "
+            )
+
+            test_entity_description = definitions[3].description.value
+            assert test_entity_description == "Description for table: Marketplace"
