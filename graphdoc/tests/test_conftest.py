@@ -5,6 +5,7 @@ import logging
 from graphdoc import GraphDoc
 from graphdoc import DocQuality
 from graphdoc import Parser
+from graphdoc import DataHelper
 
 # external packages
 import pytest
@@ -24,3 +25,6 @@ class TestConftest:
 
     def test_par(self, par: Parser):
         assert par.schema_directory_path is not None
+
+    def test_dh(self, dh: DataHelper):
+        assert isinstance(dh, DataHelper)

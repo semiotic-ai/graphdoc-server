@@ -7,6 +7,7 @@ from pathlib import Path
 from graphdoc import GraphDoc
 from graphdoc import DocQuality
 from graphdoc import Parser
+from graphdoc import DataHelper
 
 # external packages
 from pytest import fixture
@@ -40,3 +41,8 @@ def gd() -> GraphDoc:
 def par() -> Parser:
     schema_directory_path = BASE_DIR / "graphdoc" / "tests" / "assets" / "schemas"
     return Parser(schema_directory_path=str(schema_directory_path))
+
+
+@fixture
+def dh() -> DataHelper:
+    return DataHelper()
