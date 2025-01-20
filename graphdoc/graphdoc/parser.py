@@ -27,7 +27,9 @@ class Parser:
     ###################
     # Methods         #
     ###################
-    def parse_schema_from_file(self, schema_file: str, schema_directory_path: Optional[str] = None) -> DocumentNode: 
+    def parse_schema_from_file(
+        self, schema_file: str, schema_directory_path: Optional[str] = None
+    ) -> DocumentNode:
         """
         Parse a schema from a file.
 
@@ -40,11 +42,12 @@ class Parser:
         """
         if schema_directory_path:
             check_directory_path(schema_directory_path)
+            schema_path = Path(schema_directory_path) / schema_file
+        elif self.schema_directory_path:
+            schema_path = Path(self.schema_directory_path) / schema_file
         else:
-            schema_directory_path = self.schema_directory_path
-        
-        schema_path = Path(schema_directory_path) / schema_file
-        check_file_path(str(schema_path))
-        
+            check_file_path(schema_file)
+            schema_path = Path(schema_file)
+
         schema = schema_path.read_text()
         return parse(schema)
