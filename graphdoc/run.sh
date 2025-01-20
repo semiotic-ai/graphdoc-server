@@ -37,6 +37,7 @@ dev_command() {
 commit_command() {
     format_command
     lint_command
+    test_command
 }
 
 commit_ci_command() {
