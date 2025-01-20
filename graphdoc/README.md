@@ -8,6 +8,7 @@ Your `.env` file should look like the following:
 
 ```
 OPENAI_API_KEY=<your openai api key>
+HF_DATASET_KEY=<a huggingface api key with access to datasets>
 ```
 
 ## Installation 
