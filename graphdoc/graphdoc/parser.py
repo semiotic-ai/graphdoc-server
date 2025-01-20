@@ -1,14 +1,26 @@
 # system packages
 
 # internal packages
+import logging
 from pathlib import Path
 from typing import Optional, Union
 
-from graphql import Node, StringValueNode, parse
+from graphql import (
+    EnumValueDefinitionNode,
+    FieldDefinitionNode,
+    Node,
+    ObjectTypeDefinitionNode,
+    StringValueNode,
+    parse,
+)
 from .helper import check_directory_path, check_file_path
 
 # external packages
 from graphql.language.ast import DocumentNode
+
+# configure logging
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
 
 class Parser:
@@ -85,6 +97,91 @@ class Parser:
                         self.update_node_descriptions(item, new_value)
             elif isinstance(child, Node):
                 self.update_node_descriptions(child, new_value)
+        return node
+
+    def fill_empty_descriptions(
+        self,
+        node: Node,
+        new_column_value: str = "Description for column: {}",
+        new_table_value: str = "Description for table: {}",
+        use_value_name: bool = True,
+        value_name: Optional[str] = None,
+    ):
+        """
+        Recursively traverse the node and its children, filling in empty descriptions with the new column or table value. Do not update descriptions that already have a value.
+
+        :param node: The GraphQL node to update
+        :type node: Node
+        :param new_column_value: The new column description value
+        :type new_column_value: str
+        :param new_table_value: The new table description value
+        :type new_table_value: str
+        :param use_value_name: Whether to use the value name in the description
+        :type use_value_name: bool
+        :param value_name: The name of the value
+        :type value_name: Optional[str]
+        :return: The updated node
+        :rtype: Node
+        """
+        if hasattr(node, "description"):  # and node.description == None:
+            description = getattr(node, "description", None)
+            if description == None:
+                # if the node is a table, use the table value
+                if isinstance(node, ObjectTypeDefinitionNode):
+                    new_value = new_table_value
+                # else the node is a column, use the column value
+                else:
+                    new_value = new_column_value
+                # format with the value name if needed (table/column name)
+                if use_value_name:
+                    update_value = new_value.format(value_name)
+                else:
+                    update_value = new_value
+
+                node.description = StringValueNode(value=update_value)
+
+        for attr in dir(node):
+            if attr.startswith("__") or attr == "description":
+                continue
+            child = getattr(node, attr, None)
+            if isinstance(child, (list, tuple)):
+                for item in child:
+                    if isinstance(item, Node):
+                        if (
+                            isinstance(item, FieldDefinitionNode)
+                            or isinstance(item, EnumValueDefinitionNode)
+                            or isinstance(item, ObjectTypeDefinitionNode)
+                        ):
+                            if isinstance(child, ObjectTypeDefinitionNode):
+                                log.debug(
+                                    f"found an instance of a ObjectTypeDefinitionNode: {item.name.value}"
+                                )
+                            value_name = item.name.value
+                        self.fill_empty_descriptions(
+                            item,
+                            new_column_value,
+                            new_table_value,
+                            use_value_name,
+                            value_name,
+                        )
+            elif isinstance(child, Node):
+                if (
+                    isinstance(child, FieldDefinitionNode)
+                    or isinstance(child, EnumValueDefinitionNode)
+                    or isinstance(child, ObjectTypeDefinitionNode)
+                ):
+                    if isinstance(child, ObjectTypeDefinitionNode):
+                        log.debug(
+                            f"found an instance of a ObjectTypeDefinitionNode: {child.name.value}"
+                        )
+                    value_name = child.name.value
+                self.fill_empty_descriptions(
+                    child,
+                    new_column_value,
+                    new_table_value,
+                    use_value_name,
+                    value_name,
+                )
         return node
 
     ###################
