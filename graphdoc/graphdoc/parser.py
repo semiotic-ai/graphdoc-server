@@ -12,6 +12,7 @@ from graphql import (
     ObjectTypeDefinitionNode,
     StringValueNode,
     parse,
+    print_ast,
 )
 from .helper import check_directory_path, check_file_path
 
@@ -37,7 +38,7 @@ class Parser:
         self.schema_directory_path = schema_directory_path
 
     ###################
-    # Parsing Methods #
+    # GraphQL Methods #
     ###################
     # def parse_schema_from_str
 
@@ -183,6 +184,25 @@ class Parser:
                     value_name,
                 )
         return node
+
+    def schema_equality_check(self, gold_node: Node, check_node: Node) -> bool:
+        """
+        A method to check if two schema nodes are equal. Only checks that the schemas structures are equal, not the descriptions.
+
+        :param gold_node: The gold standard schema node
+        :type gold_node: Node
+        :param check_node: The schema node to check
+        :type check_node: Node
+        :return: Whether the schemas are equal
+        :rtype: bool
+        """
+        gold_node = self.update_node_descriptions(gold_node)
+        check_node = self.update_node_descriptions(check_node)
+
+        if print_ast(gold_node) != print_ast(check_node):
+            return False
+        else:
+            return True
 
     ###################
     # File Methods    #
