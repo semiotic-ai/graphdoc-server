@@ -31,3 +31,11 @@ class TestConftest:
     def test_dh(self, dh: DataHelper):
         assert isinstance(dh, DataHelper)
         assert dh.hf_api_key is not None
+
+    @pytest.mark.skipif("not config.getoption('--fire')")
+    def test_with_fire(self):
+        assert True
+
+    @pytest.mark.skipif("not config.getoption('--dry-fire')")
+    def test_with_dry_fire(self):
+        assert True

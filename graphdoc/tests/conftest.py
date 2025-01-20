@@ -29,6 +29,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 #############################
 # Internal Package Fixtures #
 #############################
+def pytest_addoption(parser):
+    parser.addoption(
+        "--fire",
+        action="store_true",
+        default=False,
+        help="Make external API calls and save responses locally",
+    )
+
+    parser.addoption(
+        "--dry-fire",
+        action="store_true",
+        default=False,
+        help="Load locally saved data instead of making API calls",
+    )
+
+
 @fixture
 def gd() -> GraphDoc:
     if OPENAI_API_KEY:

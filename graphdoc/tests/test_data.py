@@ -81,3 +81,8 @@ class TestDataHelper:
         # add for type checking as to_pandas() can yield an iterable
         if isinstance(type_df, pd.DataFrame):
             assert isinstance(type_df.at[0, "category"], str)
+
+    @pytest.mark.skipif("not config.getoption('--fire')")
+    def test__upload_to_hf(self, dh: DataHelper):
+        graphdoc_ds = dh._create_graph_doc_dataset()
+        assert dh._upload_to_hf(graphdoc_ds)
