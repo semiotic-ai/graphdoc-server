@@ -23,7 +23,7 @@ test_dry_command() {
 }
 
 test_command() {
-    poetry run pytest
+    poetry run pytest --log-cli-level=DEBUG
 }
 
 install_command() {
