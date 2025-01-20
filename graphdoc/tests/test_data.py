@@ -86,3 +86,7 @@ class TestDataHelper:
     def test__upload_to_hf(self, dh: DataHelper):
         graphdoc_ds = dh._create_graph_doc_dataset()
         assert dh._upload_to_hf(graphdoc_ds)
+
+    # @pytest.mark.skipif("not config.getoption('--fire')")
+    # def test__load_from_hf(self, dh: DataHelper, request):
+    #     assert dh._load_from_hf()

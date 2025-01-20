@@ -46,6 +46,16 @@ def pytest_addoption(parser):
 
 
 @fixture
+def fire(request):
+    return request.config.getoption("--fire")
+
+
+@fixture
+def dry_fire(request):
+    return request.config.getoption("--dry-fire")
+
+
+@fixture
 def gd() -> GraphDoc:
     if OPENAI_API_KEY:
         return GraphDoc(model="openai/gpt-4o-mini", api_key=OPENAI_API_KEY)
