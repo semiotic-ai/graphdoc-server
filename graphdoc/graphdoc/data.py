@@ -3,6 +3,7 @@
 # internal packages
 
 # external packages
+from datasets import Features, Value
 
 
 class DataHelper:
@@ -34,6 +35,18 @@ class DataHelper:
     ######################
     # hf functions
     ######################
+
+    # return the graph_doc dataset columns
+    def _get_graph_doc_columns(self) -> Features:
+        return Features(
+            {
+                "category": Value("string"),
+                "rating": Value("string"),
+                "schema_name": Value("string"),
+                "schema_type": Value("string"),
+                "schema_str": Value("string"),
+            }
+        )
 
     # create a dataset
 
