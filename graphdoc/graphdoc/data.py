@@ -3,8 +3,8 @@
 # internal packages
 
 # external packages
-from typing import Optional
-from datasets import Features, Value, Dataset
+from typing import Optional, Union
+from datasets import Features, Value, Dataset, load_dataset
 
 
 class DataHelper:
@@ -104,6 +104,27 @@ class DataHelper:
         return Dataset.from_dict(data, features=features)
 
     # pull down a dataset from huggingface
+    def _load_from_hf(
+        self, repo_id: str = "semiotic/graphdoc_schemas", token: Optional[str] = None
+    ) -> Union[Dataset, None]:
+        """
+        A method to load a dataset from the Hugging Face Hub.
+
+        :param repo_id: The repository ID to load the dataset from
+        :type repo_id: str
+        :param token: The Hugging Face API token
+        :type token: str
+        :return: The loaded dataset
+        :rtype: Union[Dataset, None]
+        """
+        try:
+            if token:
+                return load_dataset(path=repo_id, token=token)
+            else:
+                return load_dataset(path=repo_id, token=self.hf_api_key)
+        except Exception as e:
+            print(f"Error loading dataset: {e}")
+            return None
 
     # check that the dataset has the correct format
 
@@ -114,30 +135,30 @@ class DataHelper:
     # deduplicate a dataset
 
     # upload a dataset to huggingface
-    def _upload_to_hf(
-        self,
-        dataset: Dataset,
-        repo_id: str = "semiotic/graphdoc_schemas",
-        token: Optional[str] = None,
-    ) -> bool:
-        """
-        A method to upload a dataset to the Hugging Face Hub.
+    # def _upload_to_hf(
+    #     self,
+    #     dataset: Dataset,
+    #     repo_id: str = "semiotic/graphdoc_schemas",
+    #     token: Optional[str] = None,
+    # ) -> bool:
+    #     """
+    #     A method to upload a dataset to the Hugging Face Hub.
 
-        :param dataset: The dataset to upload
-        :type dataset: Dataset
-        :param repo_id: The repository ID to upload the dataset to
-        :type repo_id: str
-        :param token: The Hugging Face API token
-        :type token: str
-        :return: Whether the upload was successful
-        :rtype: bool
-        """
-        try:
-            if token:
-                dataset.push_to_hub(repo_id=repo_id, token=token)
-            else:
-                dataset.push_to_hub(repo_id=repo_id, token=self.hf_api_key)
-            return True
-        except Exception as e:
-            print(f"Error uploading dataset: {e}")
-            return False
+    #     :param dataset: The dataset to upload
+    #     :type dataset: Dataset
+    #     :param repo_id: The repository ID to upload the dataset to
+    #     :type repo_id: str
+    #     :param token: The Hugging Face API token
+    #     :type token: str
+    #     :return: Whether the upload was successful
+    #     :rtype: bool
+    #     """
+    #     try:
+    #         if token:
+    #             dataset.push_to_hub(repo_id=repo_id, token=token)
+    #         else:
+    #             dataset.push_to_hub(repo_id=repo_id, token=self.hf_api_key)
+    #         return True
+    #     except Exception as e:
+    #         print(f"Error uploading dataset: {e}")
+    #         return False
