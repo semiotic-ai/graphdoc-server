@@ -23,10 +23,6 @@ class TestDataHelper:
         features = dh._get_graph_doc_columns()
         assert isinstance(features, Features)
 
-    def test__create_graph_doc_dataset(self, dh: DataHelper):
-        dataset = dh._create_graph_doc_dataset()
-        assert isinstance(dataset, Dataset)
-
     def test___check_graph_doc_data_dict(self, dh: DataHelper):
         passing_dict = {
             "category": ["test"],
@@ -57,10 +53,26 @@ class TestDataHelper:
         with pytest.raises(ValueError):
             dh._check_graph_doc_data_dict(extra_key_dict)
 
-        # wrong_type_dict = {
-        #     "category": [1],
-        #     "rating": ["test"],
-        #     "schema_name": ["test"],
-        #     "schema_type": ["test"],
-        #     "schema_str": "test",
-        # }
+    def test__create_graph_doc_dataset(self, dh: DataHelper):
+        passing_dict = {
+            "category": ["test"],
+            "rating": ["test"],
+            "schema_name": ["test"],
+            "schema_type": ["test"],
+            "schema_str": ["test"],
+        }
+        wrong_type_dict = {
+            "category": [1],
+            "rating": ["test"],
+            "schema_name": ["test"],
+            "schema_type": ["test"],
+            "schema_str": ["test"],
+        }
+        empty_ds = dh._create_graph_doc_dataset()
+        passing_ds = dh._create_graph_doc_dataset(passing_dict)
+        type_ds = dh._create_graph_doc_dataset(wrong_type_dict)
+
+        assert isinstance(empty_ds, Dataset)
+        assert isinstance(passing_ds, Dataset)
+        assert isinstance(type_ds, Dataset)
+        assert isinstance(type_ds.to_pandas().iloc[0]["category"], str)
