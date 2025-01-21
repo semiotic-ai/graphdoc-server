@@ -183,7 +183,50 @@ class DataHelper:
         else:
             return "unknown schema"
 
-    # load schemas from a folder, keep the difficulty tag
+    def _parse_objects_from_full_schema_object(
+        self, schema: SchemaObject
+    ) -> Union[dict[str, SchemaObject], None]:
+        """
+        Parse out all available tables from a full schema object.
+
+        :param schema: The full schema object to parse
+        :type schema: SchemaObject
+        :return: The parsed objects (tables and enums)
+        :rtype: Union[dict, None]
+        """
+        if schema.schema_ast is None:
+            log.info(f"Schema object has no schema_ast: {schema.schema_name}")
+            return None
+        elif not isinstance(schema.schema_ast, DocumentNode):
+            log.info(
+                f"Schema object cannot be further decomposed: {schema.schema_name}"
+            )
+            return None
+
+        tables = {}
+        for definition in schema.schema_ast.definitions:
+            if isinstance(definition, ObjectTypeDefinitionNode):
+                key = f"{schema.key}_{definition.name.value}"
+                schema_type = self._check_node_type(definition)
+            elif isinstance(definition, EnumValueDefinitionNode):
+                key = f"{schema.key}_{definition.name.value}"
+                schema_type = self._check_node_type(definition)
+            else:
+                continue
+            object_schema = SchemaObject.from_dict(
+                {
+                    "key": key,
+                    "category": schema.category,
+                    "rating": schema.rating,
+                    "schema_name": definition.name.value,
+                    "schema_type": schema_type,
+                    "schema_str": print_ast(definition),
+                    "schema_ast": definition,
+                }
+            )
+            tables[object_schema.key] = object_schema
+        return tables
+
     def _load_folder_schemas(
         self, category: str, folder_path: Optional[Union[str, Path]] = None
     ) -> dict[str, SchemaObject]:
@@ -256,8 +299,6 @@ class DataHelper:
         for category, path in folder_path.items():
             schemas.update(self._load_folder_schemas(category, path))
         return schemas
-
-    # parse out tables from a schema, keep the difficulty tag
 
     # convert parsed schemas to a dataset
 
