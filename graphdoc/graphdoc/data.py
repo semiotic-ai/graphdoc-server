@@ -1,28 +1,177 @@
 # system packages
 
 # internal packages
+from dataclasses import dataclass
+import logging
+from pathlib import Path
+
+from graphql import (
+    DocumentNode,
+    EnumValueDefinitionNode,
+    Node,
+    ObjectTypeDefinitionNode,
+    print_ast,
+)
+from .helper import check_directory_path, check_file_path
+from .parser import Parser
 
 # external packages
-from typing import Optional, Union
+from typing import Literal, Optional, Union
 from datasets import Features, Value, Dataset, load_dataset
+
+# configure logging
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
+
+
+@dataclass
+class SchemaObject:
+    key: str
+    category: Optional[
+        Literal["perfect", "almost perfect", "somewhat correct", "incorrect"]
+    ] = None
+    rating: Optional[Literal["4", "3", "2", "1"]] = None
+    schema_name: Optional[str] = None
+    schema_type: Optional[Literal["full schema", "table schema", "enum schema"]] = (
+        None  # , "column schema"
+    )
+    schema_str: Optional[str] = None
+    schema_ast: Optional[Node] = None
 
 
 class DataHelper:
     """
     A helper class for interacting with external and internal data sets and sources.
+
+    :param hf_api_key: The Hugging Face API key
+    :type hf_api_key: str
+    :param schema_directory_path: A path to a directory containing sub-directories of schemas. This is mainly for accessing internal package data.
+    :type schema_directory_path: str
     """
 
     def __init__(
         self,
         hf_api_key: Optional[str] = None,
+        schema_directory_path: Optional[str] = None,
     ) -> None:
         self.hf_api_key = hf_api_key
+        if schema_directory_path:
+            check_directory_path(schema_directory_path)
+            self.schema_directory_path = schema_directory_path
+        else:
+            self.schema_directory_path = Path(__file__).parent / "assets" / "schemas"
+            check_directory_path(self.schema_directory_path)
+
+        # instantiate the parser for handling graphql
+        self.par = Parser()
 
     ######################
     # loading local data
     ######################
 
+    def _categories(self) -> list:
+        """
+        Return the valid categories for the schema directory.
+
+        :return: The categories for the schema directory
+        :rtype: list
+        """
+        return ["perfect", "almost perfect", "somewhat correct", "incorrect"]
+
+    def _folder_paths(self) -> dict:
+        """
+        Return the folder paths for the schema directory.
+
+        :return: The folder paths for the schema directory
+        :rtype: dict
+        """
+        return {
+            "perfect": self.schema_directory_path / "perfect",
+            "almost perfect": self.schema_directory_path / "almost_perfect",
+            "somewhat correct": self.schema_directory_path / "somewhat_correct",
+            "incorrect": self.schema_directory_path / "incorrect",
+        }
+
+    def _category_ratings(self) -> dict:
+        """
+        Return the category ratings for the schema directory.
+
+        :return: The category ratings for the schema directory
+        :rtype: dict
+        """
+        return {
+            "perfect": "4",
+            "almost perfect": "3",
+            "somewhat correct": "2",
+            "incorrect": "1",
+        }
+
+    def _check_category_validity(self, category: str) -> bool:
+        """
+        Check the validity of a category.
+
+        :param category: The category to check
+        :type category: str
+        :return: True if the category is valid
+        :rtype: bool
+        """
+        if category not in self._categories():
+            raise ValueError(f"Invalid category: {category}")
+
+    # TODO: uppdate field types for enums and entities
+    def _check_node_type(self, node: Node) -> str:
+        # Union[DocumentNode, ObjectTypeDefinitionNode, EnumValueDefinitionNode]
+        if isinstance(node, DocumentNode):
+            return "full schema"
+        elif isinstance(node, ObjectTypeDefinitionNode):
+            return "table schema"
+        elif isinstance(node, EnumValueDefinitionNode):
+            return "enum schema"
+
     # load schemas from a folder, keep the difficulty tag
+    def _load_folder_schemas(
+        self, category: str, folder_path: Optional[Union[str, Path]] = None
+    ) -> dict:
+        """
+        Load schemas from a folder, keeping the difficulty tag.
+
+        :param folder_path: The path to the folder containing the schemas
+        :type folder_path: Union[str, Path]
+        :param category: The category of the schemas
+        :type category: str
+        :return: The loaded schemas
+        :rtype: dict
+        """
+        self._check_category_validity(category)
+
+        if folder_path is None:
+            folder_path = self._folder_paths().get(category)
+            if folder_path is None:
+                raise ValueError(
+                    f"Invalid category: {category} or folder path: {folder_path}"
+                )
+        else:
+            check_directory_path(folder_path)
+
+        schemas = {}
+        for schema_file in folder_path.iterdir():
+            check_file_path(schema_file)
+
+            try:
+                schema_ast = self.par.parse_schema_from_file(schema_file)
+            except Exception as e:
+                log.warning(f"Error parsing schema {schema_file}: {e}")
+                schema_ast = None
+
+            schema = SchemaObject(key=str(schema_file))
+            schema.category = category
+            schema.rating = self._category_ratings().get(category)
+            schema.schema_name = schema_file.stem
+            schema.schema_type = self._check_node_type(schema_ast)
+            schema.schema_str = print_ast(schema_ast)
+            schema.schema_ast = schema_ast
+            schemas[schema_file] = schema
+        return schemas
 
     # load folder of schemas from a folder, keep the difficulty tag
 
@@ -135,30 +284,30 @@ class DataHelper:
     # deduplicate a dataset
 
     # upload a dataset to huggingface
-    # def _upload_to_hf(
-    #     self,
-    #     dataset: Dataset,
-    #     repo_id: str = "semiotic/graphdoc_schemas",
-    #     token: Optional[str] = None,
-    # ) -> bool:
-    #     """
-    #     A method to upload a dataset to the Hugging Face Hub.
+    def _upload_to_hf(
+        self,
+        dataset: Dataset,
+        repo_id: str = "semiotic/graphdoc_schemas",
+        token: Optional[str] = None,
+    ) -> bool:
+        """
+        A method to upload a dataset to the Hugging Face Hub.
 
-    #     :param dataset: The dataset to upload
-    #     :type dataset: Dataset
-    #     :param repo_id: The repository ID to upload the dataset to
-    #     :type repo_id: str
-    #     :param token: The Hugging Face API token
-    #     :type token: str
-    #     :return: Whether the upload was successful
-    #     :rtype: bool
-    #     """
-    #     try:
-    #         if token:
-    #             dataset.push_to_hub(repo_id=repo_id, token=token)
-    #         else:
-    #             dataset.push_to_hub(repo_id=repo_id, token=self.hf_api_key)
-    #         return True
-    #     except Exception as e:
-    #         print(f"Error uploading dataset: {e}")
-    #         return False
+        :param dataset: The dataset to upload
+        :type dataset: Dataset
+        :param repo_id: The repository ID to upload the dataset to
+        :type repo_id: str
+        :param token: The Hugging Face API token
+        :type token: str
+        :return: Whether the upload was successful
+        :rtype: bool
+        """
+        try:
+            if token:
+                dataset.push_to_hub(repo_id=repo_id, token=token)
+            else:
+                dataset.push_to_hub(repo_id=repo_id, token=self.hf_api_key)
+            return True
+        except Exception as e:
+            print(f"Error uploading dataset: {e}")
+            return False
