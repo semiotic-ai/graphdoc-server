@@ -65,6 +65,6 @@ We have one primary dataset for the `GraphDoc` program, which contains schemas a
 
 | category | rating | schema_name | schema_type | schema_str | 
 |----------|--------|-------------|-------------|------------|
-| [ Perfect, Almost Perfect, Somewhat Correct, Incorrect ] | [4, 3, 2, 1] | str | [Full Schema, Table Schema] | str |
+| [ perfect, almost perfect, somewhat correct, incorrect ] | [4, 3, 2, 1] | str | [full schema, table schema] | str |
 
 A public dataset can be found at [semiotic/graphdoc_schemas](https://huggingface.co/datasets/semiotic/graphdoc_schemas). 
