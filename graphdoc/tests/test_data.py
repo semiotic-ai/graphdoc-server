@@ -135,19 +135,19 @@ class TestDataHelper:
             dataset = dh._schema_objects_to_dataset(schemas)
             assert isinstance(dataset, Dataset)
             # TODO: make this a static value by deriving from a knowmn schema directory
-            assert len(dataset) == 4
+            assert len(dataset) == 28
 
     def test__folder_to_dataset(self, dh: DataHelper):
         dataset = dh._folder_to_dataset(category="perfect")
         assert isinstance(dataset, Dataset)
         # TODO: make this a static value by deriving from a knowmn schema directory
-        assert len(dataset) == 1
+        assert len(dataset) == 7
 
     def test__folder_of_folders_to_dataset(self, dh: DataHelper):
         dataset = dh._folder_of_folders_to_dataset()
         assert isinstance(dataset, Dataset)
         # TODO: make this a static value by deriving from a knowmn schema directory
-        assert len(dataset) == 4
+        assert len(dataset) == 28
 
     @pytest.mark.skipif("not config.getoption('--fire')")
     def test__upload_to_hf(self, dh: DataHelper):
