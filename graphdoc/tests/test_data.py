@@ -93,3 +93,4 @@ class TestDataHelper:
 
     def test__load_folder_schemas(self, dh: DataHelper):
         assert dh._load_folder_schemas(category="perfect")
+        # TODO: add in test for an alternative schema directory location
