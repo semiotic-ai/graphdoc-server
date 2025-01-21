@@ -98,3 +98,12 @@ class TestDataHelper:
         for schema in schemas.values():
             assert isinstance(schema, SchemaObject)
         # TODO: add in test for an alternative schema directory location
+
+    def test__load_folder_of_folders(self, dh: DataHelper):
+        schemas = dh._load_folder_of_folders()
+        assert isinstance(schemas, dict)
+        counter = 0
+        for schema in schemas.values():
+            assert isinstance(schema, SchemaObject)
+            counter += 1
+        assert counter == 4
