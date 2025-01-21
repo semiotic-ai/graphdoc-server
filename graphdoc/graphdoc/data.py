@@ -173,7 +173,14 @@ class DataHelper:
 
     # TODO: uppdate field types for enums and entities
     def _check_node_type(self, node: Node) -> str:
-        # Union[DocumentNode, ObjectTypeDefinitionNode, EnumValueDefinitionNode]
+        """
+        Check the type of a schema node.
+
+        :param node: The schema node to check
+        :type node: Node
+        :return: The type of the schema node
+        :rtype: str
+        """
         if isinstance(node, DocumentNode):
             return "full schema"
         elif isinstance(node, ObjectTypeDefinitionNode):
@@ -277,7 +284,6 @@ class DataHelper:
             schemas[schema_file] = schema
         return schemas
 
-    # load folder of schemas from a folder, keep the difficulty tag
     def _load_folder_of_folders(
         self, folder_path: Optional[dict] = None
     ) -> Union[dict[str, SchemaObject], None]:
@@ -300,11 +306,73 @@ class DataHelper:
             schemas.update(self._load_folder_schemas(category, path))
         return schemas
 
-    # convert parsed schemas to a dataset
+    def _schema_objects_to_dict(self, schemas: dict[str, SchemaObject]) -> dict:
+        """
+        Convert parsed schemas to a dictionary object.
 
-    # convert a folder of schemas to a dataset
+        :param schemas: The parsed schemas
+        :type schemas: dict
+        :return: The converted schemas
+        :rtype: dict
+        """
+        schema_dict = {
+            "category": [],
+            "rating": [],
+            "schema_name": [],
+            "schema_type": [],
+            "schema_str": [],
+        }
+        for schema in schemas.values():
+            schema_dict["category"].append(schema.category)
+            schema_dict["rating"].append(schema.rating)
+            schema_dict["schema_name"].append(schema.schema_name)
+            schema_dict["schema_type"].append(schema.schema_type)
+            schema_dict["schema_str"].append(schema.schema_str)
+        return schema_dict
 
-    # convert a folder of folders to a dataset
+    def _schema_objects_to_dataset(self, schemas: dict[str, SchemaObject]) -> Dataset:
+        """
+        Convert parsed schemas to a dataset.
+
+        :param schemas: The parsed schemas
+        :type schemas: dict
+        :return: The converted dataset
+        :rtype: Dataset
+        """
+        schema_dict = self._schema_objects_to_dict(schemas)
+        return self._create_graph_doc_dataset(schema_dict)
+
+    def _folder_to_dataset(
+        self, category: str, folder_path: Optional[Union[str, Path]] = None
+    ) -> Dataset:
+        """
+        Convert a folder of schemas to a dataset.
+
+        :param category: The category of the schemas
+        :type category: str
+        :param folder_path: The path to the folder containing the schemas
+        :type folder_path: Union[str, Path]
+        :return: The converted dataset
+        :rtype: Dataset
+        """
+        schemas = self._load_folder_schemas(category, folder_path)
+        return self._schema_objects_to_dataset(schemas)
+
+    def _folder_of_folders_to_dataset(
+        self, folder_path: Optional[dict] = None
+    ) -> Dataset:
+        """
+        Convert a folder of folders containing schemas to a dataset.
+
+        :param folder_path: The dictionary that maps the category to the folder. {category: folder_path}
+        :type folder_path: dict
+        :return: The converted dataset
+        :rtype: Dataset
+        """
+        schemas = self._load_folder_of_folders(folder_path)
+        if schemas is None:
+            raise ValueError("No schemas found")
+        return self._schema_objects_to_dataset(schemas)
 
     ######################
     # hf functions
@@ -366,8 +434,15 @@ class DataHelper:
 
         return True
 
-    # create a dataset
     def _create_graph_doc_dataset(self, data: Optional[dict] = None) -> Dataset:
+        """
+        Create a graph_doc dataset from a data dictionary.
+
+        :param data: The data dictionary to create the dataset from
+        :type data: dict
+        :return: The created dataset
+        :rtype: Dataset
+        """
         features = self._get_graph_doc_columns()
         if data is None:
             data = self._get_empty_graphdoc_data()
