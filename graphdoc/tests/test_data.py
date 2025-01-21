@@ -158,3 +158,7 @@ class TestDataHelper:
         else:
             log.warning("Failed to create a dataset from the schema directory")
             assert False
+
+    @pytest.mark.skipif("not config.getoption('--fire')")
+    def test__create_and_upload_repo_card(self, dh: DataHelper):
+        assert dh._create_and_upload_repo_card()
