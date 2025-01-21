@@ -15,15 +15,15 @@ lint_command() {
 }
 
 test_fire_command() {
-    poetry run pytest --fire --log-cli-level=DEBUG
+    poetry run pytest --fire 
 }
 
 test_dry_command() {
-    poetry run pytest --dry-fire --log-cli-level=DEBUG
+    poetry run pytest --dry-fire 
 }
 
 test_command() {
-    poetry run pytest --log-cli-level=DEBUG
+    poetry run pytest 
 }
 
 install_command() {
