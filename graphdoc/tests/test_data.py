@@ -106,4 +106,22 @@ class TestDataHelper:
         for schema in schemas.values():
             assert isinstance(schema, SchemaObject)
             counter += 1
+        # TODO: make this a static value by deriving from a knowmn schema directory
         assert counter == 4
+
+    def test__parse_objects_from_full_schema_object(self, dh: DataHelper):
+        schemas = dh._load_folder_of_folders()
+        if schemas:
+            keys = list(schemas.keys())
+            schema = schemas[keys[0]]
+            objects = dh._parse_objects_from_full_schema_object(schema)
+            assert isinstance(objects, dict)
+            counter = 0
+            for obj in objects.values():
+                assert isinstance(obj, SchemaObject)
+                counter += 1
+            # TODO: make this a static value by deriving from a knowmn schema directory
+            assert counter == 6
+        else:
+            log.warning("No schemas found in the schema directory")
+            assert False
