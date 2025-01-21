@@ -83,11 +83,6 @@ class TestDataHelper:
         if isinstance(type_df, pd.DataFrame):
             assert isinstance(type_df.at[0, "category"], str)
 
-    @pytest.mark.skipif("not config.getoption('--fire')")
-    def test__upload_to_hf(self, dh: DataHelper):
-        graphdoc_ds = dh._create_graph_doc_dataset()
-        assert dh._upload_to_hf(graphdoc_ds)
-
     # @pytest.mark.skipif("not config.getoption('--fire')")
     # def test__load_from_hf(self, dh: DataHelper, request):
     #     assert dh._load_from_hf()
@@ -124,4 +119,42 @@ class TestDataHelper:
             assert counter == 6
         else:
             log.warning("No schemas found in the schema directory")
+            assert False
+
+    def test__schema_objects_to_dict(self, dh: DataHelper):
+        schemas = dh._load_folder_of_folders()
+        if schemas:
+            schema_dict = dh._schema_objects_to_dict(schemas)
+            assert isinstance(schema_dict, dict)
+            # TODO: make this a static value by deriving from a knowmn schema directory
+            assert len(schema_dict["category"]) == 4
+
+    def test__schema_objects_to_dataset(self, dh: DataHelper):
+        schemas = dh._load_folder_of_folders()
+        if schemas:
+            dataset = dh._schema_objects_to_dataset(schemas)
+            assert isinstance(dataset, Dataset)
+            # TODO: make this a static value by deriving from a knowmn schema directory
+            assert len(dataset) == 4
+
+    def test__folder_to_dataset(self, dh: DataHelper):
+        dataset = dh._folder_to_dataset(category="perfect")
+        assert isinstance(dataset, Dataset)
+        # TODO: make this a static value by deriving from a knowmn schema directory
+        assert len(dataset) == 1
+
+    def test__folder_of_folders_to_dataset(self, dh: DataHelper):
+        dataset = dh._folder_of_folders_to_dataset()
+        assert isinstance(dataset, Dataset)
+        # TODO: make this a static value by deriving from a knowmn schema directory
+        assert len(dataset) == 4
+
+    @pytest.mark.skipif("not config.getoption('--fire')")
+    def test__upload_to_hf(self, dh: DataHelper):
+        # TODO: later update this to not overwrite the dataset, but to append or not push if it makes no changes
+        graphdoc_ds = dh._folder_of_folders_to_dataset()
+        if graphdoc_ds:
+            assert dh._upload_to_hf(graphdoc_ds)
+        else:
+            log.warning("Failed to create a dataset from the schema directory")
             assert False
