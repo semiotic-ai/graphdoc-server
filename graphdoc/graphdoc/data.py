@@ -237,7 +237,7 @@ class DataHelper:
     # load folder of schemas from a folder, keep the difficulty tag
     def _load_folder_of_folders(
         self, folder_path: Optional[dict] = None
-    ) -> Union[dict, None]:
+    ) -> Union[dict[str, SchemaObject], None]:
         """
         Load a folder of folders containing schemas, keeping the difficulty tag.
 
@@ -255,11 +255,7 @@ class DataHelper:
         schemas = {}
         for category, path in folder_path.items():
             schemas.update(self._load_folder_schemas(category, path))
-
-        # schemas = {}
-        # for category in self._categories():
-        #     schemas.update(self._load_folder_schemas(category, folder_path))
-        # return schemas
+        return schemas
 
     # parse out tables from a schema, keep the difficulty tag
 
