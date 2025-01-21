@@ -338,6 +338,8 @@ class DataHelper:
 
         :param schemas: The parsed schemas
         :type schemas: dict
+        :param parse_objects: Whether to parse objects from the schemas
+        :type parse_objects: bool
         :return: The converted dataset
         :rtype: Dataset
         """
@@ -351,7 +353,10 @@ class DataHelper:
         return self._create_graph_doc_dataset(schema_dict)
 
     def _folder_to_dataset(
-        self, category: str, folder_path: Optional[Union[str, Path]] = None
+        self,
+        category: str,
+        folder_path: Optional[Union[str, Path]] = None,
+        parse_objects: bool = True,
     ) -> Dataset:
         """
         Convert a folder of schemas to a dataset.
@@ -360,27 +365,31 @@ class DataHelper:
         :type category: str
         :param folder_path: The path to the folder containing the schemas
         :type folder_path: Union[str, Path]
+        :param parse_objects: Whether to parse objects from the schemas
+        :type parse_objects: bool
         :return: The converted dataset
         :rtype: Dataset
         """
         schemas = self._load_folder_schemas(category, folder_path)
-        return self._schema_objects_to_dataset(schemas)
+        return self._schema_objects_to_dataset(schemas, parse_objects)
 
     def _folder_of_folders_to_dataset(
-        self, folder_path: Optional[dict] = None
+        self, folder_path: Optional[dict] = None, parse_objects: bool = True
     ) -> Dataset:
         """
         Convert a folder of folders containing schemas to a dataset.
 
         :param folder_path: The dictionary that maps the category to the folder. {category: folder_path}
         :type folder_path: dict
+        :param parse_objects: Whether to parse objects from the schemas
+        :type parse_objects: bool
         :return: The converted dataset
         :rtype: Dataset
         """
         schemas = self._load_folder_of_folders(folder_path)
         if schemas is None:
             raise ValueError("No schemas found")
-        return self._schema_objects_to_dataset(schemas)
+        return self._schema_objects_to_dataset(schemas, parse_objects)
 
     ######################
     # hf functions
