@@ -330,7 +330,9 @@ class DataHelper:
             schema_dict["schema_str"].append(schema.schema_str)
         return schema_dict
 
-    def _schema_objects_to_dataset(self, schemas: dict[str, SchemaObject]) -> Dataset:
+    def _schema_objects_to_dataset(
+        self, schemas: dict[str, SchemaObject], parse_objects: bool = True
+    ) -> Dataset:
         """
         Convert parsed schemas to a dataset.
 
@@ -339,6 +341,12 @@ class DataHelper:
         :return: The converted dataset
         :rtype: Dataset
         """
+        if parse_objects:
+            original_schemas = schemas.copy()
+            for schema in original_schemas.values():
+                objects = self._parse_objects_from_full_schema_object(schema)
+                if objects:
+                    schemas.update(objects)
         schema_dict = self._schema_objects_to_dict(schemas)
         return self._create_graph_doc_dataset(schema_dict)
 
