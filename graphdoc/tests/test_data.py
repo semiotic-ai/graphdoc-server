@@ -8,6 +8,7 @@ from graphdoc import Parser
 from graphdoc import DataHelper
 
 # external packages
+from graphdoc.data import SchemaObject
 import pandas as pd
 import pytest
 from dspy import LM, Predict
@@ -92,5 +93,8 @@ class TestDataHelper:
     #     assert dh._load_from_hf()
 
     def test__load_folder_schemas(self, dh: DataHelper):
-        assert dh._load_folder_schemas(category="perfect")
+        schemas = dh._load_folder_schemas(category="perfect")
+        assert isinstance(schemas, dict)
+        for schema in schemas.values():
+            assert isinstance(schema, SchemaObject)
         # TODO: add in test for an alternative schema directory location

@@ -17,7 +17,15 @@ from .parser import Parser
 
 # external packages
 from typing import Literal, Optional, Union
-from datasets import Features, Value, Dataset, load_dataset
+from datasets import (
+    Features,
+    Value,
+    Dataset,
+    load_dataset,
+    DatasetDict,
+    IterableDatasetDict,
+    IterableDataset,
+)
 
 # configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -37,6 +45,50 @@ class SchemaObject:
     )
     schema_str: Optional[str] = None
     schema_ast: Optional[Node] = None
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "SchemaObject":
+        """Create SchemaObject from dictionary with validation."""
+
+        # Check required key
+        if "key" not in data:
+            raise ValueError("Missing required field: key")
+
+        # Validate category if present
+        if "category" in data and data["category"] is not None:
+            valid_categories = [
+                "perfect",
+                "almost perfect",
+                "somewhat correct",
+                "incorrect",
+            ]
+            if data["category"] not in valid_categories:
+                raise ValueError(
+                    f"Invalid category. Must be one of: {valid_categories}"
+                )
+
+        # Validate rating if present
+        if "rating" in data and data["rating"] is not None:
+            valid_ratings = ["4", "3", "2", "1"]
+            if data["rating"] not in valid_ratings:
+                raise ValueError(f"Invalid rating. Must be one of: {valid_ratings}")
+
+        # Validate schema_type if present
+        if "schema_type" in data and data["schema_type"] is not None:
+            valid_types = ["full schema", "table schema", "enum schema"]
+            if data["schema_type"] not in valid_types:
+                raise ValueError(f"Invalid schema_type. Must be one of: {valid_types}")
+
+        # Create instance with validated data
+        return cls(
+            key=data["key"],
+            category=data.get("category"),
+            rating=data.get("rating"),
+            schema_name=data.get("schema_name"),
+            schema_type=data.get("schema_type"),
+            schema_str=data.get("schema_str"),
+            schema_ast=data.get("schema_ast"),
+        )
 
 
 class DataHelper:
@@ -86,10 +138,10 @@ class DataHelper:
         :rtype: dict
         """
         return {
-            "perfect": self.schema_directory_path / "perfect",
-            "almost perfect": self.schema_directory_path / "almost_perfect",
-            "somewhat correct": self.schema_directory_path / "somewhat_correct",
-            "incorrect": self.schema_directory_path / "incorrect",
+            "perfect": Path(self.schema_directory_path) / "perfect",
+            "almost perfect": Path(self.schema_directory_path) / "almost_perfect",
+            "somewhat correct": Path(self.schema_directory_path) / "somewhat_correct",
+            "incorrect": Path(self.schema_directory_path) / "incorrect",
         }
 
     def _category_ratings(self) -> dict:
@@ -117,6 +169,7 @@ class DataHelper:
         """
         if category not in self._categories():
             raise ValueError(f"Invalid category: {category}")
+        return True
 
     # TODO: uppdate field types for enums and entities
     def _check_node_type(self, node: Node) -> str:
@@ -127,11 +180,13 @@ class DataHelper:
             return "table schema"
         elif isinstance(node, EnumValueDefinitionNode):
             return "enum schema"
+        else:
+            return "unknown schema"
 
     # load schemas from a folder, keep the difficulty tag
     def _load_folder_schemas(
         self, category: str, folder_path: Optional[Union[str, Path]] = None
-    ) -> dict:
+    ) -> dict[str, SchemaObject]:
         """
         Load schemas from a folder, keeping the difficulty tag.
 
@@ -154,7 +209,7 @@ class DataHelper:
             check_directory_path(folder_path)
 
         schemas = {}
-        for schema_file in folder_path.iterdir():
+        for schema_file in Path(folder_path).iterdir():
             check_file_path(schema_file)
 
             try:
@@ -163,17 +218,48 @@ class DataHelper:
                 log.warning(f"Error parsing schema {schema_file}: {e}")
                 schema_ast = None
 
-            schema = SchemaObject(key=str(schema_file))
-            schema.category = category
-            schema.rating = self._category_ratings().get(category)
-            schema.schema_name = schema_file.stem
-            schema.schema_type = self._check_node_type(schema_ast)
-            schema.schema_str = print_ast(schema_ast)
-            schema.schema_ast = schema_ast
+            schema = SchemaObject.from_dict(
+                {
+                    "key": str(schema_file),
+                    "category": category,
+                    "rating": self._category_ratings().get(category),
+                    "schema_name": schema_file.stem,
+                    "schema_type": (
+                        self._check_node_type(schema_ast) if schema_ast else None
+                    ),
+                    "schema_str": print_ast(schema_ast) if schema_ast else None,
+                    "schema_ast": schema_ast,
+                }
+            )
             schemas[schema_file] = schema
         return schemas
 
     # load folder of schemas from a folder, keep the difficulty tag
+    def _load_folder_of_folders(
+        self, folder_path: Optional[dict] = None
+    ) -> Union[dict, None]:
+        """
+        Load a folder of folders containing schemas, keeping the difficulty tag.
+
+        :param folder_path: The dictionary that maps the category to the folder. {category: folder_path}
+        :type folder_path: dict
+        :return: The loaded schemas
+        :rtype: dict
+        """
+        if folder_path:
+            for key in folder_path.keys():
+                self._check_category_validity(key)
+        else:
+            folder_path = self._folder_paths()
+
+        schemas = {}
+        for category, path in folder_path.items():
+            schemas.update(self._load_folder_schemas(category, path))
+
+        # schemas = {}
+        # for category in self._categories():
+        #     schemas.update(self._load_folder_schemas(category, folder_path))
+        # return schemas
 
     # parse out tables from a schema, keep the difficulty tag
 
@@ -255,7 +341,7 @@ class DataHelper:
     # pull down a dataset from huggingface
     def _load_from_hf(
         self, repo_id: str = "semiotic/graphdoc_schemas", token: Optional[str] = None
-    ) -> Union[Dataset, None]:
+    ) -> Union[(DatasetDict | Dataset | IterableDatasetDict | IterableDataset), None]:
         """
         A method to load a dataset from the Hugging Face Hub.
 
