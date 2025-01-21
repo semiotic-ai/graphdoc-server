@@ -26,6 +26,8 @@ from datasets import (
     IterableDatasetDict,
     IterableDataset,
 )
+from huggingface_hub.repocard import RepoCard
+from huggingface_hub import HfApi
 
 # configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -105,14 +107,26 @@ class DataHelper:
         self,
         hf_api_key: Optional[str] = None,
         schema_directory_path: Optional[str] = None,
+        repo_card_path: Optional[str] = None,
     ) -> None:
         self.hf_api_key = hf_api_key
+        self.hf_api = HfApi(token=self.hf_api_key)
+
         if schema_directory_path:
             check_directory_path(schema_directory_path)
             self.schema_directory_path = schema_directory_path
         else:
             self.schema_directory_path = Path(__file__).parent / "assets" / "schemas"
             check_directory_path(self.schema_directory_path)
+
+        if repo_card_path:
+            check_file_path(repo_card_path)
+            self.repo_card_path = repo_card_path
+        else:
+            self.repo_card_path = (
+                Path(__file__).parent / "assets" / "cards" / "GRAPHDOC_SCHEMAS.MD"
+            )
+            check_file_path(self.repo_card_path)
 
         # instantiate the parser for handling graphql
         self.par = Parser()
@@ -525,4 +539,79 @@ class DataHelper:
             return True
         except Exception as e:
             print(f"Error uploading dataset: {e}")
+            return False
+
+    def _upload_repo_card_to_hf(
+        self,
+        repo_id: str,
+        repo_card: RepoCard,
+        repo_type: Literal["dataset", "model"] = "dataset",
+        token: Optional[str] = None,
+    ) -> bool:
+        """
+        A method to upload a repo card to the Hugging Face Hub.
+
+        :param repo_id: The repository ID to upload the repo card to
+        :type repo_id: str
+        :param repo_card: The repo card to upload
+        :type repo_card: RepoCard
+        :param token: The Hugging Face API token
+        :type token: str
+        :return: Whether the upload was successful
+        :rtype: bool
+        """
+        try:
+            repo_url = self.hf_api.create_repo(
+                repo_id=repo_id, repo_type=repo_type, exist_ok=True
+            )
+            log.debug(f"Repo URL: {repo_url}")
+            log.debug(f"Repo Card Type: {type(repo_card)}")
+            if token:
+                repo_card.push_to_hub(repo_id=repo_id, token=token, repo_type=repo_type)
+            else:
+                repo_card.push_to_hub(
+                    repo_id=repo_id, token=self.hf_api_key, repo_type=repo_type
+                )
+            return True
+        except Exception as e:
+            print(f"Error uploading repo card: {e}")
+            return False
+
+    def _create_repo_card(self, repo_card_path: str) -> RepoCard:
+        """
+        A method to create a repo card.
+
+        :param repo_card_path: The path to the repo card
+        :type repo_card_path: str
+        :return: The created repo card
+        :rtype: RepoCard
+        """
+        check_file_path(repo_card_path)
+        return RepoCard.load(repo_card_path)
+
+    def _create_and_upload_repo_card(
+        self,
+        repo_id: str = "semiotic/graphdoc_schemas",
+        repo_card_path: Optional[str] = None,
+    ) -> bool:
+        """
+        A method to create and upload a repo card to the Hugging Face Hub.
+
+        :param repo_id: The repository ID to upload the repo card to
+        :type repo_id: str
+        :param repo_card_path: The path to the repo card
+        :type repo_card_path: str
+        :return: Whether the upload was successful
+        :rtype: bool
+        """
+        if repo_card_path is None:
+            repo_card_path = str(self.repo_card_path)
+        else:
+            check_file_path(repo_card_path)
+
+        repo_card = self._create_repo_card(repo_card_path)
+        try:
+            return self._upload_repo_card_to_hf(repo_id=repo_id, repo_card=repo_card)
+        except Exception as e:
+            print(f"Error uploading repo card: {e}")
             return False
