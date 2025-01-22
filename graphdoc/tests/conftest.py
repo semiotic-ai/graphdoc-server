@@ -82,10 +82,12 @@ def run_evaluator(request):
 @fixture
 def gd() -> GraphDoc:
     if OPENAI_API_KEY:
-        return GraphDoc(model="openai/gpt-4o-mini", api_key=OPENAI_API_KEY)
+        return GraphDoc(model="openai/gpt-4o-mini", api_key=OPENAI_API_KEY, cache=False)
     else:
         log.warning("Missing OPENAI_API_KEY. Ensure .env is properly set.")
-        return GraphDoc(model="openai/gpt-4o-mini", api_key="filler api key")
+        return GraphDoc(
+            model="openai/gpt-4o-mini", api_key="filler api key", cache=False
+        )
 
 
 @fixture
