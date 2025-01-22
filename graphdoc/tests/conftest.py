@@ -51,6 +51,13 @@ def pytest_addoption(parser):
         help="Make external write call",
     )
 
+    parser.addoption(
+        "--run-evaluator",
+        action="store_true",
+        default=False,
+        help="Run the evaluator",
+    )
+
 
 @fixture
 def fire(request):
@@ -65,6 +72,11 @@ def dry_fire(request):
 @fixture
 def write(request):
     return request.config.getoption("--write")
+
+
+@fixture
+def run_evaluator(request):
+    return request.config.getoption("--run-evaluator")
 
 
 @fixture

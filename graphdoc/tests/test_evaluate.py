@@ -48,3 +48,21 @@ class TestDocQualityEval:
         training_ds = dh.create_graph_doc_example_trainset()
         assert isinstance(dqe.create_evaluator(), Evaluate)
         assert isinstance(dqe.create_evaluator(trainset=training_ds), Evaluate)
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif("not config.getoption('--run-evaluator')")
+    def test_run_evaluator(self, gd: GraphDoc, dh: DataHelper):
+        dqe = DocQualityEval(gd)
+        trainset = dh.create_graph_doc_example_trainset()
+        log.debug(f"Training Example: {trainset[0]}")
+        # trainset = [
+        #     Example(
+        #         database_schema="this is a test, you should reply with a rating of 4 and a category of perfect",
+        #         category="perfect",
+        #         rating=4,
+        #     ).with_inputs("database_schema")
+        # ]
+        # log.debug(f"Training Example: {trainset[0]}") 
+        evaluator = dqe.create_evaluator(trainset=trainset)
+        dqe.run_evaluator(evaluator, DocQuality, dqe.validate_rating)
+        # assert False
