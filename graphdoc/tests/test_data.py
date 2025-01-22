@@ -163,3 +163,8 @@ class TestDataHelper:
     def test__create_and_upload_repo_card(self, dh: DataHelper):
         assert dh._create_and_upload_repo_card()
 
+    def test__check_graph_doc_dataset_format(self, dh: DataHelper):
+        graphdoc_ds = dh._folder_of_folders_to_dataset()
+        failing_ds = Dataset.from_dict({"failing": [1], "rating": [1], "schema_name": [1], "schema_type": [1], "schema_str": [1]})
+        assert dh._check_graph_doc_dataset_format(graphdoc_ds)
+        assert not dh._check_graph_doc_dataset_format(failing_ds)
