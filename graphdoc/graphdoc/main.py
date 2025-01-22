@@ -12,10 +12,11 @@ class GraphDoc:
         self,
         model: str,
         api_key: str,
+        cache: bool = True,
     ) -> None:
 
         # initialize base dspy config
-        self.lm = dspy.LM(model=model, api_key=api_key)
+        self.lm = dspy.LM(model=model, api_key=api_key, cache=cache)
         dspy.configure(lm=self.lm)
 
         # initialize modules
