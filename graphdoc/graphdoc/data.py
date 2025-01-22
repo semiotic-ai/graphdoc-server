@@ -16,7 +16,7 @@ from .helper import check_directory_path, check_file_path
 from .parser import Parser
 
 # external packages
-from typing import Literal, Optional, Union
+from typing import List, Literal, Optional, Union
 from datasets import (
     Features,
     Value,
@@ -30,6 +30,7 @@ from huggingface_hub.repocard import RepoCard
 from huggingface_hub import HfApi
 from datasets import concatenate_datasets
 from datasets_sql import query
+from dspy import Example
 
 # configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -518,7 +519,9 @@ class DataHelper:
         features = self._get_graph_doc_columns()
         return dataset.features == features
 
-    def _add_to_graph_doc_dataset(self, dataset: Dataset, data: Union[Dataset, dict]) -> Dataset:
+    def _add_to_graph_doc_dataset(
+        self, dataset: Dataset, data: Union[Dataset, dict]
+    ) -> Dataset:
         """
         Add new data to a dataset.
 
@@ -544,7 +547,7 @@ class DataHelper:
         else:
             raise ValueError("Base dataset does not have the correct format")
 
-    def _drop_dataset_duplicates(self, dataset: Dataset) -> bool:
+    def _drop_dataset_duplicates(self, dataset: Dataset) -> Dataset:
         """
         Drop duplicates from a dataset.
 
@@ -658,10 +661,42 @@ class DataHelper:
         except Exception as e:
             print(f"Error uploading repo card: {e}")
             return False
-        
+
     ######################
     # DSPy Data Helper
     ######################
+    def create_graph_doc_example_trainset(
+        self, repo_id: str = "semiotic/graphdoc_schemas", token: Optional[str] = None
+    ) -> List[Example]:
+        """
+        Create a trainset for the graph_doc dataset.
+
+        :param repo_id: The repository ID to load the dataset from
+        :type repo_id: str
+        :param token: The Hugging Face API token
+        :type token: str
+        :return: The created trainset
+        :rtype: List[Example]
+        """
+        dataset = self._load_from_hf(repo_id=repo_id, token=token)
+        if dataset:
+            if isinstance(dataset, DatasetDict):
+                dataset = dataset.get("train")
+            if isinstance(dataset, Dataset):
+                return [
+                    Example(
+                        database_schema=x["schema_str"],
+                        category=x["category"],
+                        rating=x["rating"],
+                    ).with_inputs("database_schema")
+                    for x in dataset.to_dict()
+                ]
+            else:
+                raise ValueError(
+                    f"Dataset is not a valid type, must be a Dataset. Is: {type(dataset)}"
+                )
+        else:
+            raise ValueError("No dataset found")
 
 
 # TODO: we could make this a subclass in the future if we start to add more datasets
