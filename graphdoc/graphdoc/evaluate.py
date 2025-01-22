@@ -1,12 +1,13 @@
 # system packages
 import logging
-from typing import Literal
+from typing import List, Literal, Optional
 
 # internal packages
+from .data import DataHelper
 
 # external packages
 import dspy
-from dspy import Signature, InputField, OutputField, Example
+from dspy import Signature, InputField, OutputField, Example, Evaluate
 
 # logging
 logging.basicConfig(level=logging.DEBUG)
@@ -18,24 +19,90 @@ class DocQualityEval:
     A helper class for dealing with evaluation of DocQuality.
     """
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, dh: Optional[DataHelper] = None) -> None:
+        if dh:
+            self.dh = dh
+        else:
+            self.dh = DataHelper()
 
     def validate_category(
         self, example: Example, prediction: Example, trace=None
     ) -> bool:
+        """
+        A helper function to validate the category of the prediction.
+
+        :param example: The example to validate against
+        :type example: Example
+        :param prediction: The prediction to validate
+        :type prediction: Example
+        :param trace: The trace of the prediction
+        :type trace: Optional[str]
+        :return: Whether the prediction is correct
+        :rtype: bool
+        """
         try:
             return prediction.category == example.category
         except Exception as e:
             log.warning(f"Category validation failed due to error: {e}")
             return False
 
-    def validate_rating(self, example: Example, prediction: Example, trace=None):
+    def validate_rating(
+        self, example: Example, prediction: Example, trace=None
+    ) -> bool:
+        """
+        A helper function to validate the rating of the prediction.
+
+        :param example: The example to validate against
+        :type example: Example
+        :param prediction: The prediction to validate
+        :type prediction: Example
+        :param trace: The trace of the prediction
+        :type trace: Optional[str]
+        :return: Whether the prediction is correct
+        :rtype: bool
+        """
         try:
             return prediction.rating == example.rating
         except Exception as e:
             log.warning(f"Rating validation failed due to error: {e}")
             return False
+
+    def create_evaluator(
+        self,
+        repo_id: str = "semiotic/graphdoc_schemas",
+        num_threads: int = 1,
+        display_progress: bool = True,
+        display_table: bool = True,
+        token: Optional[str] = None,
+        trainset: Optional[List[Example]] = None,
+    ) -> Evaluate:
+        """
+        A helper function to create an evaluator for the DocQuality module.
+
+        :param repo_id: The repository ID to load the dataset from
+        :type repo_id: str
+        :param num_threads: The number of threads to use for evaluation
+        :type num_threads: int
+        :param display_progress: Whether to display progress
+        :type display_progress: bool
+        :param display_table: The number of rows to display in the table
+        :type display_table: int
+        :param token: The Hugging Face API token
+        :type token: Optional[str]
+        :return: The evaluator
+        :rtype: Evaluate
+        """
+        if not trainset:
+            trainset = self.dh.create_graph_doc_example_trainset(
+                repo_id=repo_id, token=token
+            )
+        return Evaluate(
+            devset=trainset,
+            num_threads=num_threads,
+            display_progress=display_progress,
+            display_table=display_table,
+        )
+
 
 #################
 # DSPy Modules  #
@@ -60,6 +127,7 @@ class DocQuality(Signature):
     ] = OutputField()
     rating: Literal[4, 3, 2, 1] = OutputField()
 
+
 #########################
 # DSPy Optimizer Module #
 #########################
@@ -67,7 +135,8 @@ class DocQualityOptimizer(Signature):
     """
     A helper class for dealing with optimization of DocQuality.
     """
+
     def __init__(self) -> None:
         pass
 
-    # def 
+    # def

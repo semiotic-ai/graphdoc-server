@@ -12,6 +12,7 @@ from graphql import (
     ObjectTypeDefinitionNode,
     print_ast,
 )
+import pandas as pd
 from .helper import check_directory_path, check_file_path
 from .parser import Parser
 
@@ -677,8 +678,14 @@ class DataHelper:
         :rtype: List[Example]
         """
         # TODO: refactor this to use the dataset directly
-        records = dataset.to_pandas().to_dict('records')
-        
+        records = dataset.to_pandas()
+        if isinstance(records, pd.DataFrame):
+            records = records.to_dict("records")
+        else:
+            raise ValueError(
+                f"Dataset is not a valid type, must be a DataFrame. Is: {type(records)}"
+            )
+
         return [
             Example(
                 database_schema=record["schema_str"],
@@ -687,7 +694,7 @@ class DataHelper:
             ).with_inputs("database_schema")
             for record in records
         ]
-    
+
     def create_graph_doc_example_trainset(
         self, repo_id: str = "semiotic/graphdoc_schemas", token: Optional[str] = None
     ) -> List[Example]:
