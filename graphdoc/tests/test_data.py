@@ -149,7 +149,7 @@ class TestDataHelper:
         # TODO: make this a static value by deriving from a knowmn schema directory
         assert len(dataset) == 28
 
-    @pytest.mark.skipif("not config.getoption('--fire')")
+    @pytest.mark.skipif("not config.getoption('--write')")
     def test__upload_to_hf(self, dh: DataHelper):
         # TODO: later update this to not overwrite the dataset, but to append or not push if it makes no changes
         graphdoc_ds = dh._folder_of_folders_to_dataset()
@@ -159,6 +159,7 @@ class TestDataHelper:
             log.warning("Failed to create a dataset from the schema directory")
             assert False
 
-    @pytest.mark.skipif("not config.getoption('--fire')")
+    @pytest.mark.skipif("not config.getoption('--write')")
     def test__create_and_upload_repo_card(self, dh: DataHelper):
         assert dh._create_and_upload_repo_card()
+

@@ -44,6 +44,14 @@ def pytest_addoption(parser):
         help="Load locally saved data instead of making API calls",
     )
 
+    parser.addoption(
+        "--write",
+        action="store_true",
+        default=False,
+        help="Make external write call",
+    )
+
+
 
 @fixture
 def fire(request):
@@ -53,6 +61,11 @@ def fire(request):
 @fixture
 def dry_fire(request):
     return request.config.getoption("--dry-fire")
+
+
+@fixture
+def write(request):
+    return request.config.getoption("--write")
 
 
 @fixture
