@@ -45,18 +45,18 @@ class DocQuality(Signature):
     """
     Given a GraphQL Schema, evaluate the quality of documentation for that schema and provide a category rating.
     The categories are described as:
-    - Perfect (4): The documentation contains enough information so that the interpretation of the schema and its database content is completely free of ambiguity.
-    - Almost Perfect (3): The documentation is almost perfect and free from ambiguity, but there is room for improvement.
-    - Somewhat Correct (2): The documentation is somewhat correct but has room for improvement due to missing information. The documentation is not incorrect.
-    - Incorrect (1): The documentation is incorrect and contains inaccurate or misleading information. Any incorrect information automatically leads to an incorrect rating, even if some correct information is present.
+    - perfect (4): The documentation contains enough information so that the interpretation of the schema and its database content is completely free of ambiguity.
+    - almost perfect (3): The documentation is almost perfect and free from ambiguity, but there is room for improvement.
+    - somewhat correct (2): The documentation is somewhat correct but has room for improvement due to missing information. The documentation is not incorrect.
+    - incorrect (1): The documentation is incorrect and contains inaccurate or misleading information. Any incorrect information automatically leads to an incorrect rating, even if some correct information is present.
     Output a number rating that corresponds to the categories described above.
     """
 
     database_schema: str = InputField()
     category: Literal[
-        "Perfect",
-        "Almost Perfect",
-        "Somewhat Correct",
-        "Incorrect",
+        "perfect",
+        "almost perfect",
+        "somewhat correct",
+        "incorrect",
     ] = OutputField()
-    rating: int = OutputField()
+    rating: Literal[4, 3, 2, 1] = OutputField()
