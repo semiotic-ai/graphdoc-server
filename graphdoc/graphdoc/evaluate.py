@@ -1,6 +1,6 @@
 # system packages
 import logging
-from typing import List, Literal, Optional
+from typing import Callable, List, Literal, Optional
 
 # internal packages
 from .data import DataHelper
@@ -102,6 +102,14 @@ class DocQualityEval:
             display_progress=display_progress,
             display_table=display_table,
         )
+
+    def run_evaluator(
+        self, evaluator: Evaluate, module: Signature, metric: Callable
+    ) -> None:
+        """
+        A helper function to run the evaluator.
+        """
+        evaluator(module, metric=metric)
 
 
 #################
