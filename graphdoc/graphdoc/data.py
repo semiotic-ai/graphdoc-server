@@ -28,6 +28,7 @@ from datasets import (
 )
 from huggingface_hub.repocard import RepoCard
 from huggingface_hub import HfApi
+from datasets import concatenate_datasets
 
 # configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -516,7 +517,31 @@ class DataHelper:
         features = self._get_graph_doc_columns()
         return dataset.features == features
 
-    # add new data to a dataset
+    def _add_to_graph_doc_dataset(self, dataset: Dataset, data: Union[Dataset, dict]) -> Dataset:
+        """
+        Add new data to a dataset.
+
+        :param dataset: The dataset to add the data to
+        :type dataset: Dataset
+        :param data: The data to add to the dataset (either a Dataset or dictionary)
+        :type data: Union[Dataset, dict]
+        :return: The updated dataset
+        :rtype: Dataset
+        """
+        if self._check_graph_doc_dataset_format(dataset):
+            if isinstance(data, Dataset):
+                if self._check_graph_doc_dataset_format(data):
+                    return concatenate_datasets([dataset, data])
+                else:
+                    raise ValueError("Input Dataset does not have the correct format")
+            elif isinstance(data, dict):
+                if self._check_graph_doc_data_dict(data):
+                    data_ds = self._create_graph_doc_dataset(data)
+                    return concatenate_datasets([dataset, data_ds])
+                else:
+                    raise ValueError("Data dictionary does not have the correct format")
+        else:
+            raise ValueError("Base dataset does not have the correct format")
 
     # check that there are no duplicates in a dataset
 
