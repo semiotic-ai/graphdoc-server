@@ -37,7 +37,6 @@ class DocQualityEval:
             log.warning(f"Rating validation failed due to error: {e}")
             return False
 
-
 #################
 # DSPy Modules  #
 #################
@@ -60,3 +59,15 @@ class DocQuality(Signature):
         "incorrect",
     ] = OutputField()
     rating: Literal[4, 3, 2, 1] = OutputField()
+
+#########################
+# DSPy Optimizer Module #
+#########################
+class DocQualityOptimizer(Signature):
+    """
+    A helper class for dealing with optimization of DocQuality.
+    """
+    def __init__(self) -> None:
+        pass
+
+    # def 
