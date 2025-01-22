@@ -192,7 +192,7 @@ class TestDataHelper:
         de_duplicated_ds = dh._drop_dataset_duplicates(grouped_ds)
         assert len(de_duplicated_ds) == len_original
         assert not len(de_duplicated_ds) == len(grouped_ds)
-    
+
     def test__create_graph_doc_example_trainset(self, dh: DataHelper):
         graphdoc_ds = dh._folder_of_folders_to_dataset()
         examples = dh._create_graph_doc_example_trainset(graphdoc_ds)

@@ -6,9 +6,10 @@ from graphdoc import GraphDoc
 from graphdoc import DocQuality, DocQualityEval
 
 # external packages
+from graphdoc.data import DataHelper
 import pytest
 from dspy import Example
-from dspy import LM, Predict
+from dspy import LM, Predict, Evaluate
 
 # logging
 logging.basicConfig(level=logging.DEBUG)
@@ -40,3 +41,10 @@ class TestDocQualityEval:
         )
         assert classification.category == "perfect"
         assert classification.rating == 4
+
+    @pytest.mark.skipif("not config.getoption('--fire')")
+    def test_create_evaluator(self, dh: DataHelper):
+        dqe = DocQualityEval(dh)
+        training_ds = dh.create_graph_doc_example_trainset()
+        assert isinstance(dqe.create_evaluator(), Evaluate)
+        assert isinstance(dqe.create_evaluator(trainset=training_ds), Evaluate)
