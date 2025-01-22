@@ -11,7 +11,7 @@ from graphdoc import DataHelper
 from graphdoc.data import SchemaObject
 import pandas as pd
 import pytest
-from dspy import LM, Predict
+from dspy import LM, Predict, Example
 from datasets import Features, Dataset
 
 # logging
@@ -192,8 +192,16 @@ class TestDataHelper:
         de_duplicated_ds = dh._drop_dataset_duplicates(grouped_ds)
         assert len(de_duplicated_ds) == len_original
         assert not len(de_duplicated_ds) == len(grouped_ds)
+    
+    def test__create_graph_doc_example_trainset(self, dh: DataHelper):
+        graphdoc_ds = dh._folder_of_folders_to_dataset()
+        examples = dh._create_graph_doc_example_trainset(graphdoc_ds)
+        assert isinstance(examples, list)
+        assert isinstance(examples[0], Example)
+        assert len(examples) == len(graphdoc_ds)
 
     @pytest.mark.skipif("not config.getoption('--fire')")
     def test_create_graph_doc_example_trainset(self, dh: DataHelper):
         examples = dh.create_graph_doc_example_trainset()
         assert isinstance(examples, list)
+        assert isinstance(examples[0], Example)
