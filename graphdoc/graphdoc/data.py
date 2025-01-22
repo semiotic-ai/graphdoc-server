@@ -29,6 +29,7 @@ from datasets import (
 from huggingface_hub.repocard import RepoCard
 from huggingface_hub import HfApi
 from datasets import concatenate_datasets
+from datasets_sql import query
 
 # configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -543,11 +544,18 @@ class DataHelper:
         else:
             raise ValueError("Base dataset does not have the correct format")
 
-    # check that there are no duplicates in a dataset
+    def _drop_dataset_duplicates(self, dataset: Dataset) -> bool:
+        """
+        Drop duplicates from a dataset.
 
-    # deduplicate a dataset
+        :param dataset: The dataset to check
+        :type dataset: Dataset
+        :return: True if there are no duplicates
+        :rtype: bool
+        """
+        de_duplicated_dataset = query("SELECT DISTINCT * FROM dataset")
+        return de_duplicated_dataset
 
-    # upload a dataset to huggingface
     def _upload_to_hf(
         self,
         dataset: Dataset,
