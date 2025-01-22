@@ -1,13 +1,14 @@
 # system packages
 import logging
-from typing import Callable, List, Literal, Optional
+from typing import Callable, List, Literal, Optional, Union
 
 # internal packages
 from .data import DataHelper
 
 # external packages
 import dspy
-from dspy import Signature, InputField, OutputField, Example, Evaluate
+from dspy import Example
+from dspy.evaluate import Evaluate
 
 # logging
 logging.basicConfig(level=logging.DEBUG)
@@ -104,7 +105,7 @@ class DocQualityEval:
         )
 
     def run_evaluator(
-        self, evaluator: Evaluate, module: Signature, metric: Callable
+        self, evaluator: Evaluate, module: dspy.Predict, metric: Callable
     ) -> None:
         """
         A helper function to run the evaluator.
@@ -115,7 +116,7 @@ class DocQualityEval:
 #################
 # DSPy Modules  #
 #################
-class DocQuality(Signature):
+class DocQuality(dspy.Signature):
     """
     Given a GraphQL Schema, evaluate the quality of documentation for that schema and provide a category rating.
     The categories are described as:
@@ -126,20 +127,20 @@ class DocQuality(Signature):
     Output a number rating that corresponds to the categories described above.
     """
 
-    database_schema: str = InputField()
+    database_schema: str = dspy.InputField()
     category: Literal[
         "perfect",
         "almost perfect",
         "somewhat correct",
         "incorrect",
-    ] = OutputField()
-    rating: Literal[4, 3, 2, 1] = OutputField()
+    ] = dspy.OutputField()
+    rating: Literal[4, 3, 2, 1] = dspy.OutputField()
 
 
 #########################
 # DSPy Optimizer Module #
 #########################
-class DocQualityOptimizer(Signature):
+class DocQualityOptimizer(dspy.Signature):
     """
     A helper class for dealing with optimization of DocQuality.
     """
