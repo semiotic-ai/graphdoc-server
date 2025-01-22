@@ -504,7 +504,17 @@ class DataHelper:
             print(f"Error loading dataset: {e}")
             return None
 
-    # check that the dataset has the correct format
+    def _check_graph_doc_dataset_format(self, dataset: Dataset) -> bool:
+        """
+        Check that the dataset has the correct format.
+
+        :param dataset: The dataset to check
+        :type dataset: Dataset
+        :return: True if the dataset has the correct format
+        :rtype: bool
+        """
+        features = self._get_graph_doc_columns()
+        return dataset.features == features
 
     # add new data to a dataset
 
