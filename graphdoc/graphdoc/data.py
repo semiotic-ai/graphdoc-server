@@ -691,6 +691,16 @@ class DataHelper:
     def create_graph_doc_example_trainset(
         self, repo_id: str = "semiotic/graphdoc_schemas", token: Optional[str] = None
     ) -> List[Example]:
+        """
+        Create a trainset for the graph_doc dataset.
+
+        :param repo_id: The repository ID to load the dataset from
+        :type repo_id: str
+        :param token: The Hugging Face API token
+        :type token: str
+        :return: The created trainset
+        :rtype: List[Example]
+        """
         dataset = self._load_from_hf(repo_id=repo_id, token=token)
         if dataset:
             if isinstance(dataset, DatasetDict):
