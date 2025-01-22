@@ -165,7 +165,15 @@ class TestDataHelper:
 
     def test__check_graph_doc_dataset_format(self, dh: DataHelper):
         graphdoc_ds = dh._folder_of_folders_to_dataset()
-        failing_ds = Dataset.from_dict({"failing": [1], "rating": [1], "schema_name": [1], "schema_type": [1], "schema_str": [1]})
+        failing_ds = Dataset.from_dict(
+            {
+                "failing": [1],
+                "rating": [1],
+                "schema_name": [1],
+                "schema_type": [1],
+                "schema_str": [1],
+            }
+        )
         assert dh._check_graph_doc_dataset_format(graphdoc_ds)
         assert not dh._check_graph_doc_dataset_format(failing_ds)
 
@@ -184,3 +192,8 @@ class TestDataHelper:
         de_duplicated_ds = dh._drop_dataset_duplicates(grouped_ds)
         assert len(de_duplicated_ds) == len_original
         assert not len(de_duplicated_ds) == len(grouped_ds)
+
+    @pytest.mark.skipif("not config.getoption('--fire')")
+    def test_create_graph_doc_example_trainset(self, dh: DataHelper):
+        examples = dh.create_graph_doc_example_trainset()
+        assert isinstance(examples, list)

@@ -52,7 +52,6 @@ def pytest_addoption(parser):
     )
 
 
-
 @fixture
 def fire(request):
     return request.config.getoption("--fire")
