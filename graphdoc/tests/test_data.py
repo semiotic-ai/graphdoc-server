@@ -175,3 +175,12 @@ class TestDataHelper:
         len_before = len(graphdoc_ds)
         len_after = len(dh._add_to_graph_doc_dataset(graphdoc_ds, graphdoc_ds_2))
         assert len_after == len_before + len(graphdoc_ds_2)
+
+    def test__drop_dataset_duplicates(self, dh: DataHelper):
+        graphdoc_ds = dh._folder_of_folders_to_dataset()
+        graphdoc_ds_2 = dh._folder_of_folders_to_dataset()
+        len_original = len(graphdoc_ds)
+        grouped_ds = dh._add_to_graph_doc_dataset(graphdoc_ds, graphdoc_ds_2)
+        de_duplicated_ds = dh._drop_dataset_duplicates(grouped_ds)
+        assert len(de_duplicated_ds) == len_original
+        assert not len(de_duplicated_ds) == len(grouped_ds)
