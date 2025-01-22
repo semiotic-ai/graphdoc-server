@@ -658,3 +658,17 @@ class DataHelper:
         except Exception as e:
             print(f"Error uploading repo card: {e}")
             return False
+        
+    ######################
+    # DSPy Data Helper
+    ######################
+
+
+# TODO: we could make this a subclass in the future if we start to add more datasets
+# class DocQualityDataHelper(DataHelper):
+#     """
+#     A helper class specifically for the DocQuality dataset.
+#     """
+
+#     def __init__(self, hf_api_key: Optional[str] = None, schema_directory_path: Optional[str] = None, repo_card_path: Optional[str] = None) -> None:
+#         super().__init__(hf_api_key, schema_directory_path, repo_card_path)
