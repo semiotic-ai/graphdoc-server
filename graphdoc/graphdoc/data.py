@@ -104,6 +104,8 @@ class DataHelper:
     :type hf_api_key: str
     :param schema_directory_path: A path to a directory containing sub-directories of schemas. This is mainly for accessing internal package data.
     :type schema_directory_path: str
+    :param repo_card_path: A path to a repo card file. This is mainly for accessing internal package data.
+    :type repo_card_path: str
     """
 
     def __init__(
@@ -665,32 +667,36 @@ class DataHelper:
     ######################
     # DSPy Data Helper
     ######################
-    def create_graph_doc_example_trainset(
-        self, repo_id: str = "semiotic/graphdoc_schemas", token: Optional[str] = None
-    ) -> List[Example]:
+    def _create_graph_doc_example_trainset(self, dataset: Dataset) -> List[Example]:
         """
         Create a trainset for the graph_doc dataset.
 
-        :param repo_id: The repository ID to load the dataset from
-        :type repo_id: str
-        :param token: The Hugging Face API token
-        :type token: str
+        :param dataset: The dataset to create the trainset from
+        :type dataset: Dataset
         :return: The created trainset
         :rtype: List[Example]
         """
+        # TODO: refactor this to use the dataset directly
+        records = dataset.to_pandas().to_dict('records')
+        
+        return [
+            Example(
+                database_schema=record["schema_str"],
+                category=record["category"],
+                rating=record["rating"],
+            ).with_inputs("database_schema")
+            for record in records
+        ]
+    
+    def create_graph_doc_example_trainset(
+        self, repo_id: str = "semiotic/graphdoc_schemas", token: Optional[str] = None
+    ) -> List[Example]:
         dataset = self._load_from_hf(repo_id=repo_id, token=token)
         if dataset:
             if isinstance(dataset, DatasetDict):
                 dataset = dataset.get("train")
             if isinstance(dataset, Dataset):
-                return [
-                    Example(
-                        database_schema=x["schema_str"],
-                        category=x["category"],
-                        rating=x["rating"],
-                    ).with_inputs("database_schema")
-                    for x in dataset.to_dict()
-                ]
+                return self._create_graph_doc_example_trainset(dataset)
             else:
                 raise ValueError(
                     f"Dataset is not a valid type, must be a Dataset. Is: {type(dataset)}"
