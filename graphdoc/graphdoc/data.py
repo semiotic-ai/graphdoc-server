@@ -695,6 +695,29 @@ class DataHelper:
             for record in records
         ]
 
+    def _create_doc_generator_example_trainset(self, dataset: Dataset) -> List[Example]:
+        """
+        Create a trainset for the DocGenerator module.
+        """
+        # TODO: refactor this to use the dataset directly
+        records = dataset.to_pandas()
+        if isinstance(records, pd.DataFrame):
+            records = records.to_dict("records")
+        else:
+            raise ValueError(
+                f"Dataset is not a valid type, must be a DataFrame. Is: {type(records)}"
+            )
+
+        return [
+            Example(
+                database_schema=record["schema_str"],
+                documented_schema=record[
+                    "schema_str"
+                ],  # TODO: we must refactor this to use the gold
+            ).with_inputs("database_schema")
+            for record in records
+        ]
+
     def create_graph_doc_example_trainset(
         self, repo_id: str = "semiotic/graphdoc_schemas", token: Optional[str] = None
     ) -> List[Example]:

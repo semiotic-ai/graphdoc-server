@@ -77,7 +77,9 @@ class DocGeneratorEval:
                 f"An exception occurred while preprocessing the schema: {e}"
             )
 
-    def evaluate_documentation_quality(self, schema: Example, pred: Prediction, trace=None) -> int:
+    def evaluate_documentation_quality(
+        self, schema: Example, pred: Prediction, trace=None
+    ) -> int:
         """
         A helper function to evaluate the quality of the documentation.
 
@@ -95,9 +97,10 @@ class DocGeneratorEval:
             raise ValueError(f"An exception occurred while parsing the schema: {e}")
         if not self.dh.par.schema_equality_check(gold_schema, pred_schema):
             return 1
-        
+
         evaluation = dspy.Predict(DocQuality)(database_schema=pred.documented_schema)
         return evaluation.rating
+
 
 #################
 # DSPy Modules  #
