@@ -77,7 +77,7 @@ class DocGeneratorEval:
                 f"An exception occurred while preprocessing the schema: {e}"
             )
 
-    def evaluate_documentation_quality(self, schema: str, pred: Prediction, trace=None) -> int:
+    def evaluate_documentation_quality(self, schema: Example, pred: Prediction, trace=None) -> int:
         """
         A helper function to evaluate the quality of the documentation.
 
@@ -89,7 +89,7 @@ class DocGeneratorEval:
         :rtype: int
         """
         try:
-            gold_schema = parse(schema)
+            gold_schema = parse(schema.database_schema)
             pred_schema = parse(pred.documented_schema)
         except Exception as e:
             raise ValueError(f"An exception occurred while parsing the schema: {e}")
