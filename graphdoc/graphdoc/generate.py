@@ -98,7 +98,6 @@ class DocGeneratorEval:
                 f"evaluate_documentation_quality: An exception occurred while parsing the schema: {e}"
             )
             return 1
-            # raise ValueError(f"An exception occurred while parsing the schema: {e}")
         if not self.dh.par.schema_equality_check(gold_schema, pred_schema):
             log.warning("evaluate_documentation_quality: Schema equality check failed")
             return 1
