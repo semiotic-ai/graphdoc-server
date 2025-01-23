@@ -53,7 +53,10 @@ class TestDocGeneratorEval:
     ):
         dg = dspy.ChainOfThought(DocGenerator)
         trainset = [
-            Example(database_schema="type Marketplace { confusing: ID! }", documented_schema="type Marketplace { confusing: ID! }")
+            Example(
+                database_schema="type Marketplace { confusing: ID! }",
+                documented_schema="type Marketplace { confusing: ID! }",
+            )
         ]
         pred = dg(database_schema=trainset[0].database_schema)
         eval = dge.evaluate_documentation_quality(trainset[0], pred)
