@@ -41,9 +41,11 @@ if __name__ == "__main__":
             display_progress=True,
             display_table=5,
             return_all_scores=True,
-        return_outputs=True,
+            return_outputs=True,
         )
-        overall_score, results, scores = evaluator(dg, dge.evaluate_documentation_quality)
+        overall_score, results, scores = evaluator(
+            dg, dge.evaluate_documentation_quality
+        )
 
         c = 0
         for result in results:
