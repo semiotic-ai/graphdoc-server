@@ -1,0 +1,32 @@
+{
+  "predict": {
+    "lm": null,
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "### TASK:\nGiven a GraphQL Schema, your task is to generate a precise and informative description for each field within the schema's entities and enums. Focus on providing detailed explanations that are concise and factual, ensuring clarity without altering the schema's structure or introducing speculative commentary.\n\n### Requirements:\n- Concentrate exclusively on confirmed details from the provided schema.\n- Maintain brevity and accuracy in the descriptions.\n- Avoid using phrases like \"in the { table } table\" in your description.\n- Ensure the documentation format aligns with the provided examples.\n\n### Formatting:\n- The schema should be documented in a manner that reflects its intended use and structure, with clear and precise language that aids understanding of each field's purpose and functionality.",
+      "fields": [
+        {
+          "prefix": "Database Schema:",
+          "description": "${database_schema}"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Documented Schema:",
+          "description": "The database schema with proper documentation, ensuring that the underlying schema is not altered."
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.13",
+      "dspy": "2.6.0rc8",
+      "cloudpickle": "3.1"
+    }
+  }
+}

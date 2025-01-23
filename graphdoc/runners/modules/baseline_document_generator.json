@@ -1,0 +1,32 @@
+{
+  "predict": {
+    "lm": null,
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "### TASK:\nGiven a GraphQL Schema, generate a precise description for the columns of the tables in the database.\n\n### Requirements:\n- Focus solely on confirmed details from the provided schema.\n- Keep the description concise and factual.\n- Exclude any speculative or additional commentary.\n- DO NOT return the phrase \"in the { table } table\" in your description.\n\n### Formatting\n- Ensure that the schema maintains proper documentation formatting, as is provided.",
+      "fields": [
+        {
+          "prefix": "Database Schema:",
+          "description": "${database_schema}"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Documented Schema:",
+          "description": "The database schema with proper documentation, ensuring that the underlying schema is not altered."
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.13",
+      "dspy": "2.6.0rc8",
+      "cloudpickle": "3.1"
+    }
+  }
+}
