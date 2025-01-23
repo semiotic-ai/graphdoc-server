@@ -63,8 +63,12 @@ class DocQualityEval:
         :rtype: bool
         """
         try:
-            log.info(f"validate_rating: Prediction Rating: {prediction.rating} {type(prediction.rating)}")
-            log.info(f"validate_rating: Example Rating: {example.rating} {type(example.rating)}")
+            log.info(
+                f"validate_rating: Prediction Rating: {prediction.rating} {type(prediction.rating)}"
+            )
+            log.info(
+                f"validate_rating: Example Rating: {example.rating} {type(example.rating)}"
+            )
             return prediction.rating == example.rating
         except Exception as e:
             log.warning(f"Rating validation failed due to error: {e}")
