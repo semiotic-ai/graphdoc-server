@@ -52,8 +52,11 @@ class TestDocGeneratorEval:
         self, dge: DocGeneratorEval, trainset: list[Example]
     ):
         dg = dspy.ChainOfThought(DocGenerator)
+        trainset = [
+            Example(database_schema="type Marketplace { confusing: ID! }", documented_schema="type Marketplace { confusing: ID! }")
+        ]
         pred = dg(database_schema=trainset[0].database_schema)
-        eval = dge.evaluate_documentation_quality(trainset[0].database_schema, pred)
+        eval = dge.evaluate_documentation_quality(trainset[0], pred)
         assert isinstance(eval, int)
         assert eval in [1, 2, 3, 4, 5]
         log.info(f"The quality of the documentation is: {eval}")
