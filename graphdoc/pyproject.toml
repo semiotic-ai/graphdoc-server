@@ -6,9 +6,10 @@ authors = ["denver <denver@semiotic.ai>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "3.11.8"
+python = "3.13.0"
 dspy = {version = "^2.6.0rc8", allow-prereleases = true}
 datasets-sql = "^0.4.0"
+graphql-core = "3.2.5"
 
 
 [tool.poetry.group.dev.dependencies]
