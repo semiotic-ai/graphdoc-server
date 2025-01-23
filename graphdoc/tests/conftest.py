@@ -10,8 +10,10 @@ from graphdoc import Parser
 from graphdoc import DataHelper
 
 # external packages
+from graphdoc.generate import DocGeneratorEval
 from pytest import fixture
 from dotenv import load_dotenv
+from dspy import Example
 
 # logging
 logging.basicConfig(level=logging.DEBUG)
@@ -100,3 +102,16 @@ def par() -> Parser:
 def dh() -> DataHelper:
     log.debug(f"HF_DATASET_KEY: {HF_DATASET_KEY}")
     return DataHelper(hf_api_key=HF_DATASET_KEY)
+
+
+@fixture
+def dge() -> DocGeneratorEval:
+    dh = DataHelper(hf_api_key=HF_DATASET_KEY)
+    return DocGeneratorEval(dh)
+
+
+@fixture
+def trainset(dh: DataHelper) -> list[Example]:
+    graphdoc_ds = dh._folder_of_folders_to_dataset(parse_objects=False)
+    examples = dh._create_graph_doc_example_trainset(graphdoc_ds)
+    return examples

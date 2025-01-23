@@ -10,7 +10,7 @@ from graphdoc import DataHelper
 
 # external packages
 import pytest
-from dspy import LM, Predict
+from dspy import LM, Predict, Example
 from dotenv import load_dotenv
 
 # logging
@@ -39,3 +39,8 @@ class TestConftest:
     @pytest.mark.skipif("not config.getoption('--dry-fire')")
     def test_with_dry_fire(self):
         assert True
+
+    def test_trainset(self, trainset: list[Example]):
+        assert isinstance(trainset, list)
+        assert isinstance(trainset[0], Example)
+        assert len(trainset) > 0
