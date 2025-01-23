@@ -4,7 +4,7 @@
   "train": [],
   "demos": [],
   "signature": {
-    "instructions": "Given a GraphQL Schema, evaluate the quality of documentation for that schema and provide a category rating.\nThe categories are described as:\n- perfect (4): The documentation contains enough information so that the interpretation of the schema and its database content is completely free of ambiguity.\n- almost perfect (3): The documentation is almost perfect and free from ambiguity, but there is room for improvement.\n- somewhat correct (2): The documentation is somewhat correct but has room for improvement due to missing information. The documentation is not incorrect.\n- incorrect (1): The documentation is incorrect and contains inaccurate or misleading information. Any incorrect information automatically leads to an incorrect rating, even if some correct information is present.\nOutput a number rating that corresponds to the categories described above.",
+    "instructions": "Analyze the provided GraphQL schema documentation for its clarity and completeness. Based on your analysis, assign a quality rating from 1 to 4, where:\n- 4 indicates the documentation is perfect, providing comprehensive and unambiguous information.\n- 3 indicates that the documentation is almost perfect but could benefit from minor improvements.\n- 2 indicates that the documentation is somewhat correct but lacks certain details, making it less clear.\n- 1 indicates that the documentation is incorrect, containing misleading or inaccurate information. \n\nPlease provide a detailed explanation for your rating, highlighting any specific strengths or weaknesses in the documentation.",
     "fields": [
       {
         "prefix": "Database Schema:",

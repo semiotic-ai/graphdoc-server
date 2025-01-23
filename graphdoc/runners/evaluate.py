@@ -32,14 +32,14 @@ if __name__ == "__main__":
 
     ca = ChatAdapter()
 
-    lm = dspy.LM(model="openai/gpt-4", api_key=OPENAI_API_KEY, cache=True)
+    lm = dspy.LM(model="openai/gpt-4o-mini", api_key=OPENAI_API_KEY, cache=True)
     dspy.configure(lm=lm)
     classify = dspy.Predict(DocQuality)
 
-    dataset = dh._folder_of_folders_to_dataset(parse_objects=False)
+    dataset = dh._folder_of_folders_to_dataset(parse_objects=True)
     trainset = dh._create_graph_doc_example_trainset(dataset=dataset)
 
-    evaluator = dqe.create_evaluator()  # trainset=trainset
+    evaluator = dqe.create_evaluator(trainset=trainset)  # trainset=trainset
 
     # compiled_dspy_program.save("./dspy_program/program.json", save_program=False)
     os.makedirs(f"modules", exist_ok=True)
