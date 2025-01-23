@@ -68,3 +68,13 @@ We have one primary dataset for the `GraphDoc` program, which contains schemas a
 | [ perfect, almost perfect, somewhat correct, incorrect ] | [4, 3, 2, 1] | str | [full schema, table schema] | str |
 
 A public dataset can be found at [semiotic/graphdoc_schemas](https://huggingface.co/datasets/semiotic/graphdoc_schemas). 
+
+## Runners
+
+The `runners` directory contains early implementations of the `GraphDoc` program. These will largely be replaced by the `GraphDoc` program, but are useful for testing, experimentation, and documentation. 
+
+```bash
+poetry run python runners/evaluate.py
+poetry run python runners/generate.py
+```
+
