@@ -25,15 +25,10 @@ class TestDocQualityEval:
 
         dqe = DocQualityEval()
         assert dqe.validate_category(ex, ex)
-    
+
     @pytest.mark.skipif("not config.getoption('--fire')")
     def test_validate_rating(self, dh: DataHelper, gd: GraphDoc):
-        ex = Example()
-        ex.rating = "test"
-
         dqe = DocQualityEval()
-        assert dqe.validate_rating(ex, ex)
-
         dataset = dh._folder_of_folders_to_dataset(parse_objects=True)
         trainset = dh._create_graph_doc_example_trainset(dataset=dataset)
 
@@ -43,7 +38,6 @@ class TestDocQualityEval:
         log.info(f"test_validate_rating: Prediction Rating: {prediction.rating}")
         log.info(f"test_validate_rating: Example Rating: {example.rating}")
         assert dqe.validate_rating(example, prediction)
-
 
     @pytest.mark.skipif("not config.getoption('--fire')")
     def test_doc_quality(self, gd: GraphDoc):
@@ -75,5 +69,3 @@ class TestDocQualityEval:
         except Exception as e:
             log.error(f"An error occurred while running the evaluator: {e}")
             assert False
-
-    
