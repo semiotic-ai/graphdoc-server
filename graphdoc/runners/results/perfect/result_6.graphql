@@ -1,0 +1,5 @@
+" A helper utility entity that works as a set for deduplication purpose. "
+type _Item @entity {
+  " The unique identifier for the item. It is a combination of the item type and account address. The format is MARKETPLACE_ACCOUNT-{ Account } or COLLECTION_ACCOUNT-{ Buyer/Seller }-{ Collection ID }-{ Account }, depending on the item type. "
+  id: ID!
+}

@@ -1,0 +1,17 @@
+```
+type Trade @entity @transaction {
+  id: ID! # A unique identifier for each trade
+  transactionHash: String! # A unique hash representing the transaction
+  logIndex: Int # An optional integer that may represent the index of the log for the transaction
+  timestamp: BigInt! # The time at which the trade occurred
+  blockNumber: BigInt! # The number of the block in the blockchain where the trade is recorded
+  isBundle: Boolean! # A boolean indicating whether the trade is a bundle of items or a single item
+  collection: Collection! # The collection to which the traded item belongs
+  tokenId: BigInt! # A unique identifier for the traded item
+  amount: BigInt! # The amount of the item that was traded
+  priceETH: BigDecimal! # The price of the trade in Ethereum (ETH)
+  strategy: SaleStrategy! # The strategy used for the sale
+  buyer: String! # The address of the buyer
+  seller: String! # The address of the seller
+}
+```

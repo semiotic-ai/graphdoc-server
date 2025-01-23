@@ -1,0 +1,30 @@
+type Marketplace @entity @regularPolling {
+  " The smart contract address of the protocol's main contract such as Factory, Registry, etc. "
+  id: ID!
+  " The name of the NFT marketplace, for example, LooksRare. "
+  name: String!
+  " The slug of the NFT marketplace, for example, looksrare. "
+  slug: String!
+  " The blockchain network that this subgraph is indexing on. "
+  network: Network!
+  " The version of the subgraph schema in SemVer format, for example, 1.0.0. "
+  schemaVersion: String!
+  " The version of the subgraph implementation in SemVer format, for example, 1.0.0. "
+  subgraphVersion: String!
+  " The version of the methodology used to compute metrics, loosely based on SemVer format, for example, 1.0.0. "
+  methodologyVersion: String!
+  " The number of collections listed on the marketplace. "
+  collectionCount: Int!
+  " The trade count of all collections on the marketplace. "
+  tradeCount: Int!
+  " The cumulative trade volume in Ethereum (ETH). "
+  cumulativeTradeVolumeETH: BigDecimal!
+  " The revenue that goes to the marketplace protocol, also known as protocol fee, in Ethereum (ETH). "
+  marketplaceRevenueETH: BigDecimal!
+  " The revenue that goes to the creator, also known as royalty fee, in Ethereum (ETH). "
+  creatorRevenueETH: BigDecimal!
+  " The sum of marketplaceRevenueETH and creatorRevenueETH in Ethereum (ETH). "
+  totalRevenueETH: BigDecimal!
+  " The cumulative number of unique traders. "
+  cumulativeUniqueTraders: Int!
+}
