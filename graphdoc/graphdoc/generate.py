@@ -3,7 +3,7 @@ import logging
 from typing import Callable, List, Literal, Optional, Union
 
 from graphdoc.evaluate import DocQuality
-from graphql import parse
+from graphql import parse, print_ast
 
 # internal packages
 from .data import DataHelper
@@ -59,17 +59,23 @@ class DocGeneratorEval:
             log.warning(f"Schema format validation failed due to error: {e}")
             return False
 
-    def preprocess_schema(self, entity: Example) -> Example:
+    def preprocess_schema(self, database_schema: str) -> str:
         """
         A helper function to preprocess the schema.
 
-        :param entity: The entity to preprocess
-        :type entity: Example
-        :return: The preprocessed entity
-        :rtype: Example
+        :param database_schema: The database schema to preprocess
+        :type database_schema: str
+        :return: The preprocessed database schema
+        :rtype: str
         """
-
-        return entity
+        try:
+            database_ast = parse(database_schema)
+            updated_ast = self.dh.par.fill_empty_descriptions(database_ast)
+            return print_ast(updated_ast)
+        except Exception as e:
+            raise ValueError(
+                f"An exception occurred while preprocessing the schema: {e}"
+            )
 
     def evaluate_documentation_quality(self, pred: Prediction, trace=None) -> int:
         """
