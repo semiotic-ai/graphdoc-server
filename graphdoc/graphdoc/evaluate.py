@@ -7,7 +7,7 @@ from .data import DataHelper
 
 # external packages
 import dspy
-from dspy import Example
+from dspy import Example, Prediction
 from dspy.evaluate import Evaluate
 
 # logging
@@ -48,7 +48,7 @@ class DocQualityEval:
             return False
 
     def validate_rating(
-        self, example: Example, prediction: Example, trace=None
+        self, example: Example, prediction: Prediction, trace=None
     ) -> bool:
         """
         A helper function to validate the rating of the prediction.
@@ -63,6 +63,8 @@ class DocQualityEval:
         :rtype: bool
         """
         try:
+            log.info(f"validate_rating: Prediction Rating: {prediction.rating} {type(prediction.rating)}")
+            log.info(f"validate_rating: Example Rating: {example.rating} {type(example.rating)}")
             return prediction.rating == example.rating
         except Exception as e:
             log.warning(f"Rating validation failed due to error: {e}")

@@ -690,7 +690,7 @@ class DataHelper:
             Example(
                 database_schema=record["schema_str"],
                 category=record["category"],
-                rating=record["rating"],
+                rating=int(record["rating"]), # TODO: we should handle this at the evaluation signature and agree upon a type
             ).with_inputs("database_schema")
             for record in records
         ]
