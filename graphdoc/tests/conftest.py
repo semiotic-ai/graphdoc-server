@@ -1,31 +1,36 @@
-# internal packages
+# system packages
 import os
-import json
-from typing import Dict
+import logging
 from pathlib import Path
-from datetime import datetime
+
+# internal packages
+from graphdoc import GraphDoc
+from graphdoc import DocQuality
+from graphdoc import Parser
+from graphdoc import DataHelper
 
 # external packages
+from graphdoc.generate import DocGeneratorEval
 from pytest import fixture
 from dotenv import load_dotenv
+from dspy import Example
 
-load_dotenv(".env")
+# logging
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
-# internal packages
-from graphdoc import LanguageModel, OpenAILanguageModel
-from graphdoc import Prompt, PromptRevision, RequestObject
-from graphdoc import PromptExecutor, EntityComparisonPromptExecutor
-from graphdoc import Parser
-from graphdoc import GraphNetworkArbitrum
-from graphdoc import GraphDoc
+# Global Variables
+load_dotenv("../.env")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+HF_DATASET_KEY = os.getenv("HF_DATASET_KEY")
 
 # Define the base directory (project root)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
-####################
-# Config Fixtures
-####################
+#############################
+# Internal Package Fixtures #
+#############################
 def pytest_addoption(parser):
     parser.addoption(
         "--fire",
@@ -41,6 +46,20 @@ def pytest_addoption(parser):
         help="Load locally saved data instead of making API calls",
     )
 
+    parser.addoption(
+        "--write",
+        action="store_true",
+        default=False,
+        help="Make external write call",
+    )
+
+    parser.addoption(
+        "--run-evaluator",
+        action="store_true",
+        default=False,
+        help="Run the evaluator",
+    )
+
 
 @fixture
 def fire(request):
@@ -52,30 +71,25 @@ def dry_fire(request):
     return request.config.getoption("--dry-fire")
 
 
-####################
-# Object Fixtures
-####################
+@fixture
+def write(request):
+    return request.config.getoption("--write")
 
 
 @fixture
-def lm() -> OpenAILanguageModel:
-    return OpenAILanguageModel(
-        api_key=os.getenv("OPENAI_API_KEY"),
-    )
+def run_evaluator(request):
+    return request.config.getoption("--run-evaluator")
 
 
 @fixture
-def pe(lm: OpenAILanguageModel) -> PromptExecutor:
-    return PromptExecutor(
-        language_model=lm,
-    )
-
-
-@fixture
-def ecpe(lm: OpenAILanguageModel) -> EntityComparisonPromptExecutor:
-    return EntityComparisonPromptExecutor(
-        language_model=lm,
-    )
+def gd() -> GraphDoc:
+    if OPENAI_API_KEY:
+        return GraphDoc(model="openai/gpt-4o-mini", api_key=OPENAI_API_KEY, cache=False)
+    else:
+        log.warning("Missing OPENAI_API_KEY. Ensure .env is properly set.")
+        return GraphDoc(
+            model="openai/gpt-4o-mini", api_key="filler api key", cache=False
+        )
 
 
 @fixture
@@ -85,68 +99,19 @@ def par() -> Parser:
 
 
 @fixture
-def sg() -> GraphNetworkArbitrum:
-    graph_api_key = os.getenv("GRAPH_API_KEY")
-    if graph_api_key is None:
-        raise ValueError(
-            "API key not found. Please provide one or set GRAPH_API_KEY in your environment or .env file."
-        )
-    else:
-        return GraphNetworkArbitrum(api_key=graph_api_key)
+def dh() -> DataHelper:
+    log.debug(f"HF_DATASET_KEY: {HF_DATASET_KEY}")
+    return DataHelper(hf_api_key=HF_DATASET_KEY)
 
 
 @fixture
-def gd() -> GraphDoc:
-    return GraphDoc(
-        openai_api_key=os.getenv("OPENAI_API_KEY"),
-        schema_directory_path=str(
-            BASE_DIR / "graphdoc" / "tests" / "assets" / "schemas"
-        ),
-    )
+def dge() -> DocGeneratorEval:
+    dh = DataHelper(hf_api_key=HF_DATASET_KEY)
+    return DocGeneratorEval(dh)
 
 
 @fixture
-def entity_comparison_assets() -> Dict:
-    # Set the absolute or relative path for the assets directory
-    assets_dir = BASE_DIR / "graphdoc" / "tests" / "assets"
-    if not assets_dir.exists():
-        raise FileNotFoundError(f"assets directory not found at: {assets_dir}")
-
-    with open(Path(assets_dir / "entity_comparison_assets.json"), "r") as f:
-        entity_comparison_assets = json.load(f)
-
-    gold_entity_comparison = "".join(entity_comparison_assets["gold"]["prompt"])
-    four_entity_comparison = "".join(entity_comparison_assets["four"]["prompt"])
-    three_entity_comparison = "".join(entity_comparison_assets["three"]["prompt"])
-    two_entity_comparison = "".join(entity_comparison_assets["two"]["prompt"])
-    one_entity_comparison = "".join(entity_comparison_assets["one"]["prompt"])
-    return {
-        "gold_entity_comparison": gold_entity_comparison,
-        "four_entity_comparison": four_entity_comparison,
-        "three_entity_comparison": three_entity_comparison,
-        "two_entity_comparison": two_entity_comparison,
-        "one_entity_comparison": one_entity_comparison,
-    }
-
-
-@fixture
-def sample_request_object() -> RequestObject:
-    return RequestObject(
-        prompt="Test prompt",
-        response="Test response",
-        model="gpt-4",
-        prompt_tokens=10,
-        response_tokens=20,
-        request_time=int(datetime.now().timestamp()),
-        request_id="test_123",
-        request_object=None,
-    )
-
-
-@fixture
-def sample_prompt() -> Prompt:
-    return Prompt(
-        title="Test Prompt",
-        base_content="This is a base prompt content",
-        metadata={"type": "test"},
-    )
+def trainset(dh: DataHelper) -> list[Example]:
+    graphdoc_ds = dh._folder_of_folders_to_dataset(parse_objects=False)
+    examples = dh._create_graph_doc_example_trainset(graphdoc_ds)
+    return examples

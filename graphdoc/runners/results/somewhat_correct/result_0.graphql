@@ -1,0 +1,113 @@
+```graphql
+enum Network {
+  ARBITRUM_ONE
+  ARWEAVE_MAINNET
+  AURORA
+  AVALANCHE
+  BOBA
+  BSC
+  CELO
+  COSMOS
+  CRONOS
+  MAINNET
+  FANTOM
+  FUSE
+  HARMONY
+  JUNO
+  MOONBEAM
+  MOONRIVER
+  NEAR_MAINNET
+  OPTIMISM
+  OSMOSIS
+  MATIC
+  XDAI
+}
+
+enum NftStandard {
+  ERC721
+  ERC1155
+  UNKNOWN
+}
+
+enum SaleStrategy {
+  STANDARD_SALE
+  ANY_ITEM_FROM_COLLECTION
+  ANY_ITEM_FROM_SET
+  DUTCH_AUCTION
+  PRIVATE_SALE
+}
+
+type Marketplace @entity @regularPolling {
+  " Unique identifier of the marketplace, represented by the smart contract address "
+  id: ID!
+  " Name of the marketplace "
+  name: String!
+  " URL-friendly version of the marketplace name "
+  slug: String!
+  " The network on which this marketplace operates "
+  network: Network!
+  " Version of the schema used by the subgraph "
+  schemaVersion: String!
+  " Version of the subgraph implementation "
+  subgraphVersion: String!
+  " Version of the methodology used by the marketplace "
+  methodologyVersion: String!
+  " Number of collections listed on the marketplace "
+  collectionCount: Int!
+  " Total number of trades across all collections on the marketplace "
+  tradeCount: Int!
+  " Total trade volume across all collections on the marketplace, in ETH "
+  cumulativeTradeVolumeETH: BigDecimal!
+  " Total revenue earned by the marketplace, in ETH "
+  marketplaceRevenueETH: BigDecimal!
+  " Total revenue earned by creators on the marketplace, in ETH "
+  creatorRevenueETH: BigDecimal!
+  " Sum of marketplace and creator revenues, in ETH "
+  totalRevenueETH: BigDecimal!
+  " Total number of unique traders on the marketplace "
+  cumulativeUniqueTraders: Int!
+}
+
+type Collection @entity @regularPolling {
+  " Unique identifier of the collection, represented by the contract address "
+  id: ID!
+  " Name of the collection "
+  name: String
+  " Symbol of the collection "
+  symbol: String
+  " Total supply of NFTs in the collection "
+  totalSupply: BigInt
+  " NFT standard used by the collection "
+  nftStandard: NftStandard!
+  " Royalty fee rate for the collection "
+  royaltyFee: BigDecimal!
+  " Total trade volume of the collection, in ETH "
+  cumulativeTradeVolumeETH: BigDecimal!
+  " Total revenue earned by the marketplace from the collection, in ETH "
+  marketplaceRevenueETH: BigDecimal!
+  " Total revenue earned by the creator from the collection, in ETH "
+  creatorRevenueETH: BigDecimal!
+  " Sum of marketplace and creator revenues from the collection, in ETH "
+  totalRevenueETH: BigDecimal!
+  " Total number of trades in the collection "
+  tradeCount: Int!
+  " Total number of buyers in the collection "
+  buyerCount: Int!
+  " Total number of sellers in the collection "
+  sellerCount: Int!
+  " List of trades in the collection "
+  trades: [Trade!]! @derivedFrom(field: "collection")
+}
+
+type Trade @entity @transaction {
+  " Unique identifier of the trade, composed of the transaction hash, log index, and optional ID within bundle "
+  id: ID!
+  " Hash of the transaction in which the trade occurred "
+  transactionHash: String!
+  " Index of the event in the transaction log "
+  logIndex: Int
+  " Timestamp of the block in which the trade occurred "
+  timestamp: BigInt!
+  " Number of the block in which the trade occurred "
+  blockNumber: BigInt!
+  " Whether the

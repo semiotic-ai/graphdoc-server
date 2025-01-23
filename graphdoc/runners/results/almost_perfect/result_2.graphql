@@ -1,0 +1,30 @@
+type Collection @entity @regularPolling {
+  " Contract address. "
+  id: ID!
+  " Collection name, mirrored from the smart contract. Can be null. "
+  name: String
+  " Collection symbol, mirrored from the smart contract. Can be null. "
+  symbol: String
+  " Total supply of the collection, mirrored from the smart contract. "
+  totalSupply: BigInt
+  " NFT Standard the collection uses. "
+  nftStandard: NftStandard!
+  " Royalty fee rate in percentage. For example, 2.5% should be 2.5. "
+  royaltyFee: BigDecimal!
+  " Cumulative trade volume in ETH. "
+  cumulativeTradeVolumeETH: BigDecimal!
+  " Revenue that goes to the marketplace protocol, also known as protocol fee. "
+  marketplaceRevenueETH: BigDecimal!
+  " Revenue that goes to the creator, also known as royalty fee. "
+  creatorRevenueETH: BigDecimal!
+  " Sum of marketplaceRevenue and creatorRevenue. "
+  totalRevenueETH: BigDecimal!
+  " Trade count of the collection on the marketplace. "
+  tradeCount: Int!
+  " Number of buyers. "
+  buyerCount: Int!
+  " Number of sellers. "
+  sellerCount: Int!
+  " Trades of the collection. "
+  trades: [Trade!]! @derivedFrom(field: "collection")
+}

@@ -1,0 +1,30 @@
+type CollectionDailySnapshot @entity @dailySnapshot {
+  " Unique identifier composed of the contract address and the number of days since epoch unix time "
+  id: ID!
+  " Refers to the collection to which this snapshot belongs "
+  collection: Collection!
+  " Block number when the snapshot was taken "
+  blockNumber: BigInt!
+  " Timestamp when the snapshot was taken "
+  timestamp: BigInt!
+  " Royalty fee rate in percentage "
+  royaltyFee: BigDecimal!
+  " Minimum sale price of the day in ETH "
+  dailyMinSalePrice: BigDecimal!
+  " Maximum sale price of the day in ETH "
+  dailyMaxSalePrice: BigDecimal!
+  " Cumulative trade volume in ETH "
+  cumulativeTradeVolumeETH: BigDecimal!
+  " Daily trade volume in ETH "
+  dailyTradeVolumeETH: BigDecimal!
+  " Revenue that goes to the marketplace protocol "
+  marketplaceRevenueETH: BigDecimal!
+  " Revenue that goes to the creator "
+  creatorRevenueETH: BigDecimal!
+  " Sum of marketplace and creator revenue "
+  totalRevenueETH: BigDecimal!
+  " Trade count of the collection on the marketplace "
+  tradeCount: Int!
+  " Number of traded items of the day "
+  dailyTradedItemCount: Int!
+}

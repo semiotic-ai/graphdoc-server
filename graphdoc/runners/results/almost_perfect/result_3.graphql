@@ -1,0 +1,29 @@
+" A Trade entity representing a transaction in the blockchain. "
+type Trade @entity @transaction {
+  " Unique identifier for the trade, composed of transaction hash, log index, and an optional ID within a bundle. "
+  id: ID!
+  " Hash of the event transaction. "
+  transactionHash: String!
+  " Index of the event log. "
+  logIndex: Int
+  " Timestamp of the block where the trade was executed. "
+  timestamp: BigInt!
+  " Number of the block where the trade was executed. "
+  blockNumber: BigInt!
+  " Indicator of whether the trade is part of a bundle. "
+  isBundle: Boolean!
+  " Collection involved in the trade. "
+  collection: Collection!
+  " ID of the traded Non-Fungible Token (NFT). "
+  tokenId: BigInt!
+  " Amount of token to transfer, typically set at 1 except for ERC1155 batch. "
+  amount: BigInt!
+  " Price of the trade in ETH, determined by a single token or an average price in a batch. "
+  priceETH: BigDecimal!
+  " Strategy used for executing the trade. "
+  strategy: SaleStrategy!
+  " Account address of the buyer. "
+  buyer: String!
+  " Account address of the seller. "
+  seller: String!
+}

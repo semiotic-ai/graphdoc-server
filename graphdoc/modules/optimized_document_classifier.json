@@ -1,0 +1,30 @@
+{
+  "lm": null,
+  "traces": [],
+  "train": [],
+  "demos": [],
+  "signature": {
+    "instructions": "Analyze the provided GraphQL schema documentation for its clarity and completeness. Based on your analysis, assign a quality rating from 1 to 4, where:\n- 4 indicates the documentation is perfect, providing comprehensive and unambiguous information.\n- 3 indicates that the documentation is almost perfect but could benefit from minor improvements.\n- 2 indicates that the documentation is somewhat correct but lacks certain details, making it less clear.\n- 1 indicates that the documentation is incorrect, containing misleading or inaccurate information. \n\nPlease provide a detailed explanation for your rating, highlighting any specific strengths or weaknesses in the documentation.",
+    "fields": [
+      {
+        "prefix": "Database Schema:",
+        "description": "${database_schema}"
+      },
+      {
+        "prefix": "Category:",
+        "description": "${category}"
+      },
+      {
+        "prefix": "Rating:",
+        "description": "${rating}"
+      }
+    ]
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "2.6.0rc8",
+      "cloudpickle": "3.1"
+    }
+  }
+}

@@ -2,6 +2,15 @@
 
 This project is aimed at generating documentation given a graphql schema. 
 
+## .env
+
+Your `.env` file should look like the following: 
+
+```
+OPENAI_API_KEY=<your openai api key>
+HF_DATASET_KEY=<a huggingface api key with access to datasets>
+```
+
 ## Installation 
 
 Ensure you have `pyenv` and `poetry` installed on your local machine. The instructions below are for `macOs`
@@ -49,3 +58,23 @@ To utilize the Jupyter notebook, we will need to initialize a kernel.
 ```bash
 poetry run python -m ipykernel install --user --name=graphdoc
 ```
+
+## Dataset 
+
+We have one primary dataset for the `GraphDoc` program, which contains schemas and an associated rating. The table is as follows: 
+
+| category | rating | schema_name | schema_type | schema_str | 
+|----------|--------|-------------|-------------|------------|
+| [ perfect, almost perfect, somewhat correct, incorrect ] | [4, 3, 2, 1] | str | [full schema, table schema] | str |
+
+A public dataset can be found at [semiotic/graphdoc_schemas](https://huggingface.co/datasets/semiotic/graphdoc_schemas). 
+
+## Runners
+
+The `runners` directory contains early implementations of the `GraphDoc` program. These will largely be replaced by the `GraphDoc` program, but are useful for testing, experimentation, and documentation. 
+
+```bash
+poetry run python runners/evaluate.py
+poetry run python runners/generate.py
+```
+

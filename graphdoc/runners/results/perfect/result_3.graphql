@@ -1,0 +1,29 @@
+" Trades exist such as a combination of taker/order and bid/ask. "
+type Trade @entity @transaction {
+  " Unique identifier for a trade, composed of: { Transaction hash }-{ Log index }-{ (optional) ID within bundle } "
+  id: ID!
+  " Unique identifier for the transaction in which the trade is executed. Multiple trades can be executed in a single transaction. "
+  transactionHash: String!
+  " Unique identifier for the log within the transaction corresponding to a trade event. "
+  logIndex: Int
+  " Timestamp of the block where the trade is executed. "
+  timestamp: BigInt!
+  " Number of the block where the trade is executed. A block is a collection of transactions executed on the blockchain. "
+  blockNumber: BigInt!
+  " Indicator of whether the trade is part of a bundle of trades. "
+  isBundle: Boolean!
+  " Collection associated with the trade and corresponding NFT. "
+  collection: Collection!
+  " Unique identifier for the NFT that is traded, unique within the collection. "
+  tokenId: BigInt!
+  " Amount of token to transfer, typically set at 1 except for ERC1155 batch. "
+  amount: BigInt!
+  " Price of the trade in ETH. If the trade is part of a batch purchase, the price is the average price in the batch. "
+  priceETH: BigDecimal!
+  " Sale strategy used to execute the trade, defined by the SaleStrategy Enum. "
+  strategy: SaleStrategy!
+  " Address of the account purchasing the NFT(s). "
+  buyer: String!
+  " Address of the account selling the NFT(s). "
+  seller: String!
+}

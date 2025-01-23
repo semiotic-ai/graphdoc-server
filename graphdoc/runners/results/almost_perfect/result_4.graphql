@@ -1,0 +1,30 @@
+type MarketplaceDailySnapshot @entity @dailySnapshot {
+  " Unique identifier for each snapshot, composed of the contract address and the number of days since Unix epoch time. "
+  id: ID!
+  " The marketplace to which the snapshot belongs. "
+  marketplace: Marketplace!
+  " Block number when the snapshot was taken. "
+  blockNumber: BigInt!
+  " Block timestamp when the snapshot was taken. "
+  timestamp: BigInt!
+  " Number of collections listed on the marketplace. "
+  collectionCount: Int!
+  " Cumulative trade volume in ETH. "
+  cumulativeTradeVolumeETH: BigDecimal!
+  " Revenue that goes to the marketplace protocol. "
+  marketplaceRevenueETH: BigDecimal!
+  " Revenue that goes to the creator. "
+  creatorRevenueETH: BigDecimal!
+  " Sum of marketplace protocol revenue and creator revenue. "
+  totalRevenueETH: BigDecimal!
+  " Trade count of all collections on the marketplace. "
+  tradeCount: Int!
+  " Cumulative number of unique traders. "
+  cumulativeUniqueTraders: Int!
+  " Number of daily active traders. "
+  dailyActiveTraders: Int!
+  " Number of traded collections of the day. "
+  dailyTradedCollectionCount: Int!
+  " Number of traded items of the day. "
+  dailyTradedItemCount: Int!
+}

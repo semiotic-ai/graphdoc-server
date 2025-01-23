@@ -1,34 +1,23 @@
 # system packages
-import json
-import logging
-from pathlib import Path
-from abc import ABC, abstractmethod
-from typing import Optional
-import importlib.resources as pkg_resources
 
 # internal packages
+import logging
+from pathlib import Path
+from typing import Optional, Union
 
-# external packages
-from tokencost import count_string_tokens
 from graphql import (
     EnumValueDefinitionNode,
-    FieldNode,
-    build_schema,
+    FieldDefinitionNode,
+    Node,
+    ObjectTypeDefinitionNode,
+    StringValueNode,
     parse,
-    build_ast_schema,
-    validate_schema,
     print_ast,
 )
-from graphql import Node, StringValueNode
-from graphql import parse
-from graphql.language.ast import (
-    DocumentNode,
-    ObjectTypeDefinitionNode,
-    FieldDefinitionNode,
-)
+from .helper import check_directory_path, check_file_path
 
-from openai import OpenAI
-from jinja2 import Environment, FileSystemLoader
+# external packages
+from graphql.language.ast import DocumentNode
 
 # configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -36,104 +25,72 @@ log = logging.getLogger(__name__)
 
 
 class Parser:
-    def __init__(self, schema_directory_path: Optional[str] = None):
+    """
+    A class for the parsing and handling of GraphQL objects.
+
+    :param schema_directory_path: A path to a directory containing schemas
+    :type schema_directory_path: str
+    """
+
+    def __init__(self, schema_directory_path: Optional[str] = None) -> None:
         if schema_directory_path:
-            schema_directory_path = Path(schema_directory_path).resolve()
-            if not schema_directory_path.is_dir():
-                raise ValueError(
-                    f"The provided schema directory path '{schema_directory_path}' is not a valid directory."
-                )
+            check_directory_path(schema_directory_path)
         self.schema_directory_path = schema_directory_path
 
-        # load the model token details from tokencost
-        package_name = "tokencost"
-        resource_name = "model_prices.json"
+    ###################
+    # GraphQL Methods #
+    ###################
+    # def parse_schema_from_str
 
-        try:
-            with pkg_resources.files(package_name).joinpath(resource_name).open(
-                "r"
-            ) as file:
-                self.model_data = json.load(file)
-        except FileNotFoundError:
-            raise ValueError(
-                f"{resource_name} not found in the package {package_name}."
-            )
+    # def build_entity_select_all_query
 
-    def parse_schema_from_str(self, schema_text: str):
-        return parse(schema_text)
+    # def get_all_select_queries
 
     def parse_schema_from_file(
-        self, schema_file: str, schema_directory_path: Optional[str] = None
-    ):
+        self, schema_file: Union[str, Path], schema_directory_path: Optional[str] = None
+    ) -> DocumentNode:
+        """
+        Parse a schema from a file.
+
+        :param schema_file: The name of the schema file
+        :type schema_file: str
+        :param schema_directory_path: A path to a directory containing schemas
+        :type schema_directory_path: str
+        :return: The parsed schema
+        :rtype: DocumentNode
+        """
         if schema_directory_path:
-            schema_directory_path = Path(schema_directory_path).resolve()
-            if not schema_directory_path.is_dir():
-                raise ValueError(
-                    f"The provided schema directory path '{schema_directory_path}' is not a valid directory."
-                )
-            else:
-                self.schema_directory_path = schema_directory_path
-
-        schema_path = Path(self.schema_directory_path) / schema_file
-        schema = schema_path.read_text()
-        return self.parse_schema_from_str(schema)
-
-    def check_schema_token_count(self, schema_ast, model: str = "gpt-4o"):
-        schema_str = print_ast(schema_ast)
-        token_count = count_string_tokens(schema_str, model)
-        return token_count
-
-    def get_model_max_input_tokens(self, model: str = "gpt-4o"):
-        if model in self.model_data:
-            return self.model_data[model]["max_input_tokens"]
+            check_directory_path(schema_directory_path)
+            schema_path = Path(schema_directory_path) / schema_file
+        elif self.schema_directory_path:
+            schema_path = Path(self.schema_directory_path) / schema_file
         else:
-            raise ValueError(f"Model {model} not found in the model data.")
+            check_file_path(schema_file)
+            schema_path = Path(schema_file)
 
-    def check_prompt_validity(self, prompt: str, model: str = "gpt-4o"):
-        """Check to see if the prompt for a model is too long."""
-        prompt_token_count = count_string_tokens(prompt, model)
-        max_input_tokens = self.get_model_max_input_tokens(model)
-        if prompt_token_count > max_input_tokens:
-            logging.warning(
-                f"Prompt token count {prompt_token_count} exceeds the maximum input tokens {max_input_tokens} for model {model}."
-            )
-            return False
-        return True
+        schema = schema_path.read_text()
+        return parse(schema)
 
-    def format_text_schema_to_json(self, schema_text, label="gold", version="1.0.0"):
-        lines = schema_text.strip().split("\n")
-        formatted_lines = []
+    def update_node_descriptions(
+        self, node: Node, new_value: Optional[str] = None
+    ) -> Node:
+        """
+        Given a GraphQL node, recursively traverse the node and its children, updating all descriptions with the new value.
 
-        for line in lines:
-            cleaned_line = line.replace('"', '"').rstrip()
-
-            if not cleaned_line:
-                formatted_lines.append("\n")
-                continue
-
-        formatted_lines.append(cleaned_line + " \n")
-        json_output = {f"{label}": {"version": f"{version}", "prompt": formatted_lines}}
-        return json_output
-
-    def format_schema_ast_to_json(self, schema_ast, label="gold", version="1.0.0"):
-        schema_str = print_ast(schema_ast)
-        return self.format_text_schema_to_json(schema_str, label, version)
-
-    def format_schema_file_to_json(
-        self, schema_file, schema_directory_path=None, label="gold", version="1.0.0"
-    ):
-        schema_ast = self.parse_schema_from_file(schema_file, schema_directory_path)
-        return self.format_schema_ast_to_json(schema_ast, label, version)
-
-    def update_node_descriptions(self, node, new_value=None):
-        """Update the descriptions of the nodes in the schema. If new_value is None, the description nodes will be removed."""
-        if hasattr(node, "description") and isinstance(
-            node.description, StringValueNode
-        ):
-            if new_value:
-                node.description.value = new_value
-            else:
-                node.description = None
+        :param node: The GraphQL node to update
+        :type node: Node
+        :param new_value: The new description value
+        :type new_value: Optional[str]
+        :return: The updated node
+        :rtype: Node
+        """
+        if hasattr(node, "description"):
+            description = getattr(node, "description", None)
+            if isinstance(description, StringValueNode):
+                if new_value:
+                    description.value = new_value
+                else:
+                    setattr(node, "description", None)
 
         for attr in dir(node):
             if attr.startswith("__") or attr == "description":
@@ -149,22 +106,44 @@ class Parser:
 
     def fill_empty_descriptions(
         self,
-        node,
-        new_column_value="Description for column: {}",
-        new_table_value="Description for table: {}",
-        use_column_name=True,
-        column_name=None,
+        node: Node,
+        new_column_value: str = "Description for column: {}",
+        new_table_value: str = "Description for table: {}",
+        use_value_name: bool = True,
+        value_name: Optional[str] = None,
     ):
-        """Fill empty descriptions in the schema."""
-        if hasattr(node, "description") and node.description == None:
-            if isinstance(node, ObjectTypeDefinitionNode):
-                new_value = new_table_value
-            else:
-                new_value = new_column_value
-            if new_value:
-                if use_column_name:
-                    update_value = new_value.format(column_name)
-                    node.description = StringValueNode(value=update_value)
+        """
+        Recursively traverse the node and its children, filling in empty descriptions with the new column or table value. Do not update descriptions that already have a value.
+
+        :param node: The GraphQL node to update
+        :type node: Node
+        :param new_column_value: The new column description value
+        :type new_column_value: str
+        :param new_table_value: The new table description value
+        :type new_table_value: str
+        :param use_value_name: Whether to use the value name in the description
+        :type use_value_name: bool
+        :param value_name: The name of the value
+        :type value_name: Optional[str]
+        :return: The updated node
+        :rtype: Node
+        """
+        if hasattr(node, "description"):  # and node.description == None:
+            description = getattr(node, "description", None)
+            if description == None:
+                # if the node is a table, use the table value
+                if isinstance(node, ObjectTypeDefinitionNode):
+                    new_value = new_table_value
+                # else the node is a column, use the column value
+                else:
+                    new_value = new_column_value
+                # format with the value name if needed (table/column name)
+                if use_value_name:
+                    update_value = new_value.format(value_name)
+                else:
+                    update_value = new_value
+
+                node.description = StringValueNode(value=update_value)
 
         for attr in dir(node):
             if attr.startswith("__") or attr == "description":
@@ -182,13 +161,13 @@ class Parser:
                                 log.debug(
                                     f"found an instance of a ObjectTypeDefinitionNode: {item.name.value}"
                                 )
-                            column_name = item.name.value
+                            value_name = item.name.value
                         self.fill_empty_descriptions(
                             item,
                             new_column_value,
                             new_table_value,
-                            use_column_name,
-                            column_name,
+                            use_value_name,
+                            value_name,
                         )
             elif isinstance(child, Node):
                 if (
@@ -200,103 +179,49 @@ class Parser:
                         log.debug(
                             f"found an instance of a ObjectTypeDefinitionNode: {child.name.value}"
                         )
-                    column_name = child.name.value
+                    value_name = child.name.value
                 self.fill_empty_descriptions(
                     child,
                     new_column_value,
                     new_table_value,
-                    use_column_name,
-                    column_name,
+                    use_value_name,
+                    value_name,
                 )
         return node
 
-    def schema_equality_check(self, gold_node, check_node):
-        if gold_node == check_node:
-            return True
+    def schema_equality_check(self, gold_node: Node, check_node: Node) -> bool:
+        """
+        A method to check if two schema nodes are equal. Only checks that the schemas structures are equal, not the descriptions.
+
+        :param gold_node: The gold standard schema node
+        :type gold_node: Node
+        :param check_node: The schema node to check
+        :type check_node: Node
+        :return: Whether the schemas are equal
+        :rtype: bool
+        """
+        gold_node = self.update_node_descriptions(gold_node)
+        check_node = self.update_node_descriptions(check_node)
+
+        if print_ast(gold_node) != print_ast(check_node):
+            return False
         else:
-            gold_node = self.update_node_descriptions(gold_node)
-            check_node = self.update_node_descriptions(check_node)
+            return True
 
-            if len(gold_node.definitions) != len(check_node.definitions):
-                log.debug("document lengths differ")
-                return False
+    ###################
+    # File Methods    #
+    ###################
+    # def format_text_schema_to_json
 
-            if print_ast(gold_node) != print_ast(check_node):
-                return False
-            else:
-                return True
+    # def format_schema_ast_to_json
 
-    def build_entity_select_all_query(self, ast: DocumentNode, type_name: str) -> str:
-        """
-        Builds a GraphQL query string from an AST for a given type, including all fields.
-        Works directly with the AST to avoid schema validation issues.
+    # def format_schema_file_to_json
 
-        Args:
-            ast: The parsed GraphQL AST
-            type_name: Name of the type to query (e.g., "CollectionDailySnapshot")
+    ###################
+    # Token Methods   #
+    ###################
+    # def check_schema_token_count
 
-        Returns:
-            A GraphQL query string
-        """
-        query_name = f"{type_name}s"
-        query_name = query_name[0].lower() + query_name[1:]
+    # def get_model_max_input_tokens
 
-        # Find the type definition in the AST
-        type_def = None
-        for definition in ast.definitions:
-            if (
-                isinstance(definition, ObjectTypeDefinitionNode)
-                and definition.name.value == type_name
-            ):
-                type_def = definition
-                break
-
-        if not type_def:
-            raise ValueError(f"Type {type_name} not found in AST")
-
-        # build query parts for each field
-        field_queries = []
-
-        for field in type_def.fields:
-            field_name = field.name.value
-            field_type = field.type
-
-            # iterate through NonNull or List wrappers
-            while hasattr(field_type, "type"):
-                field_type = field_type.type
-
-            # if it's a named type (potentially an entity), just get its id
-            if hasattr(field_type, "name"):
-                type_name = field_type.name.value
-                if type_name not in [
-                    "ID",
-                    "String",
-                    "Int",
-                    "Float",
-                    "Boolean",
-                    "BigInt",
-                    "BigDecimal",
-                ]:
-                    field_queries.append(f"{field_name} {{ id }}")
-                else:
-                    field_queries.append(field_name)
-            else:
-                field_queries.append(field_name)
-
-        # combine all field queries=
-        fields_str = "\n    ".join(field_queries)
-
-        # build the query with the entity name directly
-        query = f"""{{{query_name}(first: 5) {{{fields_str}}}}}"""
-        return query
-
-    def get_all_select_queries(self, schema_ast: DocumentNode):
-        select_queries = {}
-
-        for definition in schema_ast.definitions:
-            if isinstance(definition, ObjectTypeDefinitionNode):
-                type_name = definition.name.value
-                select_query = self.build_entity_select_all_query(schema_ast, type_name)
-                select_queries[type_name] = select_query
-
-        return select_queries
+    # def check_prompt_validity

@@ -1,3 +1,3 @@
-from .test_entity_comparison_tests import *
-from .test_graphdoc_build import *
-from .test_prompt import *
+from .conftest import *
+from .test_conftest import *
+from .test_graphdoc import *

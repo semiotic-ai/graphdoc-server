@@ -1,0 +1,4 @@
+type _Item @entity {
+  "The unique identifier for an item"
+  id: ID!
+}

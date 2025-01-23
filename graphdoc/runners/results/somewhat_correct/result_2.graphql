@@ -1,0 +1,30 @@
+type Collection @entity @regularPolling {
+  " Unique identifier for the collection. "
+  id: ID!
+  " Name of the collection. "
+  name: String
+  " Symbol representing the collection. "
+  symbol: String
+  " Total number of tokens in the collection. "
+  totalSupply: BigInt
+  " The NFT standard used for the tokens in the collection. "
+  nftStandard: NftStandard!
+  " The royalty fee rate for the collection. "
+  royaltyFee: BigDecimal!
+  " The total trade volume of the collection in ETH. "
+  cumulativeTradeVolumeETH: BigDecimal!
+  " The revenue generated for the marketplace protocol from the collection in ETH. "
+  marketplaceRevenueETH: BigDecimal!
+  " The revenue generated for the creator of the collection in ETH. "
+  creatorRevenueETH: BigDecimal!
+  " The total revenue generated from the collection in ETH. "
+  totalRevenueETH: BigDecimal!
+  " The number of trades made in the collection. "
+  tradeCount: Int!
+  " The number of unique buyers in the collection. "
+  buyerCount: Int!
+  " The number of unique sellers in the collection. "
+  sellerCount: Int!
+  " The trades associated with the collection. "
+  trades: [Trade!]! @derivedFrom(field: "collection")
+}
