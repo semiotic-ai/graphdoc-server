@@ -42,12 +42,15 @@ class TestDocGeneratorEval:
     #     gold_prediction = Prediction(gold_example)
     #     check_prediction = Prediction(check_example)
 
-    # TODO:
-    # def test_preprocess_schema
+    def test_preprocess_schema(self, dge: DocGeneratorEval, trainset: list[Example]):
+        for example in trainset:
+            assert isinstance(dge.preprocess_schema(example.database_schema), str)
 
     # TODO:
     @pytest.mark.skipif("not config.getoption('--fire')")
-    def test_evaluate_documentation_quality(self, dge: DocGeneratorEval, trainset: list[Example]):
+    def test_evaluate_documentation_quality(
+        self, dge: DocGeneratorEval, trainset: list[Example]
+    ):
         dg = dspy.ChainOfThought(DocGenerator)
         pred = dg(database_schema=trainset[0].database_schema)
         eval = dge.evaluate_documentation_quality(pred)
