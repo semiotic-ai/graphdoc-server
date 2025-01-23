@@ -1,0 +1,6 @@
+almost_perfect: 78.57%
+somewhat_correct: 82.14%
+perfect: 85.71%
+incorrect: 53.57%
+
+total: 74.9975%
