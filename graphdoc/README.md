@@ -78,3 +78,8 @@ poetry run python runners/evaluate.py
 poetry run python runners/generate.py
 ```
 
+## MLFlow
+
+```bash
+mlflow ui --port 5000
+```
