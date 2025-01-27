@@ -46,7 +46,6 @@ trainset = dh._create_graph_doc_example_trainset(dataset=dataset)
 
 # get an example to use to infer the signature
 example = trainset[0].toDict()
-# drop the keys 'category' and 'rating'
 example.pop('category')
 example.pop('rating')
 print(example)
@@ -65,7 +64,7 @@ with mlflow.start_run():
             signature=signature,
             task=None,
             registered_model_name=DSPY_MODEL_NAME,
-            metadata={"trainset": "semiotic/graphdoc_schemas"} # establish versioning for trainset
+            metadata={"trainset": "semiotic/graphdoc_schemas"} # establish versioning for trainset (commit SHA)
         )
         print(f"The model was logged to MLFlow as {model_info.model_uri}")
 

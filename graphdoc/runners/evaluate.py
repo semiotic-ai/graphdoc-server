@@ -12,6 +12,7 @@ from dspy import ChatAdapter
 from dspy import Example
 from dspy.evaluate import Evaluate
 from dotenv import load_dotenv
+import mlflow
 
 # Global Variables
 load_dotenv("../.env")
@@ -19,23 +20,28 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 HF_DATASET_KEY = os.getenv("HF_DATASET_KEY")
 
 # Run Time Variables
-EVALUATE = False
-OPTIMIZE = True
+EVALUATE = True
+OPTIMIZE = False
+MODEL = "openai/gpt-4o-mini"
+CACHE = False
 
 # logging
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
+mlflow.dspy.autolog()
+mlflow.set_experiment("DSPy_1") # failing
 
 if __name__ == "__main__":
     dh = DataHelper(hf_api_key=HF_DATASET_KEY)
     dqe = DocQualityEval(dh)
     ca = ChatAdapter()
 
-    lm = dspy.LM(model="openai/gpt-4o-mini", api_key=OPENAI_API_KEY, cache=True)
+    lm = dspy.LM(model=MODEL, api_key=OPENAI_API_KEY, cache=CACHE)
     dspy.configure(lm=lm)
     classify = dspy.Predict(DocQuality)
 
-    dataset = dh._folder_of_folders_to_dataset(parse_objects=True)
+    # dataset = dh._folder_of_folders_to_dataset(parse_objects=True)
+    dataset = dh._folder_to_dataset(category="perfect", parse_objects=True)
     trainset = dh._create_graph_doc_example_trainset(dataset=dataset)
     evaluator = dqe.create_evaluator(trainset=trainset)  
 
@@ -53,11 +59,3 @@ if __name__ == "__main__":
         optimized_evaluator.save(
             f"modules/optimized_document_classifier.json", save_program=False
         )
-
-        # unoptimized_prompt = dspy.inspect_history(n=-1)
-        # optimized_prompt = dspy.inspect_history(n=1)
-
-        # with open(f"modules/unoptimized_prompt.txt", "w") as f:
-        #     f.write(unoptimized_prompt)
-        # with open(f"modules/optimized_prompt.txt", "w") as f:
-        #     f.write(optimized_prompt)
