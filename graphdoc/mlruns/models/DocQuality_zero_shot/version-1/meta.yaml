@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1737945745028
+current_stage: None
+description: null
+last_updated_timestamp: 1737945745028
+name: DocQuality_zero_shot
+run_id: c0aa163221944628893c6cf279012754
+run_link: null
+source: file:///Users/denver/Documents/code/graph/graphdoc/graphdoc/mlruns/906030794547605510/c0aa163221944628893c6cf279012754/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///Users/denver/Documents/code/graph/graphdoc/graphdoc/mlruns/906030794547605510/c0aa163221944628893c6cf279012754/artifacts/model
+user_id: null
+version: 1

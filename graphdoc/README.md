@@ -78,3 +78,23 @@ poetry run python runners/evaluate.py
 poetry run python runners/generate.py
 ```
 
+## DSPy
+
+### Optimizers 
+
+One thing from the docs: "For prompt optimizers, we suggest starting with a 20% split for training and 80% for validation, which is often the opposite of what one does for DNNs."
+
+## MLFlow
+
+```bash
+mlflow ui --port 5000
+```
+
+### Model Versioning
+
+We are using MLFlow to version our models. We want to be as careful as possible to ensure that the most recent version of our model is the best version of our model. To this end, we will want to cover a couple of things: 
+
+1. Tracking Training and Evaluation data for each model version
+2. Tracking the model's performance on the training and evaluation data
+
+We are going to use HuggingFace datasets to track the training and evaluation data for each model version. We will track the dataset version in the `metadata` field of the model. So that we can easily track the dataset version for each model version. One thing we will need to handle is the fact that the signature in our codebase will not always map the signature of our saved model. To this end, we will want to treat each model as a signature type. For now, this is going to be either `zero shot` or `few shot`. Going forward, we can imagine a scenarior where we will enable `tools` and other various methods to affect the signature of our model. 

@@ -140,7 +140,7 @@ class DataHelper:
     ######################
     # loading local data
     ######################
-
+    # TODO: refactor this to be more dynamic and allow for new categories to be added. no need to hard code the categories.
     def _categories(self) -> list:
         """
         Return the valid categories for the schema directory.
@@ -162,7 +162,7 @@ class DataHelper:
             "almost perfect": Path(self.schema_directory_path) / "almost_perfect",
             "somewhat correct": Path(self.schema_directory_path) / "somewhat_correct",
             "incorrect": Path(self.schema_directory_path) / "incorrect",
-        }
+        }  # TODO: we can break this out to an attribute of the class and then read it in
 
     def _category_ratings(self) -> dict:
         """
@@ -256,7 +256,9 @@ class DataHelper:
 
     def _load_folder_schemas(
         self, category: str, folder_path: Optional[Union[str, Path]] = None
-    ) -> dict[str, SchemaObject]:
+    ) -> dict[
+        str, SchemaObject  # Path, SchemaObject
+    ]:  # TODO: just being string is confusing, we can define more explicitly that we are using the Path (and use that type)
         """
         Load schemas from a folder, keeping the difficulty tag.
 
@@ -267,7 +269,9 @@ class DataHelper:
         :return: The loaded schemas
         :rtype: dict
         """
-        self._check_category_validity(category)
+        self._check_category_validity(
+            category
+        )  # TODO: we can make this a parameter to allow this to let you add new categories in
 
         if folder_path is None:
             folder_path = self._folder_paths().get(category)
@@ -755,3 +759,5 @@ class DataHelper:
 
 #     def __init__(self, hf_api_key: Optional[str] = None, schema_directory_path: Optional[str] = None, repo_card_path: Optional[str] = None) -> None:
 #         super().__init__(hf_api_key, schema_directory_path, repo_card_path)
+
+# TODO: there are some helpful design patterns here that we could use: https://huggingface.co/docs/datasets/v2.3.2/en/dataset_script#add-dataset-attributes
