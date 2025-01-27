@@ -1,8 +1,12 @@
 # useful tutorial: https://dspy.ai/tutorials/multihop_search/
-
-from abc import ABC, abstractmethod
+# system packages
 import logging
+from abc import ABC, abstractmethod
 from typing import Any, Callable, List, Literal, Tuple, Union, cast
+
+# internal packages
+
+# external packages
 import dspy
 
 # logging
