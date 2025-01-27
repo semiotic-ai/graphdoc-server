@@ -17,10 +17,10 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 HF_DATASET_KEY = os.getenv("HF_DATASET_KEY")
 
 # Run Time Variables
-EVALUATE = False
-OPTIMIZE = True
+EVALUATE = True
+OPTIMIZE = False
 MODEL = "openai/gpt-4o"
-CACHE = True
+CACHE = False
 
 # logging
 logging.basicConfig(level=logging.DEBUG)
