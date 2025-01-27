@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/denver/Documents/code/graph/graphdoc/graphdoc/mlruns/743592986827386056/2df40c296b6242ed8d8bb35bc835a60e/artifacts
+end_time: 1737997417197
+entry_point_name: ''
+experiment_id: '743592986827386056'
+lifecycle_stage: active
+run_id: 2df40c296b6242ed8d8bb35bc835a60e
+run_name: silent-shark-525
+run_uuid: 2df40c296b6242ed8d8bb35bc835a60e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1737997413275
+status: 3
+tags: []
+user_id: denver

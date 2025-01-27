@@ -1,0 +1,25 @@
+artifact_path: model
+flavors:
+  dspy:
+    code: null
+    model_path: data/model.pkl
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.dspy
+    python_version: 3.13.0
+is_signature_from_type_hint: false
+metadata:
+  trainset: semiotic/graphdoc_schemas
+  trainset_version: 1.0.0
+mlflow_version: 2.20.0
+model_size_bytes: 659835
+model_uuid: 378f95f9f1844c85ac6eb7bb0f2cc806
+run_id: 5c014001c5cc448987ca2840aae9aacd
+signature:
+  inputs: '[{"type": "string", "name": "database_schema", "required": true}]'
+  outputs: null
+  params: null
+type_hint_from_example: false
+utc_time_created: '2025-01-27 03:33:01.083032'
