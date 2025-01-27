@@ -755,3 +755,5 @@ class DataHelper:
 
 #     def __init__(self, hf_api_key: Optional[str] = None, schema_directory_path: Optional[str] = None, repo_card_path: Optional[str] = None) -> None:
 #         super().__init__(hf_api_key, schema_directory_path, repo_card_path)
+
+# TODO: there are some helpful design patterns here that we could use: https://huggingface.co/docs/datasets/v2.3.2/en/dataset_script#add-dataset-attributes
