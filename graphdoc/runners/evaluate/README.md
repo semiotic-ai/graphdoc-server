@@ -12,6 +12,6 @@ This is primarily an PoC of using DSPy and MLflow together. We will go through t
     - [x] load in a given MLFlow model
     - [ ] assess if it was trained on our most recent dataset
     - [ ] if not trained, train it on our most recent dataset
-    - [ ] assess performance of the trained model on our most recent dataset
+    - [x] assess performance of the trained model on our most recent dataset
     - [x] store the training and evaluation results to MLFlow 
     - [x] save the trained model to MLFlow

@@ -37,7 +37,7 @@ if __name__ == "__main__":
     dg = dspy.ChainOfThought(DocGenerator)
 
     categories = dh._categories()
-    
+
     if EVALUATE:
         for category in categories:
             print(f"Evaluating {category}...")
@@ -70,7 +70,7 @@ if __name__ == "__main__":
             with open(f"results/{path_category}/scores.txt", "w") as f:
                 f.write(f"Scores: {scores}")
                 f.write(f"Overall Score: {overall_score}")
-    
+
     if OPTIMIZE:
         log.info("Optimizing Document Generator...")
         dg.save(f"modules/baseline_document_generator.json", save_program=False)
@@ -90,4 +90,6 @@ if __name__ == "__main__":
         optimized_generator = tp.compile(
             dg, trainset=trainset, max_labeled_demos=0, max_bootstrapped_demos=0
         )
-        optimized_generator.save(f"modules/optimized_document_generator.json", save_program=False)
+        optimized_generator.save(
+            f"modules/optimized_document_generator.json", save_program=False
+        )

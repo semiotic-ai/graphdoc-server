@@ -29,7 +29,7 @@ CACHE = False
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 mlflow.dspy.autolog()
-mlflow.set_experiment("DSPy_1") # failing
+mlflow.set_experiment("DSPy_1")  # failing
 
 if __name__ == "__main__":
     dh = DataHelper(hf_api_key=HF_DATASET_KEY)
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     # dataset = dh._folder_of_folders_to_dataset(parse_objects=True)
     dataset = dh._folder_to_dataset(category="perfect", parse_objects=True)
     trainset = dh._create_graph_doc_example_trainset(dataset=dataset)
-    evaluator = dqe.create_evaluator(trainset=trainset)  
+    evaluator = dqe.create_evaluator(trainset=trainset)
 
     os.makedirs(f"modules", exist_ok=True)
     classify.save(f"modules/baseline_document_classifier.json", save_program=False)
@@ -59,3 +59,34 @@ if __name__ == "__main__":
         optimized_evaluator.save(
             f"modules/optimized_document_classifier.json", save_program=False
         )
+
+
+# TrainerRunner
+# def __init__(self,
+# prompt
+# metric:
+# dataset: train / eval
+# logging: - always log to MLFlow: keep this hardcoded for MLFlow for now
+
+# hard code and assume we are using the right dataset
+
+# initialize the trainer
+
+# run the trainer
+# log the results to MLFlow
+
+# evaluate the output on our eval dataset
+# log the results to MLFlow
+
+# save the model to MLFlow
+
+
+# we will avoid this for now and maybe revisit it when we need another implementation not using dspy
+# TrainerDSPy(TrainerRunner)
+# def __init__(self,
+# module:
+# metric: (function)
+# dataset: train / eval
+# kwargs: this could be for
+# not opposed to rewrapping, as we may drop here and want to integrate with something like LangChain
+# we want to not be attached to dspy

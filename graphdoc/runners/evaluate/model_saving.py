@@ -27,7 +27,7 @@ FIRST_RUN = False
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
-# MLFlow 
+# MLFlow
 mlflow.dspy.autolog()
 mlflow.set_experiment(EXPERIMENT_NAME)
 ml_client = mlflow.MlflowClient()
@@ -46,8 +46,8 @@ trainset = dh._create_graph_doc_example_trainset(dataset=dataset)
 
 # get an example to use to infer the signature
 example = trainset[0].toDict()
-example.pop('category')
-example.pop('rating')
+example.pop("category")
+example.pop("rating")
 print(example)
 
 # infer the signature based on the example
@@ -55,38 +55,40 @@ signature = infer_signature(example)
 print(signature)
 
 with mlflow.start_run():
-    
+
     if FIRST_RUN:
         # log the model to MLFlow
         model_info = mlflow.dspy.log_model(
-            dspy_model=classify, 
+            dspy_model=classify,
             artifact_path="model",
             signature=signature,
             task=None,
             registered_model_name=DSPY_MODEL_NAME,
-            metadata={"trainset": "semiotic/graphdoc_schemas"} # establish versioning for trainset (commit SHA)
+            metadata={
+                "trainset": "semiotic/graphdoc_schemas"
+            },  # establish versioning for trainset (commit SHA)
         )
         print(f"The model was logged to MLFlow as {model_info.model_uri}")
 
         loaded_model = mlflow.dspy.load_model(model_info.model_uri)
         pred = loaded_model(database_schema=trainset[1].database_schema).rating
         print(f"The model predicted a rating of {pred}")
-    
-    else: 
+
+    else:
         # get the latest version of the model
         latest_version = ml_client.get_latest_versions(DSPY_MODEL_NAME)
         print(f"The latest version of the model is {latest_version}")
 
-        # load the latest model 
+        # load the latest model
         loaded_model = mlflow.dspy.load_model(latest_version[0].source)
         pred = loaded_model(database_schema=trainset[1].database_schema).rating
         print(f"The model predicted a rating of {pred}")
 
 # 1. Managing the DSPy / MLFlow relationship
 #     - [x] Create a DSPy model
-#     - [x] Create a MLFlow model that tracks to that DSPy model 
+#     - [x] Create a MLFlow model that tracks to that DSPy model
 #     - [x] Save the DSPy model to MLFlow
 
-# Notes 
-# - we are running with a local environment setting, and will want to migrate to using a 
+# Notes
+# - we are running with a local environment setting, and will want to migrate to using a
 # - even with no changes, MLFlow will log the model as a new version
