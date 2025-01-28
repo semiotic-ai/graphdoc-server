@@ -1,9 +1,10 @@
 # system packages
 import logging
+import os
 from pathlib import Path
 
 # internal packages
-from graphdoc import check_directory_path, check_file_path
+from graphdoc import check_directory_path, check_file_path, load_yaml_config
 
 # external packages
 import pytest
@@ -38,3 +39,17 @@ class TestHelper:
             / "opensea_original_schema.graphql"
         )
         assert check_file_path(str(schema_file_path)) is None
+
+    def test_load_yaml_config(self):
+        config_path = (
+            BASE_DIR
+            / "graphdoc"
+            / "tests"
+            / "assets"
+            / "configs"
+            / "single_prompt_trainer.yaml"
+        )
+        config = load_yaml_config(str(config_path))
+        assert config is not None
+        assert config["language_model"]["lm_api_key"] is not None
+        assert config["language_model"]["lm_api_key"] == os.getenv("OPENAI_API_KEY")
