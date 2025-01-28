@@ -2,7 +2,7 @@
 # system packages
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Callable, List, Literal, Tuple, Union, cast
+from typing import Any, Callable, Dict, List, Literal, Tuple, Union, cast
 
 # internal packages
 
@@ -66,10 +66,10 @@ class SinglePrompt(ABC):
     def _format_metric(
         self,
         examples: List[dspy.Example],
-        overal_score: float,
+        overall_score: float,
         results: List,
         scores: List,
-    ):
+    ) -> Dict[str, Any]:
         # self.metric_type # ensure that the metric type is used to format the results
         """This takes the results from the evaluate_evalset and does any necessary formatting, taking into account the metric type"""
         pass
