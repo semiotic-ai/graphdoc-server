@@ -1,6 +1,8 @@
 # system packages
+import logging
 from abc import abstractmethod
-from typing import List, Literal
+from collections import defaultdict
+from typing import Any, Dict, List, Literal
 
 # internal packages
 from .prompt import SinglePrompt
@@ -8,6 +10,9 @@ from .prompt import SinglePrompt
 # external packages
 import dspy
 
+# logging
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
 ###################
 # DSPy Signatures #
@@ -66,10 +71,49 @@ class DocQualityPrompt(SinglePrompt):
     def _format_metric(
         self,
         examples: List[dspy.Example],
-        overal_score: float,
+        overall_score: float,
         results: List,
         scores: List,
-    ):
-        # self.metric_type # ensure that the metric type is used to format the results
-        """This takes the results from the evaluate_evalset and does any necessary formatting, taking into account the metric type"""
-        pass
+    ) -> Dict[str, Any]:
+        """This takes the results from the evaluate_evalset and does any necessary formatting"""
+        
+        formatted_results = {
+            'overall_score': overall_score,
+            'per_category_scores': {},
+            'details': []
+        }
+        category_stats = defaultdict(lambda: {'correct': 0, 'total': 0})
+
+        for result, score in zip(results, scores):
+            example, prediction, is_correct = result
+            example_data = {key: value for key, value in example.items()}
+            
+            category = example_data.get('category', 'unknown')
+            expected_rating = example_data.get('rating', None)
+            
+            predicted_category = getattr(prediction, 'category', 'unknown')
+            predicted_rating = getattr(prediction, 'rating', None)
+
+            category_stats[category]['total'] += 1
+            if is_correct:
+                category_stats[category]['correct'] += 1
+
+            detail_entry = {
+                **example_data,  
+                'expected_category': category,
+                'expected_rating': expected_rating,
+                'predicted_category': predicted_category,
+                'predicted_rating': predicted_rating,
+                'is_correct': is_correct
+            }
+            formatted_results['details'].append(detail_entry)
+
+        for category, stats in category_stats.items():
+            percent_correct = (stats['correct'] / stats['total']) * 100 if stats['total'] > 0 else 0
+            formatted_results['per_category_scores'][category] = {
+                'expected_rating': None,  
+                'predicted_rating': None, 
+                'percent_correct': percent_correct
+            }
+
+        return formatted_results
