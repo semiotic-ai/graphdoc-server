@@ -1,6 +1,6 @@
 # system packages
 import logging
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from abc import ABC, abstractmethod
 
 # internal packages
@@ -9,6 +9,7 @@ from ..prompts import SinglePrompt, DocQualityPrompt
 # external packages
 import dspy
 import mlflow
+from mlflow.models import ModelSignature
 
 # logging
 logging.basicConfig(level=logging.DEBUG)
@@ -40,11 +41,11 @@ class SinglePromptTrainerRunner(ABC):
 
     # mlflow related methods
     @abstractmethod
-    def get_signature(self):
+    def get_signature(self) -> ModelSignature:
         pass
 
     @abstractmethod
-    def get_prompt_signature(self, prompt):
+    def get_prompt_signature(self, prompt) -> dspy.Signature:
         pass
 
     # TODO: we should update this to enable a remote model to be loaded
@@ -89,7 +90,9 @@ class SinglePromptTrainerRunner(ABC):
             optimizer_type = self.optimizer_type
         optimizer = self.initialize_trainer(optimizer_type)
         if optimizer_type == "miprov2":
-            print(f"compiling model (type: {type(self.prompt.infer)}): {self.prompt.infer}")
+            print(
+                f"compiling model (type: {type(self.prompt.infer)}): {self.prompt.infer}"
+            )
             print(f"trainset type: {type(self.trainset)}")
             optimized_model = optimizer.compile(
                 self.prompt.infer,
@@ -100,24 +103,8 @@ class SinglePromptTrainerRunner(ABC):
             return optimized_model
 
     @abstractmethod
-    def evaluate_training(
-        self, base_model, optimized_model, type: str, metric_type: str
-    ):
+    def evaluate_training(self, base_model, optimized_model) -> Tuple[float, float]:
         pass
-        # # TODO: we should type this better
-        # base_prompt = SinglePrompt(
-        #     prompt=base_model,
-        #     type=self.prompt.type,  # type: ignore
-        #     metric_type=self.prompt.metric_type,  # type: ignore
-        # )
-        # optimized_prompt = SinglePrompt(
-        #     prompt=optimized_model,
-        #     type=self.prompt.type,  # type: ignore
-        #     metric_type=self.prompt.metric_type,  # type: ignore
-        # )
-        # base_evaluation = base_prompt.evaluate_evalset(self.evalset)
-        # optimized_evaluation = optimized_prompt.evaluate_evalset(self.evalset)
-        # return base_evaluation, optimized_evaluation
 
     def _compare_models(
         self,
@@ -137,20 +124,3 @@ class SinglePromptTrainerRunner(ABC):
     @abstractmethod
     def run_training(self, load_model: bool = True, save_model: bool = True):
         pass
-        # if load_model:
-        #     base_model = self.load_model()
-        #     self.prompt = SinglePrompt(
-        #         prompt=base_model,
-        #         type=self.prompt.type,
-        #         metric_type=self.prompt.metric_type,
-        #     )
-        # else:
-        #     base_model = self.prompt.infer
-        # optimized_model = self.run_trainer()
-        # self.save_model(optimized_model)
-        # base_evaluation, optimized_evaluation = self.evaluate_training(
-        #     base_model, optimized_model
-        # )
-        # if self._compare_models(base_evaluation, optimized_evaluation):
-        #     self.save_model(optimized_model)
-        #     log.info("Model training successful, saving model")

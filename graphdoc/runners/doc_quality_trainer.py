@@ -30,7 +30,7 @@ if __name__ == "__main__":
     dh = DataHelper(hf_api_key=HF_DATASET_KEY)
     dataset = dh._folder_to_dataset(category="perfect", parse_objects=True)
     trainset = dh._create_graph_doc_example_trainset(dataset=dataset)
-    
+
     doc_quality_prompt = DocQualityPrompt(
         type="chain_of_thought",
         metric_type="rating",
@@ -41,6 +41,6 @@ if __name__ == "__main__":
         mlflow_model_name=MLFLOW_MODEL_NAME,
         mlflow_experiment_name=MLFLOW_EXPERIMENT_NAME,
         trainset=trainset,
-        evalset=trainset
+        evalset=trainset,
     )
     doc_quality_trainer.run_training()
