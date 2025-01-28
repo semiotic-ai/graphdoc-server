@@ -25,16 +25,26 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
         example.pop("rating")
         return infer_signature(example)
     
+    def get_prompt_signature(self, prompt):
+        if isinstance(prompt, dspy.ChainOfThought):
+            return prompt.predict.signature
+        elif isinstance(prompt, dspy.Predict):
+            return prompt.signature
+        else:
+            raise ValueError(f"Invalid prompt type: {type(prompt)}")
+    
     def evaluate_training(
-        self, base_model, optimized_model, type: str, metric_type: str
+        self, base_model, optimized_model
     ):
+        print(f"eval training base_model (type: {type(base_model)}): {base_model}")
+        print(f"eval training optimized_model (type: {type(optimized_model)}): {optimized_model}")
         base_prompt = DocQualityPrompt(
-            prompt=base_model,
+            prompt=self.get_prompt_signature(base_model),
             type=self.prompt.type,  # type: ignore
             metric_type=self.prompt.metric_type,  # type: ignore
         )
         optimized_prompt = DocQualityPrompt(
-            prompt=optimized_model,
+            prompt=self.get_prompt_signature(optimized_model),
             type=self.prompt.type,  # type: ignore
             metric_type=self.prompt.metric_type,  # type: ignore
         )
@@ -46,7 +56,7 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
         if load_model:
             base_model = self.load_model()
             self.prompt = DocQualityPrompt(
-                prompt=base_model,
+                # prompt=DocQualitySignature,
                 type=self.prompt.type,
                 metric_type=self.prompt.metric_type,
             )

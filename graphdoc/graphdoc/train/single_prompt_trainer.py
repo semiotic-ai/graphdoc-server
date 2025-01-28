@@ -43,6 +43,10 @@ class SinglePromptTrainerRunner(ABC):
     def get_signature(self):
         pass
 
+    @abstractmethod
+    def get_prompt_signature(self, prompt):
+        pass
+
     # TODO: we should update this to enable a remote model to be loaded
     def load_model(self):
         try:
@@ -85,6 +89,8 @@ class SinglePromptTrainerRunner(ABC):
             optimizer_type = self.optimizer_type
         optimizer = self.initialize_trainer(optimizer_type)
         if optimizer_type == "miprov2":
+            print(f"compiling model (type: {type(self.prompt.infer)}): {self.prompt.infer}")
+            print(f"trainset type: {type(self.trainset)}")
             optimized_model = optimizer.compile(
                 self.prompt.infer,
                 trainset=self.trainset,
