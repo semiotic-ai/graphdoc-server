@@ -74,6 +74,16 @@ class SinglePrompt(ABC):
         """This takes the results from the evaluate_evalset and does any necessary formatting, taking into account the metric type"""
         pass
 
+    @abstractmethod
+    def _compare_metrics(
+        self, base_metrics, optimized_metrics, comparison_value: str = "overall_score"
+    ) -> bool:
+        """Compare the metrics of the base and optimized models
+
+        returns true if the optimized model is better than the base model
+        """
+        pass
+
     def evaluate_evalset(
         self,
         examples: List[dspy.Example],

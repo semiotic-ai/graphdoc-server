@@ -2,7 +2,7 @@
 import logging
 from abc import abstractmethod
 from collections import defaultdict
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List, Literal, Optional
 
 # internal packages
 from .single_prompt import SinglePrompt
@@ -44,10 +44,12 @@ class DocQualityPrompt(SinglePrompt):
         self,
         type: Literal["predict", "chain_of_thought"] = "predict",
         metric_type: Literal["rating", "category"] = "rating",
+        prompt: Optional[dspy.Signature] = None,
     ) -> None:
         # TODO: we should type this better
-        dcs = DocQualitySignature
-        super().__init__(prompt=dcs, type=type, metric_type=metric_type)  # type: ignore
+        if prompt is None:
+            prompt = DocQualitySignature  # type: ignore
+        super().__init__(prompt=prompt, type=type, metric_type=metric_type)  # type: ignore
 
     def _evaluate_rating_metric(
         self, example: dspy.Example, prediction: dspy.Prediction
@@ -120,3 +122,15 @@ class DocQualityPrompt(SinglePrompt):
             }
 
         return formatted_results
+
+    def _compare_metrics(
+        self, base_metrics, optimized_metrics, comparison_value: str = "overall_score"
+    ) -> bool:
+        """Compare the metrics of the base and optimized models
+
+        returns true if the optimized model is better than the base model
+        """
+        if comparison_value == "overall_score":
+            return optimized_metrics["overall_score"] > base_metrics["overall_score"]
+        else:
+            raise ValueError(f"Invalid comparison value: {comparison_value}")
