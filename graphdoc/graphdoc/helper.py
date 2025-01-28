@@ -1,4 +1,5 @@
 # system packages
+import yaml
 from pathlib import Path
 from typing import Union
 
@@ -21,3 +22,7 @@ def check_file_path(file_path: Union[str, Path]) -> None:
         raise ValueError(
             f"The provided path does not resolve to a valid file: {file_path}"
         )
+    
+def load_yaml_config(file_path: Union[str, Path]) -> dict:
+    with open(file_path, "r") as file:
+        return yaml.safe_load(file)
