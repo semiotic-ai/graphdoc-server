@@ -72,7 +72,6 @@ class SinglePromptTrainerRunner(ABC):
         )  # TODO: add metadata related to trainset and evalset
 
     # trainer related methods
-    @abstractmethod
     def initialize_trainer(self, optimizer_type: Optional[str] = None):
         if optimizer_type is None:
             optimizer_type = self.optimizer_type
@@ -114,7 +113,6 @@ class SinglePromptTrainerRunner(ABC):
         # optimized_evaluation = optimized_prompt.evaluate_evalset(self.evalset)
         # return base_evaluation, optimized_evaluation
 
-    @abstractmethod
     def _compare_models(
         self,
         base_evaluation,
