@@ -24,8 +24,10 @@ class SinglePrompt(ABC):
     def __init__(
         self,
         prompt: dspy.Signature,
-        type: Union[Literal["predict", "chain_of_thought"], Callable], # TODO: we should rename this to prompt_type
-        metric_type: str, # TODO: we should rename this to prompt_metric
+        type: Union[
+            Literal["predict", "chain_of_thought"], Callable
+        ],  # TODO: we should rename this to prompt_type
+        metric_type: str,  # TODO: we should rename this to prompt_metric
     ) -> None:
         self.prompt = prompt
         self.type = type
