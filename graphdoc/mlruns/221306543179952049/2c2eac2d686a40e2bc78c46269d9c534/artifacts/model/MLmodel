@@ -1,0 +1,22 @@
+artifact_path: model
+flavors:
+  dspy:
+    code: null
+    model_path: data/model.pkl
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.dspy
+    python_version: 3.13.0
+is_signature_from_type_hint: false
+mlflow_version: 2.20.0
+model_size_bytes: 6868
+model_uuid: bff60986ceae4b3fb238029bcdf270c3
+run_id: 2c2eac2d686a40e2bc78c46269d9c534
+signature:
+  inputs: '[{"type": "string", "name": "database_schema", "required": true}]'
+  outputs: null
+  params: null
+type_hint_from_example: false
+utc_time_created: '2025-01-28 02:54:15.077305'

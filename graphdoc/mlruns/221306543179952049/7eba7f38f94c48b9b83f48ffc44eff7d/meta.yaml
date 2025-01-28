@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/denver/Documents/code/graph/graphdoc/graphdoc/mlruns/221306543179952049/7eba7f38f94c48b9b83f48ffc44eff7d/artifacts
+end_time: 1738033589858
+entry_point_name: ''
+experiment_id: '221306543179952049'
+lifecycle_stage: active
+run_id: 7eba7f38f94c48b9b83f48ffc44eff7d
+run_name: fortunate-bass-189
+run_uuid: 7eba7f38f94c48b9b83f48ffc44eff7d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1738033586714
+status: 3
+tags: []
+user_id: denver
