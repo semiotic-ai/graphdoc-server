@@ -37,15 +37,31 @@ class DocQualityPrompt(SinglePrompt):
     def __init__(
         self,
         type: Literal["predict", "chain_of_thought"] = "predict",
-        metric_type: str = "rating",
+        metric_type: Literal["rating", "category"] = "rating",
     ) -> None:
+        # TODO: we should type this better
         dcs = DocQualitySignature
-        super().__init__(prompt=dcs, type=type, metric_type=metric_type)
-    
+        super().__init__(prompt=dcs, type=type, metric_type=metric_type)  # type: ignore
+
+    def _evaluate_rating_metric(
+        self, example: dspy.Example, prediction: dspy.Prediction
+    ) -> bool:
+        return example.rating == prediction.rating
+
+    def _evaluate_category_metric(
+        self, example: dspy.Example, prediction: dspy.Prediction
+    ) -> bool:
+        return example.category == prediction.category
+
     def evaluate_metric(
         self, example: dspy.Example, prediction: dspy.Prediction, trace=None
-    ) -> None:
-        pass
+    ) -> bool:
+        if self.metric_type == "rating":
+            return self._evaluate_rating_metric(example, prediction)
+        elif self.metric_type == "category":
+            return self._evaluate_category_metric(example, prediction)
+        else:
+            raise ValueError(f"Invalid metric type: {self.metric_type}")
 
     def evaluate(self, example: dspy.Example) -> None:
         """Take in an example, generate the result, and then evaluate the result"""
