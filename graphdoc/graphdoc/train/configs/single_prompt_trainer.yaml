@@ -1,0 +1,21 @@
+language_model: 
+  lm_model_name: openai/gpt-4o # Must be a valid dspy language model
+  lm_api_key: OPENAI_API_KEY # Must be a valid dspy language model API key
+  cache: true # Whether to cache the calls to the language model
+
+data: 
+  hf_api_key: HF_DATASET_KEY # Must be a valid Hugging Face API key (with permission to access graphdoc) # TODO: we may make this public in the future
+  load_from_hf: true # Whether to load the dataset from Hugging Face
+  load_from_local: false # Whether to load the dataset from a local directory
+  load_local_specific_category: false # Whether to load all categories or a specific category (if load_from_local is true)
+  local_specific_category: perfect # The specific category to load from the dataset (if load_from_local is true)
+  local_parse_objects: True # Whether to parse the objects in the dataset (if load_from_local is true)
+
+prompt:
+  type: predict # The type of prompt to use (predict, chain_of_thought)
+  metric_type: rating # The type of metric to use (rating, category)
+
+trainer: 
+  optimizer_type: miprov2 # The type of optimizer to use (miprov2)
+  mlflow_model_name: MLFLOW_MODEL_NAME # The name of the model in MLflow
+  mlflow_experiment_name: MLFLOW_EXPERIMENT_NAME # The name of the experiment in MLflow
