@@ -39,7 +39,18 @@ class GraphDoc:
     # push to the repo
     # return the version number and the commit SHA
 
-    def _get_trainer_class(self, config_path: Union[str, Path]):
+    def _get_single_prompt(self, config_path: Union[str, Path]):
+        config = load_yaml_config(config_path)
+        try:
+            prompt_class = config["prompt"]["class"]
+            prompt_type = config["prompt"]["type"]
+            prompt_metric = config["prompt"]["metric"]
+            prompt = PromptFactory.get_single_prompt(prompt_class, prompt_type, prompt_metric)
+        except Exception as e:
+            raise ValueError(f"Failed to initialize prompt class ({prompt_class}): {e}")
+        return prompt
+
+    def _get_single_trainer(self, config_path: Union[str, Path]):
         config = load_yaml_config(config_path)
         trainer_class = config["trainer"]["trainer_class"]
         trainer = TrainerFactory.get_trainer(trainer_class)  # , **config["trainer"]
