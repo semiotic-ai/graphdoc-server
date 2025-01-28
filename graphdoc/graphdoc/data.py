@@ -13,7 +13,7 @@ from graphql import (
     print_ast,
 )
 import pandas as pd
-from .helper import check_directory_path, check_file_path
+from .loader.helper import check_directory_path, check_file_path
 from .parser import Parser
 
 # external packages

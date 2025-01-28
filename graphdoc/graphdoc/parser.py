@@ -14,7 +14,7 @@ from graphql import (
     parse,
     print_ast,
 )
-from .helper import check_directory_path, check_file_path
+from .loader.helper import check_directory_path, check_file_path
 
 # external packages
 from graphql.language.ast import DocumentNode
