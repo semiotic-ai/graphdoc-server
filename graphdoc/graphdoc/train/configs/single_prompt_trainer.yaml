@@ -14,6 +14,7 @@ data:
 prompt:
   type: predict # The type of prompt to use (predict, chain_of_thought)
   metric_type: rating # The type of metric to use (rating, category)
+  prompt_signature: SinglePrompt # Must be a child of SinglePrompt (we will use an enum to map this)
 
 trainer: 
   optimizer_type: miprov2 # The type of optimizer to use (miprov2)
