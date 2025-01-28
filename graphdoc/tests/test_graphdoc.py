@@ -4,7 +4,7 @@ from pathlib import Path
 
 # internal packages
 from graphdoc import GraphDoc
-from graphdoc import DocQualityTrainer
+from graphdoc import DocQualityTrainer, SinglePrompt
 from graphdoc import load_yaml_config
 
 # external packages
@@ -21,7 +21,19 @@ class TestGraphdoc:
     def test_graphdoc(self, gd: GraphDoc):
         assert isinstance(gd, GraphDoc)
 
-    def test__get_trainer_class(self, gd: GraphDoc):
+    def test__get_single_prompt(self, gd: GraphDoc):
+        config_path = (
+            BASE_DIR
+            / "graphdoc"
+            / "tests"
+            / "assets"
+            / "configs"
+            / "single_prompt_trainer.yaml"
+        )
+        prompt = gd._get_single_prompt(config_path)
+        assert isinstance(prompt, SinglePrompt)
+
+    def test__get_single_trainer(self, gd: GraphDoc):
         config_path = (
             BASE_DIR
             / "graphdoc"
@@ -32,5 +44,5 @@ class TestGraphdoc:
         )
         config = load_yaml_config(config_path)
         assert config["trainer"]["trainer_class"] == "DocQualityTrainer"
-        trainer = gd._get_trainer_class(config_path)
+        trainer = gd._get_single_trainer(config_path)
         assert issubclass(trainer, DocQualityTrainer)
