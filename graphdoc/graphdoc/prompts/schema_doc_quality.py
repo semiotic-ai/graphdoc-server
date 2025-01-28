@@ -63,12 +63,6 @@ class DocQualityPrompt(SinglePrompt):
         else:
             raise ValueError(f"Invalid metric type: {self.metric_type}")
 
-    def evaluate(self, example: dspy.Example) -> None:
-        """Take in an example, generate the result, and then evaluate the result"""
-        # prediction = self.infer(example) # implement this based on the type of prompt
-        # return self.evaluate_metric(example, prediction)
-        pass
-
     def _format_metric(
         self,
         examples: List[dspy.Example],
