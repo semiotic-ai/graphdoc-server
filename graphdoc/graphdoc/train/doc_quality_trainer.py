@@ -73,7 +73,6 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
         if load_model:
             base_model = self.load_model()
             self.prompt = DocQualityPrompt(
-                # prompt=DocQualitySignature,
                 type=self.prompt.type,  # type: ignore
                 metric_type=self.prompt.metric_type,  # type: ignore
             )
