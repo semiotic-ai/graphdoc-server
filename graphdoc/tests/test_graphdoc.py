@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 
 # internal packages
-from graphdoc import GraphDoc
+from graphdoc import GraphDoc, DataHelper
 from graphdoc import DocQualityTrainer, SinglePrompt
 from graphdoc import load_yaml_config
 
@@ -33,7 +33,11 @@ class TestGraphdoc:
         prompt = gd._get_single_prompt(config_path)
         assert isinstance(prompt, SinglePrompt)
 
-    def test__get_single_trainer(self, gd: GraphDoc):
+    def test__get_single_trainer(self, gd: GraphDoc, dh: DataHelper):
+        graphdoc_ds = dh._folder_of_folders_to_dataset()
+        trainset = dh._create_graph_doc_example_trainset(graphdoc_ds)
+        evalset = dh._create_graph_doc_example_trainset(graphdoc_ds)
+
         config_path = (
             BASE_DIR
             / "graphdoc"
@@ -43,6 +47,5 @@ class TestGraphdoc:
             / "single_prompt_trainer.yaml"
         )
         config = load_yaml_config(config_path)
-        assert config["trainer"]["trainer_class"] == "DocQualityTrainer"
-        trainer = gd._get_single_trainer(config_path)
-        assert issubclass(trainer, DocQualityTrainer)
+        trainer = gd._get_single_trainer(config_path, trainset, evalset)
+        assert isinstance(trainer, DocQualityTrainer)
