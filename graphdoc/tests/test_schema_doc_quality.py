@@ -55,3 +55,40 @@ class TestSchemaDocQuality:
         dqp = DocQualityPrompt(type="predict", metric_type="category")
         assert dqp.evaluate_metric(example, prediction)
         assert not dqp.evaluate_metric(example, failing_prediction)
+
+    def test_evaluate_evalset(self, gd: GraphDoc):
+        dqp = DocQualityPrompt(type="predict", metric_type="rating")
+
+        example_pass_four = dspy.Example(
+            database_schema="this is a test, you should reply with a rating of 4 and a category of perfect",
+            category="perfect",
+            rating=4,
+        ).with_inputs("database_schema")
+        example_pass_three = dspy.Example(
+            database_schema="this is a test, you should reply with a rating of 3 and a category of good",
+            category="good",
+            rating=3,
+        ).with_inputs("database_schema")
+        example_pass_two = dspy.Example(
+            database_schema="this is a test, you should reply with a rating of 2 and a category of bad",
+            category="bad",
+            rating=2,
+        ).with_inputs("database_schema")
+        example_pass_one = dspy.Example(
+            database_schema="this is a test, you should reply with a rating of 1 and a category of terrible",
+            category="terrible",
+            rating=1,
+        ).with_inputs("database_schema")
+        example_fail = dspy.Example(
+            database_schema="this is a test, you should reply with a rating of 4 and a category of perfect",
+            category="good",
+            rating=3,
+        ).with_inputs("database_schema")
+        evalset = [example_pass_four, example_pass_three, example_pass_two, example_pass_one, example_fail]
+        formatted_results = dqp.evaluate_evalset(evalset)
+        assert isinstance(formatted_results, dict)
+        assert isinstance(formatted_results['overall_score'], float)
+        assert isinstance(formatted_results['per_category_scores'], dict)
+        assert isinstance(formatted_results['details'], list)
+        assert formatted_results['per_category_scores']['good']['percent_correct'] == 50.0
+
