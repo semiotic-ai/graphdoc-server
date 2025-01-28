@@ -1,6 +1,0 @@
-artifact_location: file:///Users/denver/Documents/code/graph/graphdoc/graphdoc/mlruns/743592986827386056
-creation_time: 1737948766975
-experiment_id: '743592986827386056'
-last_update_time: 1737948766975
-lifecycle_stage: active
-name: eval_model_training

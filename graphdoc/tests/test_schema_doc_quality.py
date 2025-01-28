@@ -84,11 +84,18 @@ class TestSchemaDocQuality:
             category="good",
             rating=3,
         ).with_inputs("database_schema")
-        evalset = [example_pass_four, example_pass_three, example_pass_two, example_pass_one, example_fail]
+        evalset = [
+            example_pass_four,
+            example_pass_three,
+            example_pass_two,
+            example_pass_one,
+            example_fail,
+        ]
         formatted_results = dqp.evaluate_evalset(evalset)
         assert isinstance(formatted_results, dict)
-        assert isinstance(formatted_results['overall_score'], float)
-        assert isinstance(formatted_results['per_category_scores'], dict)
-        assert isinstance(formatted_results['details'], list)
-        assert formatted_results['per_category_scores']['good']['percent_correct'] == 50.0
-
+        assert isinstance(formatted_results["overall_score"], float)
+        assert isinstance(formatted_results["per_category_scores"], dict)
+        assert isinstance(formatted_results["details"], list)
+        assert (
+            formatted_results["per_category_scores"]["good"]["percent_correct"] == 50.0
+        )

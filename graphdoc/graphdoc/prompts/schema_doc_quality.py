@@ -2,10 +2,10 @@
 import logging
 from abc import abstractmethod
 from collections import defaultdict
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List, Literal, Optional
 
 # internal packages
-from .prompt import SinglePrompt
+from .single_prompt import SinglePrompt
 
 # external packages
 import dspy
@@ -13,6 +13,7 @@ import dspy
 # logging
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
+
 
 ###################
 # DSPy Signatures #
@@ -43,10 +44,12 @@ class DocQualityPrompt(SinglePrompt):
         self,
         type: Literal["predict", "chain_of_thought"] = "predict",
         metric_type: Literal["rating", "category"] = "rating",
+        prompt: Optional[dspy.Signature] = None,
     ) -> None:
         # TODO: we should type this better
-        dcs = DocQualitySignature
-        super().__init__(prompt=dcs, type=type, metric_type=metric_type)  # type: ignore
+        if prompt is None:
+            prompt = DocQualitySignature  # type: ignore
+        super().__init__(prompt=prompt, type=type, metric_type=metric_type)  # type: ignore
 
     def _evaluate_rating_metric(
         self, example: dspy.Example, prediction: dspy.Prediction
@@ -76,44 +79,58 @@ class DocQualityPrompt(SinglePrompt):
         scores: List,
     ) -> Dict[str, Any]:
         """This takes the results from the evaluate_evalset and does any necessary formatting"""
-        
+
         formatted_results = {
-            'overall_score': overall_score,
-            'per_category_scores': {},
-            'details': []
+            "overall_score": overall_score,
+            "per_category_scores": {},
+            "details": [],
         }
-        category_stats = defaultdict(lambda: {'correct': 0, 'total': 0})
+        category_stats = defaultdict(lambda: {"correct": 0, "total": 0})
 
         for result, score in zip(results, scores):
             example, prediction, is_correct = result
             example_data = {key: value for key, value in example.items()}
-            
-            category = example_data.get('category', 'unknown')
-            expected_rating = example_data.get('rating', None)
-            
-            predicted_category = getattr(prediction, 'category', 'unknown')
-            predicted_rating = getattr(prediction, 'rating', None)
 
-            category_stats[category]['total'] += 1
+            category = example_data.get("category", "unknown")
+            expected_rating = example_data.get("rating", None)
+
+            predicted_category = getattr(prediction, "category", "unknown")
+            predicted_rating = getattr(prediction, "rating", None)
+
+            category_stats[category]["total"] += 1
             if is_correct:
-                category_stats[category]['correct'] += 1
+                category_stats[category]["correct"] += 1
 
             detail_entry = {
-                **example_data,  
-                'expected_category': category,
-                'expected_rating': expected_rating,
-                'predicted_category': predicted_category,
-                'predicted_rating': predicted_rating,
-                'is_correct': is_correct
+                **example_data,
+                "expected_category": category,
+                "expected_rating": expected_rating,
+                "predicted_category": predicted_category,
+                "predicted_rating": predicted_rating,
+                "is_correct": is_correct,
             }
-            formatted_results['details'].append(detail_entry)
+            formatted_results["details"].append(detail_entry)
 
         for category, stats in category_stats.items():
-            percent_correct = (stats['correct'] / stats['total']) * 100 if stats['total'] > 0 else 0
-            formatted_results['per_category_scores'][category] = {
-                'expected_rating': None,  
-                'predicted_rating': None, 
-                'percent_correct': percent_correct
+            percent_correct = (
+                (stats["correct"] / stats["total"]) * 100 if stats["total"] > 0 else 0
+            )
+            formatted_results["per_category_scores"][category] = {
+                "expected_rating": None,
+                "predicted_rating": None,
+                "percent_correct": percent_correct,
             }
 
         return formatted_results
+
+    def _compare_metrics(
+        self, base_metrics, optimized_metrics, comparison_value: str = "overall_score"
+    ) -> bool:
+        """Compare the metrics of the base and optimized models
+
+        returns true if the optimized model is better than the base model
+        """
+        if comparison_value == "overall_score":
+            return optimized_metrics["overall_score"] > base_metrics["overall_score"]
+        else:
+            raise ValueError(f"Invalid comparison value: {comparison_value}")
