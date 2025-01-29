@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "mlflow-manager"
+version = "0.1.0"
+description = ""
+authors = ["denver <denver@semiotic.ai>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.13.0"
+mlflow = "2.20.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
