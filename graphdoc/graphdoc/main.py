@@ -8,6 +8,7 @@ from .evaluate import DocQuality
 from .loader.helper import load_yaml_config, setup_logging
 from .train import TrainerFactory
 from .prompts import PromptFactory
+from .data import DataHelper
 
 # external packages
 import dspy
@@ -15,16 +16,20 @@ import dspy
 # logging
 log = logging.getLogger(__name__)
 
+
 class GraphDoc:
     def __init__(
         self,
         model: str,
         api_key: str,
+        hf_api_key: str,
         cache: bool = True,
         log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO",
     ) -> None:
         setup_logging(log_level)
-        log.info(f"GraphDoc initialized with model: {model}, cache: {cache}, log_level: {log_level}")
+        log.info(
+            f"GraphDoc initialized with model: {model}, cache: {cache}, log_level: {log_level}"
+        )
 
         # initialize base dspy config
         self.lm = dspy.LM(model=model, api_key=api_key, cache=cache)
@@ -32,6 +37,9 @@ class GraphDoc:
 
         # initialize modules
         self.doc_eval = dspy.Predict(DocQuality)
+
+        # initialize data helper
+        self.dh = DataHelper(hf_api_key=hf_api_key)
 
     ############
     # TRAINING #

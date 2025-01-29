@@ -1,6 +1,6 @@
 # system packages
 import logging
-from typing import List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from abc import ABC, abstractmethod
 
 # internal packages
@@ -110,9 +110,11 @@ class SinglePromptTrainerRunner(ABC):
     @abstractmethod
     def _log_evaluation_metrics(self, base_evaluation, optimized_evaluation):
         pass
-    
+
     @abstractmethod
-    def evaluate_training(self, base_model, optimized_model) -> Tuple[float, float]:
+    def evaluate_training(
+        self, base_model, optimized_model
+    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         pass
 
     def _compare_models(

@@ -1,7 +1,7 @@
 # system packages
 import io
 import logging
-from typing import List, Tuple
+from typing import Any, Dict, List, Tuple
 
 # internal packages
 from .single_prompt_trainer import SinglePromptTrainerRunner
@@ -58,14 +58,19 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
         base_evaluation_overall_score = base_evaluation["overall_score"]
         optimized_evaluation_overall_score = optimized_evaluation["overall_score"]
 
-        mlflow.log_metrics({
-            "base_evaluation_overall_score": base_evaluation_overall_score,
-            "optimized_evaluation_overall_score": optimized_evaluation_overall_score,
-        })
+        mlflow.log_metrics(
+            {
+                "base_evaluation_overall_score": base_evaluation_overall_score,
+                "optimized_evaluation_overall_score": optimized_evaluation_overall_score,
+            }
+        )
 
         metrics_data = {
             "Evaluation Type": ["Base Evaluation", "Optimized Evaluation"],
-            "Overall Score": [base_evaluation_overall_score, optimized_evaluation_overall_score],
+            "Overall Score": [
+                base_evaluation_overall_score,
+                optimized_evaluation_overall_score,
+            ],
         }
 
         for key, value in base_evaluation["per_category_scores"].items():
@@ -85,9 +90,11 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
         df = pd.DataFrame(metrics_data)
         csv_buffer = io.StringIO()
         df.to_csv(csv_buffer, index=False)
-        mlflow.log_text(csv_buffer.getvalue(), 'evaluation_comparison.csv')
+        mlflow.log_text(csv_buffer.getvalue(), "evaluation_comparison.csv")
 
-    def evaluate_training(self, base_model, optimized_model) -> Tuple[float, float]:
+    def evaluate_training(
+        self, base_model, optimized_model
+    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         print(f"eval training base_model (type: {type(base_model)}): {base_model}")
         print(
             f"eval training optimized_model (type: {type(optimized_model)}): {optimized_model}"

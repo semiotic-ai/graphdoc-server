@@ -47,11 +47,13 @@ def load_yaml_config(file_path: Union[str, Path], use_env: bool = True) -> dict:
     with open(_file_path, "r") as file:
         return yaml.load(file, Loader=SafeLoader)
 
-def setup_logging(log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], log_file_path: Optional[str] = 'logs/app.log'):
+
+def setup_logging(
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+    log_file_path: Optional[str] = "logs/app.log",
+):
     logging.basicConfig(
         level=log_level,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.StreamHandler()
-        ]
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.StreamHandler()],
     )
