@@ -12,7 +12,7 @@ import mlflow
 from mlflow.models import ModelSignature
 
 # logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
@@ -107,6 +107,10 @@ class SinglePromptTrainerRunner(ABC):
             )
             return optimized_model
 
+    @abstractmethod
+    def _log_evaluation_metrics(self, base_evaluation, optimized_evaluation):
+        pass
+    
     @abstractmethod
     def evaluate_training(self, base_model, optimized_model) -> Tuple[float, float]:
         pass

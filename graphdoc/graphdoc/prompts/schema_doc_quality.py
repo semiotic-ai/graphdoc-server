@@ -11,7 +11,7 @@ from .single_prompt import SinglePrompt
 import dspy
 
 # logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
@@ -102,7 +102,7 @@ class DocQualityPrompt(SinglePrompt):
                 category_stats[category]["correct"] += 1
 
             detail_entry = {
-                **example_data,
+                # **example_data,
                 "expected_category": category,
                 "expected_rating": expected_rating,
                 "predicted_category": predicted_category,

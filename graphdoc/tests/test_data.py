@@ -15,7 +15,7 @@ from dspy import LM, Predict, Example
 from datasets import Features, Dataset
 
 # logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 

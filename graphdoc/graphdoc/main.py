@@ -1,16 +1,19 @@
 # system packages
 
 # internal packages
+import logging
 from pathlib import Path
-from typing import List, Union
+from typing import List, Literal, Optional, Union
 from .evaluate import DocQuality
-from .loader.helper import load_yaml_config
+from .loader.helper import load_yaml_config, setup_logging
 from .train import TrainerFactory
 from .prompts import PromptFactory
 
 # external packages
 import dspy
 
+# logging
+log = logging.getLogger(__name__)
 
 class GraphDoc:
     def __init__(
@@ -18,7 +21,10 @@ class GraphDoc:
         model: str,
         api_key: str,
         cache: bool = True,
+        log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO",
     ) -> None:
+        setup_logging(log_level)
+        log.info(f"GraphDoc initialized with model: {model}, cache: {cache}, log_level: {log_level}")
 
         # initialize base dspy config
         self.lm = dspy.LM(model=model, api_key=api_key, cache=cache)

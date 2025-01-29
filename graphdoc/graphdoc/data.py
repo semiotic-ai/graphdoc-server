@@ -35,7 +35,7 @@ from datasets_sql import query
 from dspy import Example
 
 # configure logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 

@@ -20,7 +20,7 @@ from .loader.helper import check_directory_path, check_file_path
 from graphql.language.ast import DocumentNode
 
 # configure logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 

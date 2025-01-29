@@ -17,7 +17,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 HF_DATASET_KEY = os.getenv("HF_DATASET_KEY")
 
 # logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 if __name__ == "__main__":

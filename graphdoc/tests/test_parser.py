@@ -10,7 +10,7 @@ from graphql import DocumentNode
 import pytest
 
 # logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 # Define the base directory (project root)

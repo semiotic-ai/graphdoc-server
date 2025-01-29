@@ -10,7 +10,7 @@ from typing import Any, Callable, Dict, List, Literal, Tuple, Union, cast
 import dspy
 
 # logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 # config variables
@@ -92,7 +92,7 @@ class SinglePrompt(ABC):
         num_threads: int = 1,
         display_progress: bool = True,
         display_table: bool = True,
-    ) -> float:
+    ) -> Dict[str, Any]:
         """Take in a list of examples and evaluate the results"""
         evaluator = dspy.Evaluate(
             devset=examples,

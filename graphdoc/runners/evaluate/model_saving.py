@@ -24,7 +24,7 @@ CACHE = True
 FIRST_RUN = False
 
 # logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 # MLFlow

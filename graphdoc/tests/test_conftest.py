@@ -14,7 +14,7 @@ from dspy import LM, Predict, Example
 from dotenv import load_dotenv
 
 # logging
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 

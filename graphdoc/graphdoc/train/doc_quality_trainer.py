@@ -13,7 +13,7 @@ from mlflow.models import infer_signature
 from mlflow.models import ModelSignature
 
 # logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
@@ -51,6 +51,9 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
             return prompt.signature
         else:
             raise ValueError(f"Invalid prompt type: {type(prompt)}")
+        
+    def _log_evaluation_metrics(self, base_evaluation, optimized_evaluation):
+        pass 
 
     def evaluate_training(self, base_model, optimized_model) -> Tuple[float, float]:
         print(f"eval training base_model (type: {type(base_model)}): {base_model}")
@@ -69,6 +72,10 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
         )
         base_evaluation = base_prompt.evaluate_evalset(self.evalset)
         optimized_evaluation = optimized_prompt.evaluate_evalset(self.evalset)
+
+        log.info(f"base_evaluation: {base_evaluation}")
+        log.info(f"optimized_evaluation: {optimized_evaluation}")
+
         return base_evaluation, optimized_evaluation
 
     def run_training(self, load_model: bool = True, save_model: bool = True):

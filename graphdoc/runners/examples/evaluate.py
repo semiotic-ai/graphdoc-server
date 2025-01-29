@@ -26,7 +26,7 @@ MODEL = "openai/gpt-4o-mini"
 CACHE = False
 
 # logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 mlflow.dspy.autolog()
 mlflow.set_experiment("DSPy_1")  # failing
