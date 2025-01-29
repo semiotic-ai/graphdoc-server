@@ -45,13 +45,33 @@ class GraphDoc:
     # TRAINING #
     ############
 
-    # def update_graphdoc_dataset():
-    # load the dataset from the repo files
-    # optionally, let another location be specified to pull data from
-    # drop duplicates
-    # require a version, dataset card, and commit message
-    # push to the repo
-    # return the version number and the commit SHA
+    def update_graphdoc_dataset(self, local_file: bool = True, repo_card: bool = False):
+        if not local_file:
+            log.warning("Only local file updates are currently supported")
+        else: 
+            hf_ds = self.dh._load_from_hf() # def _load_from_hf(self, repo_id: str = "semiotic/graphdoc_schemas", token: Optional[str] = None)
+            local_ds = self.dh._folder_of_folders_to_dataset() # def _folder_of_folders_to_dataset(self, folder_path: Optional[dict] = None, parse_objects: bool = True)
+            ds = self.dh._add_to_graph_doc_dataset(hf_ds["train"], local_ds) # def _add_to_graph_doc_dataset(self, dataset: Dataset, data: Union[Dataset, dict]
+            ds = self.dh._drop_dataset_duplicates(ds) # def _drop_dataset_duplicates(self, dataset: Dataset) -> Dataset:
+            
+            # check that new data was actually added
+            if len(hf_ds) != len(ds):
+                try: 
+                    self.dh._upload_to_hf(ds) # def _upload_to_hf(self, dataset: Dataset, repo_id: str = "semiotic/graphdoc_schemas", token: Optional[str] = None,
+                    log.info(f"Dataset uploaded to Hugging Face (length: {len(ds)})")
+                except Exception as e:
+                    log.error(f"Failed to upload dataset to Hugging Face: {e}")
+                    raise ValueError(f"Failed to upload dataset to Hugging Face: {e}")
+            else: 
+                log.info(f"No new data to upload (lenght: {len(ds)})")
+
+            if repo_card: # TODO: fix this 
+                try:
+                    self.dh._create_and_upload_repo_card() # def _create_and_upload_repo_card(self, repo_id: str = "semiotic/graphdoc_schemas", repo_card_path: Optional[str] = None,
+                    log.info("Repo card created and uploaded")
+                except Exception as e:
+                    log.error(f"Failed to create and upload repo card: {e}")
+                    raise ValueError(f"Failed to create and upload repo card: {e}")
 
     def _get_single_prompt(self, config_path: Union[str, Path]):
         config = load_yaml_config(config_path)
