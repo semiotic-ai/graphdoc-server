@@ -62,6 +62,7 @@ class GraphDoc:
         try:
             trainer_class = config["trainer"]["class"]
             optimizer_type = config["trainer"]["optimizer_type"]
+            mlflow_tracking_uri = config["trainer"]["mlflow_tracking_uri"]
             mlflow_model_name = config["trainer"]["mlflow_model_name"]
             mlflow_experiment_name = config["trainer"]["mlflow_experiment_name"]
             prompt = self._get_single_prompt(config_path)
@@ -69,6 +70,7 @@ class GraphDoc:
                 trainer_class=trainer_class,
                 prompt=prompt,
                 optimizer_type=optimizer_type,
+                mlflow_tracking_uri=mlflow_tracking_uri,
                 mlflow_model_name=mlflow_model_name,
                 mlflow_experiment_name=mlflow_experiment_name,
                 trainset=trainset,

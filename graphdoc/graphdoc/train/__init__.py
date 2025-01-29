@@ -16,6 +16,7 @@ class TrainerFactory:
         trainer_class: str,
         prompt: SinglePrompt,
         optimizer_type: str,
+        mlflow_tracking_uri: str,
         mlflow_model_name: str,
         mlflow_experiment_name: str,
         trainset: List[dspy.Example],
@@ -34,6 +35,7 @@ class TrainerFactory:
             return trainer_classes[trainer_class](
                 prompt=prompt,  # type: ignore # TODO: we should have better type checking here
                 optimizer_type=optimizer_type,
+                mlflow_tracking_uri=mlflow_tracking_uri,
                 mlflow_model_name=mlflow_model_name,
                 mlflow_experiment_name=mlflow_experiment_name,
                 trainset=trainset,

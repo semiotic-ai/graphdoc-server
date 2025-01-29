@@ -24,18 +24,23 @@ class SinglePromptTrainerRunner(ABC):
         optimizer_type: str,
         mlflow_model_name: str,
         mlflow_experiment_name: str,
+        mlflow_tracking_uri: str,
         trainset: List[dspy.Example],
         evalset: List[dspy.Example],
     ):
         self.prompt = prompt
         self.optimizer_type = optimizer_type
+        self.mlflow_tracking_uri = mlflow_tracking_uri
         self.mlflow_model_name = mlflow_model_name
         self.mlflow_experiment_name = mlflow_experiment_name
         self.trainset = trainset
         self.evalset = evalset
 
         # mlflow related
+        log.info(f"Setting MLFlow tracking URI to {self.mlflow_tracking_uri}")
+        mlflow.set_tracking_uri(self.mlflow_tracking_uri)
         mlflow.dspy.autolog()
+        log.info(f"Setting MLFlow experiment to {self.mlflow_experiment_name}")
         mlflow.set_experiment(self.mlflow_experiment_name)
         self.mlflow_client = mlflow.MlflowClient()
 

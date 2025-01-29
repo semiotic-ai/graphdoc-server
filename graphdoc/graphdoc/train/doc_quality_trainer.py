@@ -24,16 +24,18 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
         optimizer_type: str,
         mlflow_model_name: str,
         mlflow_experiment_name: str,
+        mlflow_tracking_uri: str,
         trainset: List[dspy.Example],
         evalset: List[dspy.Example],
     ):
         super().__init__(
-            prompt,
-            optimizer_type,
-            mlflow_model_name,
-            mlflow_experiment_name,
-            trainset,
-            evalset,
+            prompt=prompt,
+            optimizer_type=optimizer_type,
+            mlflow_model_name=mlflow_model_name,
+            mlflow_experiment_name=mlflow_experiment_name,
+            mlflow_tracking_uri=mlflow_tracking_uri,
+            trainset=trainset,
+            evalset=evalset,
         )
 
     def get_signature(self) -> ModelSignature:
