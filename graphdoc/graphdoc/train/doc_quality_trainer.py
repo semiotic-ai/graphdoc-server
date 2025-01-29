@@ -1,4 +1,5 @@
 # system packages
+import io
 import logging
 from typing import List, Tuple
 
@@ -9,6 +10,7 @@ from ..prompts import DocQualityPrompt
 # external packages
 import dspy
 import mlflow
+import pandas as pd
 from mlflow.models import infer_signature
 from mlflow.models import ModelSignature
 
@@ -51,9 +53,39 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
             return prompt.signature
         else:
             raise ValueError(f"Invalid prompt type: {type(prompt)}")
-        
-    def _log_evaluation_metrics(self, base_evaluation, optimized_evaluation):
-        pass 
+
+    def _log_evaluation_metrics(self, base_evaluation, optimized_evaluation) -> None:
+        base_evaluation_overall_score = base_evaluation["overall_score"]
+        optimized_evaluation_overall_score = optimized_evaluation["overall_score"]
+
+        mlflow.log_metrics({
+            "base_evaluation_overall_score": base_evaluation_overall_score,
+            "optimized_evaluation_overall_score": optimized_evaluation_overall_score,
+        })
+
+        metrics_data = {
+            "Evaluation Type": ["Base Evaluation", "Optimized Evaluation"],
+            "Overall Score": [base_evaluation_overall_score, optimized_evaluation_overall_score],
+        }
+
+        for key, value in base_evaluation["per_category_scores"].items():
+            metrics_data[f"{key} Percent Correct"] = [
+                value["percent_correct"],
+                optimized_evaluation["per_category_scores"][key]["percent_correct"],
+            ]
+            metrics_data[f"{key} Total"] = [
+                value["total"],
+                optimized_evaluation["per_category_scores"][key]["total"],
+            ]
+            metrics_data[f"{key} Correct"] = [
+                value["correct"],
+                optimized_evaluation["per_category_scores"][key]["correct"],
+            ]
+
+        df = pd.DataFrame(metrics_data)
+        csv_buffer = io.StringIO()
+        df.to_csv(csv_buffer, index=False)
+        mlflow.log_text(csv_buffer.getvalue(), 'evaluation_comparison.csv')
 
     def evaluate_training(self, base_model, optimized_model) -> Tuple[float, float]:
         print(f"eval training base_model (type: {type(base_model)}): {base_model}")
@@ -75,7 +107,7 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
 
         log.info(f"base_evaluation: {base_evaluation}")
         log.info(f"optimized_evaluation: {optimized_evaluation}")
-
+        self._log_evaluation_metrics(base_evaluation, optimized_evaluation)
         return base_evaluation, optimized_evaluation
 
     def run_training(self, load_model: bool = True, save_model: bool = True):
