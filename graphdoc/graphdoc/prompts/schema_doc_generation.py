@@ -46,7 +46,7 @@ class DocGeneratorPrompt(SinglePrompt):
     def __init__(
         self,
         metric_type: DocQualityPrompt,
-        type: Literal["predict", "chain_of_thought"] = "predict",
+        type: Literal["predict", "chain_of_thought"] = "chain_of_thought",
         prompt: Optional[dspy.Signature] = None,
     ) -> None:
         if prompt is None:
