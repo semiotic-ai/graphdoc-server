@@ -21,7 +21,9 @@ HF_DATASET_KEY = os.getenv("HF_DATASET_KEY")
 log = logging.getLogger(__name__)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Upload local data to the Hugging Face Hub.")
+    parser = argparse.ArgumentParser(
+        description="Upload local data to the Hugging Face Hub."
+    )
     parser.add_argument(
         "--repo-card",
         type=bool,
