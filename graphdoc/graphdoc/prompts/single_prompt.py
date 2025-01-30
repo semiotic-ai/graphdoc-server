@@ -27,7 +27,7 @@ class SinglePrompt(ABC):
         type: Union[
             Literal["predict", "chain_of_thought"], Callable
         ],  # TODO: we should rename this to prompt_type
-        metric_type: str,  # TODO: we should rename this to prompt_metric
+        metric_type: Any,  # TODO: we should rename this to prompt_metric
     ) -> None:
         self.prompt = prompt
         self.type = type
