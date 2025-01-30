@@ -60,6 +60,7 @@ class SinglePromptTrainerRunner(ABC):
                 self.mlflow_model_name
             )
             loaded_model = mlflow.dspy.load_model(latest_version[0].source)
+            log.info(f"Loaded model from MLFlow: {latest_version[0].source}")
             return loaded_model
         except Exception as e:
             print(f"No model found in MLFlow, creating a new one")

@@ -119,6 +119,7 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
 
     def run_training(self, load_model: bool = True, save_model: bool = True):
         if load_model:
+            log.info("Loading model from mlflow")
             base_model = self.load_model()
             self.prompt = DocQualityPrompt(
                 type=self.prompt.type,  # type: ignore
