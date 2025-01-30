@@ -64,7 +64,7 @@ train_single_prompt_quality_train_command() {
 
 # data scripts
 local_data_update_command() {
-    poetry run python runners/local_data_update.py --repo-card False
+    poetry run python runners/data/local_data_update.py --repo-card False
 }
 
 show_help() {
