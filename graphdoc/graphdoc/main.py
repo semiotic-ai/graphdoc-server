@@ -1,9 +1,9 @@
 # system packages
-
-# internal packages
 import logging
 from pathlib import Path
 from typing import List, Literal, Optional, Union
+
+# internal packages
 from .evaluate import DocQuality
 from .loader.helper import load_yaml_config, setup_logging
 from .train import TrainerFactory
@@ -12,6 +12,7 @@ from .data import DataHelper
 
 # external packages
 import dspy
+from datasets import Dataset, IterableDataset
 
 # logging
 log = logging.getLogger(__name__)
@@ -44,34 +45,71 @@ class GraphDoc:
     ############
     # TRAINING #
     ############
+    def update_graphdoc_dataset(
+        self, local_file: bool = True, repo_card: bool = False
+    ) -> None:
+        """
+        Updates the GraphDoc dataset either from a local file or from Hugging Face.
 
-    def update_graphdoc_dataset(self, local_file: bool = True, repo_card: bool = False):
+        Args:
+            local_file (bool): If True, updates from a local file. Defaults to True.
+            repo_card (bool): If True, creates and uploads a repo card. Defaults to False.
+        """
         if not local_file:
             log.warning("Only local file updates are currently supported")
-        else: 
-            hf_ds = self.dh._load_from_hf() # def _load_from_hf(self, repo_id: str = "semiotic/graphdoc_schemas", token: Optional[str] = None)
-            local_ds = self.dh._folder_of_folders_to_dataset() # def _folder_of_folders_to_dataset(self, folder_path: Optional[dict] = None, parse_objects: bool = True)
-            ds = self.dh._add_to_graph_doc_dataset(hf_ds["train"], local_ds) # def _add_to_graph_doc_dataset(self, dataset: Dataset, data: Union[Dataset, dict]
-            ds = self.dh._drop_dataset_duplicates(ds) # def _drop_dataset_duplicates(self, dataset: Dataset) -> Dataset:
-            
-            # check that new data was actually added
-            if len(hf_ds) != len(ds):
-                try: 
-                    self.dh._upload_to_hf(ds) # def _upload_to_hf(self, dataset: Dataset, repo_id: str = "semiotic/graphdoc_schemas", token: Optional[str] = None,
+            return
+
+        try:
+            hf_ds = self.dh._load_from_hf()
+            if hf_ds is None:
+                log.error("Failed to load dataset from Hugging Face")
+                return
+
+            local_ds = self.dh._folder_of_folders_to_dataset()
+            if local_ds is None:
+                log.error("Failed to load dataset from local folder")
+                return
+
+            if not isinstance(hf_ds, dict) or "train" not in hf_ds:
+                log.error("Invalid dataset format from Hugging Face")
+                return
+
+            train_dataset = hf_ds["train"]
+            if not isinstance(train_dataset, Dataset):
+                log.error("Invalid dataset type from Hugging Face")
+                return
+
+            ds = self.dh._add_to_graph_doc_dataset(train_dataset, local_ds)
+            if ds is None:
+                log.error("Failed to add data to GraphDoc dataset")
+                return
+
+            ds = self.dh._drop_dataset_duplicates(ds)
+            if ds is None:
+                log.error("Failed to drop duplicates from dataset")
+                return
+
+            if len(train_dataset) != len(ds):
+                try:
+                    self.dh._upload_to_hf(ds)
                     log.info(f"Dataset uploaded to Hugging Face (length: {len(ds)})")
                 except Exception as e:
                     log.error(f"Failed to upload dataset to Hugging Face: {e}")
                     raise ValueError(f"Failed to upload dataset to Hugging Face: {e}")
-            else: 
-                log.info(f"No new data to upload (lenght: {len(ds)})")
+            else:
+                log.info(f"No new data to upload (length: {len(ds)})")
 
-            if repo_card: # TODO: fix this 
+            if repo_card:
                 try:
-                    self.dh._create_and_upload_repo_card() # def _create_and_upload_repo_card(self, repo_id: str = "semiotic/graphdoc_schemas", repo_card_path: Optional[str] = None,
+                    self.dh._create_and_upload_repo_card()
                     log.info("Repo card created and uploaded")
                 except Exception as e:
                     log.error(f"Failed to create and upload repo card: {e}")
                     raise ValueError(f"Failed to create and upload repo card: {e}")
+
+        except Exception as e:
+            log.error(f"An unexpected error occurred: {e}")
+            raise
 
     def _get_single_prompt(self, config_path: Union[str, Path]):
         config = load_yaml_config(config_path)

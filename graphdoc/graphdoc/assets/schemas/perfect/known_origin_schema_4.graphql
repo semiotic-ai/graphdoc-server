@@ -181,16 +181,11 @@ type ActivityEvent @entity(immutable: true) {
 ## Free-text schemas ##
 #######################
 
-" Full-text search schema for searching through the listed tokens "
 type _Schema_
 @fulltext(
-    " Full-text search schema for searching through the listed tokens "
     name: "listedTokenSearch",
-    " The language of the search. Type: String! "
     language: en
-    " The algorithm used for the search. Type: String! "
     algorithm: rank,
-    " The entities to include in the search. Fields include: metadataName, metadataArtist, metadataArtistAccount, metadataTagString, primaryAssetShortType, primaryAssetActualType. Type: [Entity!]! "
     include: [
         {
             entity: "ListedToken",
@@ -206,13 +201,9 @@ type _Schema_
     ]
 )
 @fulltext(
-    " Full-text search schema for searching through the listed editions "
     name: "editionSearch",
-    " The language of the search. Type: String! "
     language: en
-    " The algorithm used for the search. Type: String! "
     algorithm: rank,
-    " The entities to include in the search. Fields include: metadataName, metadataArtist, metadataArtistAccount, metadataTagString, metadataFormat, metadataTheme, primaryAssetShortType, primaryAssetActualType. Type: [Entity!]! "
     include: [
         {
             entity: "Edition",
