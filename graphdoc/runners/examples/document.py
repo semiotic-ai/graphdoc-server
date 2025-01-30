@@ -23,7 +23,7 @@ MODEL = "openai/gpt-4o"
 CACHE = False
 
 # logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 if __name__ == "__main__":

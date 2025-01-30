@@ -8,6 +8,7 @@ from pathlib import Path
 from graphql import (
     DocumentNode,
     EnumValueDefinitionNode,
+    EnumTypeDefinitionNode,
     Node,
     ObjectTypeDefinitionNode,
     print_ast,
@@ -34,7 +35,7 @@ from datasets_sql import query
 from dspy import Example
 
 # configure logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
@@ -205,8 +206,10 @@ class DataHelper:
             return "full schema"
         elif isinstance(node, ObjectTypeDefinitionNode):
             return "table schema"
-        elif isinstance(node, EnumValueDefinitionNode):
+        elif isinstance(node, EnumTypeDefinitionNode):
             return "enum schema"
+        elif isinstance(node, EnumValueDefinitionNode):
+            return "enum value"
         else:
             return "unknown schema"
 
@@ -233,12 +236,15 @@ class DataHelper:
         tables = {}
         for definition in schema.schema_ast.definitions:
             if isinstance(definition, ObjectTypeDefinitionNode):
+                log.debug(f"found table schema")
                 key = f"{schema.key}_{definition.name.value}"
                 schema_type = self._check_node_type(definition)
-            elif isinstance(definition, EnumValueDefinitionNode):
+            elif isinstance(definition, EnumTypeDefinitionNode):
+                log.debug(f"found enum schema")
                 key = f"{schema.key}_{definition.name.value}"
                 schema_type = self._check_node_type(definition)
             else:
+                log.debug(f"skipping schema of type: {type(definition)}")
                 continue
             object_schema = SchemaObject.from_dict(
                 {

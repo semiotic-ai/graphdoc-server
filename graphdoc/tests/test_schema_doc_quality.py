@@ -9,7 +9,7 @@ from graphdoc import DataHelper, GraphDoc
 import dspy
 
 # logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 

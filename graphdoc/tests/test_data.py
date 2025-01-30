@@ -15,7 +15,7 @@ from dspy import LM, Predict, Example
 from datasets import Features, Dataset
 
 # logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
@@ -113,10 +113,11 @@ class TestDataHelper:
             assert isinstance(objects, dict)
             counter = 0
             for obj in objects.values():
+                log.debug(f"obj type ({type(obj)}): {obj.schema_type}")
                 assert isinstance(obj, SchemaObject)
                 counter += 1
             # TODO: make this a static value by deriving from a knowmn schema directory
-            assert counter == 6
+            assert counter == 9
         else:
             log.warning("No schemas found in the schema directory")
             assert False
@@ -135,19 +136,19 @@ class TestDataHelper:
             dataset = dh._schema_objects_to_dataset(schemas)
             assert isinstance(dataset, Dataset)
             # TODO: make this a static value by deriving from a knowmn schema directory
-            assert len(dataset) == 28
+            assert len(dataset) == 40
 
     def test__folder_to_dataset(self, dh: DataHelper):
         dataset = dh._folder_to_dataset(category="perfect")
         assert isinstance(dataset, Dataset)
         # TODO: make this a static value by deriving from a knowmn schema directory
-        assert len(dataset) == 7
+        assert len(dataset) == 10
 
     def test__folder_of_folders_to_dataset(self, dh: DataHelper):
         dataset = dh._folder_of_folders_to_dataset()
         assert isinstance(dataset, Dataset)
         # TODO: make this a static value by deriving from a knowmn schema directory
-        assert len(dataset) == 28
+        assert len(dataset) == 40
 
     @pytest.mark.skipif("not config.getoption('--write')")
     def test__upload_to_hf(self, dh: DataHelper):

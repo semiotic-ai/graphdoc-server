@@ -1,6 +1,6 @@
 # system packages
 import logging
-from typing import List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from abc import ABC, abstractmethod
 
 # internal packages
@@ -12,7 +12,7 @@ import mlflow
 from mlflow.models import ModelSignature
 
 # logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
@@ -24,18 +24,23 @@ class SinglePromptTrainerRunner(ABC):
         optimizer_type: str,
         mlflow_model_name: str,
         mlflow_experiment_name: str,
+        mlflow_tracking_uri: str,
         trainset: List[dspy.Example],
         evalset: List[dspy.Example],
     ):
         self.prompt = prompt
         self.optimizer_type = optimizer_type
+        self.mlflow_tracking_uri = mlflow_tracking_uri
         self.mlflow_model_name = mlflow_model_name
         self.mlflow_experiment_name = mlflow_experiment_name
         self.trainset = trainset
         self.evalset = evalset
 
         # mlflow related
+        log.info(f"Setting MLFlow tracking URI to {self.mlflow_tracking_uri}")
+        mlflow.set_tracking_uri(self.mlflow_tracking_uri)
         mlflow.dspy.autolog()
+        log.info(f"Setting MLFlow experiment to {self.mlflow_experiment_name}")
         mlflow.set_experiment(self.mlflow_experiment_name)
         self.mlflow_client = mlflow.MlflowClient()
 
@@ -103,7 +108,13 @@ class SinglePromptTrainerRunner(ABC):
             return optimized_model
 
     @abstractmethod
-    def evaluate_training(self, base_model, optimized_model) -> Tuple[float, float]:
+    def _log_evaluation_metrics(self, base_evaluation, optimized_evaluation):
+        pass
+
+    @abstractmethod
+    def evaluate_training(
+        self, base_model, optimized_model
+    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         pass
 
     def _compare_models(

@@ -13,7 +13,7 @@ from dspy import Example
 from dspy import LM, Predict, Evaluate
 
 # logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 

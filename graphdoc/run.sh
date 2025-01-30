@@ -57,6 +57,16 @@ commit_ci_command() {
     test_dry_command
 }
 
+# training scripts 
+train_single_prompt_quality_train_command() {
+    poetry run python runners/doc_quality_trainer.py --config-path ../assets/configs/single_prompt_trainer.yaml
+}
+
+# data scripts
+local_data_update_command() {
+    poetry run python runners/local_data_update.py --repo-card False
+}
+
 show_help() {
     echo "Usage: ./nli [option]"
     echo "Options:"
@@ -73,6 +83,10 @@ show_help() {
     echo "  commit-ci              Run format and test-dry"
     echo "  install                Install dependencies"
     echo "  dev                    Install development dependencies"
+
+    echo "  train-single-prompt-quality-train Run single prompt quality training"
+
+    echo "  local-data-update       Upload local data to the Hugging Face Hub"
 }
 
 if [ -z "$1" ]; then
@@ -92,6 +106,9 @@ else
         "commit-ci") commit_ci_command ;;
         "install") install_command ;;
         "dev") dev_command ;;
+        
+        "train-single-prompt-quality-train") train_single_prompt_quality_train_command ;;
+        "local-data-update") local_data_update_command ;;
         *) show_help ;;
     esac
 fi

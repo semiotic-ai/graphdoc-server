@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 from dspy import Example
 
 # logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 # Global Variables
@@ -27,6 +27,7 @@ CACHE = True
 
 # Define the base directory (project root)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+SCHEMA_DIR = BASE_DIR / "graphdoc" / "tests" / "assets" / "schemas"
 
 
 #############################
@@ -84,12 +85,22 @@ def run_evaluator(request):
 
 @fixture
 def gd() -> GraphDoc:
-    if OPENAI_API_KEY:
-        return GraphDoc(model="openai/gpt-4o-mini", api_key=OPENAI_API_KEY, cache=CACHE)
-    else:
-        log.warning("Missing OPENAI_API_KEY. Ensure .env is properly set.")
+    if OPENAI_API_KEY and HF_DATASET_KEY:
         return GraphDoc(
-            model="openai/gpt-4o-mini", api_key="filler api key", cache=CACHE
+            model="openai/gpt-4o-mini",
+            api_key=OPENAI_API_KEY,
+            hf_api_key=HF_DATASET_KEY,
+            cache=CACHE,
+        )
+    else:
+        log.warning(
+            "Missing OPENAI_API_KEY or HF_DATASET_KEY. Ensure .env is properly set."
+        )
+        return GraphDoc(
+            model="openai/gpt-4o-mini",
+            api_key="filler api key",
+            hf_api_key="filler api key",
+            cache=CACHE,
         )
 
 
@@ -102,7 +113,7 @@ def par() -> Parser:
 @fixture
 def dh() -> DataHelper:
     log.debug(f"HF_DATASET_KEY: {HF_DATASET_KEY}")
-    return DataHelper(hf_api_key=HF_DATASET_KEY)
+    return DataHelper(hf_api_key=HF_DATASET_KEY, schema_directory_path=str(SCHEMA_DIR))
 
 
 @fixture
