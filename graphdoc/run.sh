@@ -62,6 +62,10 @@ train_single_prompt_quality_train_command() {
     poetry run python runners/trainers/doc_quality_trainer.py --config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
 }
 
+eval_single_prompt_doc_generator_command() {
+    poetry run python runners/eval/eval_doc_generator_prompt.py --config-path ../assets/configs/single_prompt_schema_doc_generator_trainer.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
+}
+
 # data scripts
 local_data_update_command() {
     poetry run python runners/data/local_data_update.py --repo-card False
@@ -84,8 +88,13 @@ show_help() {
     echo "  install                Install dependencies"
     echo "  dev                    Install development dependencies"
 
+    # training scripts
     echo "  train-single-prompt-quality-train Run single prompt quality training"
 
+    # eval scripts
+    echo "  eval-single-prompt-doc-generator Run single prompt doc generator evaluation"
+
+    # data scripts
     echo "  local-data-update       Upload local data to the Hugging Face Hub"
 }
 
@@ -106,8 +115,14 @@ else
         "commit-ci") commit_ci_command ;;
         "install") install_command ;;
         "dev") dev_command ;;
-        
+
+        # training scripts
         "train-single-prompt-quality-train") train_single_prompt_quality_train_command ;;
+
+        # eval scripts
+        "eval-single-prompt-doc-generator") eval_single_prompt_doc_generator_command ;;
+
+        # data scripts
         "local-data-update") local_data_update_command ;;
         *) show_help ;;
     esac
