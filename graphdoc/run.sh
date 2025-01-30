@@ -59,7 +59,7 @@ commit_ci_command() {
 
 # training scripts 
 train_single_prompt_quality_train_command() {
-    poetry run python runners/trainers/doc_quality_trainer.py --config-path ../assets/configs/single_prompt_trainer.yaml
+    poetry run python runners/trainers/doc_quality_trainer.py --config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
 }
 
 # data scripts
