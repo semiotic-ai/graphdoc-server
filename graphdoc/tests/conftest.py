@@ -27,6 +27,7 @@ CACHE = True
 
 # Define the base directory (project root)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+SCHEMA_DIR = BASE_DIR / "graphdoc" / "tests" / "assets" / "schemas"
 
 
 #############################
@@ -112,7 +113,7 @@ def par() -> Parser:
 @fixture
 def dh() -> DataHelper:
     log.debug(f"HF_DATASET_KEY: {HF_DATASET_KEY}")
-    return DataHelper(hf_api_key=HF_DATASET_KEY)
+    return DataHelper(hf_api_key=HF_DATASET_KEY, schema_directory_path=str(SCHEMA_DIR))
 
 
 @fixture
