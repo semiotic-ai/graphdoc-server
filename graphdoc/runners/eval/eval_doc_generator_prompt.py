@@ -56,7 +56,9 @@ if __name__ == "__main__":
     )
 
     dataset = gd.dh._load_from_hf()
-    evalset = gd.dh._create_graph_doc_example_trainset(dataset["train"].train_test_split(0.2)["test"])
+    evalset = gd.dh._create_graph_doc_example_trainset(
+        dataset["train"].train_test_split(0.2)["test"]
+    )
 
     results = doc_generator_prompt.evaluate_evalset(
         examples=evalset,

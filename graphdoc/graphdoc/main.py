@@ -123,11 +123,13 @@ class GraphDoc:
         except Exception as e:
             raise ValueError(f"Failed to initialize prompt class: {e}")
         return prompt
-    
-    def _get_nested_single_prompt(self, config_path: Union[str, Path], metric_config_path: Union[str, Path]):
+
+    def _get_nested_single_prompt(
+        self, config_path: Union[str, Path], metric_config_path: Union[str, Path]
+    ):
         """
         This is a single prompt that utilizes another single prompt as a metric.
-        """
+        """  # the builder pattern could be used here to make this more readable and avoid this separation of the get_single_prompt and get_nested_single_prompt
         config = load_yaml_config(config_path)
         try:
             metric_prompt = self._get_single_prompt(metric_config_path)

@@ -124,7 +124,7 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
             self.prompt = DocQualityPrompt(
                 type=self.prompt.type,  # type: ignore
                 metric_type=self.prompt.metric_type,  # type: ignore
-            )
+            )  # we could have this be compained with run_trainer to have one function mapped together
         else:
             base_model = self.prompt.infer
         optimized_model = self.run_trainer()

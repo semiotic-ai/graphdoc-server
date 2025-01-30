@@ -34,7 +34,9 @@ if __name__ == "__main__":
     lm_model_name = config["language_model"]["lm_model_name"]
     lm_api_key = config["language_model"]["lm_api_key"]
     lm_cache = config["language_model"]["cache"]
-    mlflow_load_model = config["trainer"]["mlflow_load_model"] # : true # Whether to load the most recent model from MLflow
+    mlflow_load_model = config["trainer"][
+        "mlflow_load_model"
+    ]  # : true # Whether to load the most recent model from MLflow
 
     gd = GraphDoc(
         model=lm_model_name,

@@ -25,3 +25,7 @@ class PromptFactory:
             )
         except Exception as e:
             raise ValueError(f"Failed to initialize prompt class ({prompt_class}): {e}")
+
+
+# David Cheriton(?) - one of the first google developers
+# avoid uneccessary verbs (get_single_prompt -> single_prompt): this is a readability thing. oop is nouns, not verbs.

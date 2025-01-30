@@ -45,7 +45,7 @@ class DocGeneratorSignature(dspy.Signature):
 class DocGeneratorPrompt(SinglePrompt):
     def __init__(
         self,
-        metric_type: DocQualityPrompt,
+        metric_type: DocQualityPrompt,  # factory function here would unify our types
         type: Literal["predict", "chain_of_thought"] = "chain_of_thought",
         prompt: Optional[dspy.Signature] = None,
     ) -> None:
@@ -93,7 +93,7 @@ class DocGeneratorPrompt(SinglePrompt):
     ) -> Any:
         return self.evaluate_documentation_quality(example, prediction, trace)
 
-    def _format_metric(
+    def _format_metric(  # this should be public
         self,
         examples: List[dspy.Example],
         overall_score: float,
@@ -104,7 +104,7 @@ class DocGeneratorPrompt(SinglePrompt):
             "overall_score": overall_score,
             "scores": scores,
             "results": results,
-        }
+        }  # WIP
 
     def _compare_metrics(
         self, base_metrics, optimized_metrics, comparison_value: str = "overall_score"

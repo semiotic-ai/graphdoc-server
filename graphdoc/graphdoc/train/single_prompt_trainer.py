@@ -54,7 +54,7 @@ class SinglePromptTrainerRunner(ABC):
         pass
 
     # TODO: we should update this to enable a remote model to be loaded
-    def load_model(self):
+    def load_model(self):  # TODO: implement mlloader class fucntionality
         try:
             latest_version = self.mlflow_client.get_latest_versions(
                 self.mlflow_model_name
@@ -83,15 +83,21 @@ class SinglePromptTrainerRunner(ABC):
         )  # TODO: add metadata related to trainset and evalset
 
     # trainer related methods
-    def initialize_trainer(self, optimizer_type: Optional[str] = None):
+    def initialize_trainer(
+        self, optimizer_type: Optional[str] = None
+    ):  # this can be moved to either the init or within the run_trainer method
         if optimizer_type is None:
             optimizer_type = self.optimizer_type
-        if optimizer_type == "miprov2":
-            return dspy.MIPROv2(metric=self.prompt.evaluate_metric, auto="light")
+        if optimizer_type == "miprov2":  # TODO: this should be a factory function
+            return dspy.MIPROv2(
+                metric=self.prompt.evaluate_metric, auto="light"
+            )  # we can just use kwargs here
         else:
             raise ValueError(f"Invalid optimizer type: {optimizer_type}")
 
-    def run_trainer(self, optimizer_type: Optional[str] = None):
+    def run_trainer(
+        self, optimizer_type: Optional[str] = None
+    ):  # run_trainer -> trainer (with comments)
         if optimizer_type is None:
             optimizer_type = self.optimizer_type
         optimizer = self.initialize_trainer(optimizer_type)
@@ -109,11 +115,13 @@ class SinglePromptTrainerRunner(ABC):
             return optimized_model
 
     @abstractmethod
-    def _log_evaluation_metrics(self, base_evaluation, optimized_evaluation):
+    def _log_evaluation_metrics(
+        self, base_evaluation, optimized_evaluation
+    ):  # TODO: this shouldn't be private, public as abstract
         pass
 
     @abstractmethod
-    def evaluate_training(
+    def evaluate_training(  # TODO: we really have no need here
         self, base_model, optimized_model
     ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         pass

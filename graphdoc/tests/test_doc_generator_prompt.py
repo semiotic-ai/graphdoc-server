@@ -16,6 +16,7 @@ log = logging.getLogger(__name__)
 # global variables
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+
 class TestDocGeneratorPrompt:
     def test_doc_generator_prompt(self):
         pass
@@ -25,10 +26,24 @@ class TestDocGeneratorPrompt:
         dgp = DocGeneratorPrompt(type="chain_of_thought", metric_type=dqp)
         assert isinstance(dgp, SinglePrompt)
         assert isinstance(dgp.infer, dspy.ChainOfThought)
-    
+
     def test_doc_generator_prompt_init_from_config(self, gd: GraphDoc):
-        config_path = BASE_DIR / "graphdoc" / "tests" / "assets" / "configs" / "single_prompt_schema_doc_generator_trainer.yaml"
-        metric_config_path = BASE_DIR / "graphdoc" / "tests" / "assets" / "configs" / "single_prompt_schema_doc_quality_trainer.yaml"
+        config_path = (
+            BASE_DIR
+            / "graphdoc"
+            / "tests"
+            / "assets"
+            / "configs"
+            / "single_prompt_schema_doc_generator_trainer.yaml"
+        )
+        metric_config_path = (
+            BASE_DIR
+            / "graphdoc"
+            / "tests"
+            / "assets"
+            / "configs"
+            / "single_prompt_schema_doc_quality_trainer.yaml"
+        )
 
         dgp = gd._get_nested_single_prompt(
             config_path=config_path,

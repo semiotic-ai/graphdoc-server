@@ -43,13 +43,17 @@ class DocQualityPrompt(SinglePrompt):
     def __init__(
         self,
         type: Literal["predict", "chain_of_thought"] = "predict",
-        metric_type: Literal["rating", "category"] = "rating",
+        metric_type: Literal[
+            "rating", "category"
+        ] = "rating",  # this could be a factory function instead
         prompt: Optional[dspy.Signature] = None,
     ) -> None:
         # TODO: we should type this better
         if prompt is None:
             prompt = DocQualitySignature  # type: ignore
         super().__init__(prompt=prompt, type=type, metric_type=metric_type)  # type: ignore
+
+    # def _evaluate_rating_diff() # with a lot of data...
 
     def _evaluate_rating_metric(
         self, example: dspy.Example, prediction: dspy.Prediction
@@ -61,9 +65,10 @@ class DocQualityPrompt(SinglePrompt):
     ) -> bool:
         return example.category == prediction.category
 
-    def evaluate_metric(
+    # abstract methods
+    def evaluate_metric(  # this could be a factory function instead that we map to the metric function
         self, example: dspy.Example, prediction: dspy.Prediction, trace=None
-    ) -> bool:
+    ) -> bool:  # factory function here would remove rtti
         if self.metric_type == "rating":
             return self._evaluate_rating_metric(example, prediction)
         elif self.metric_type == "category":
@@ -71,7 +76,7 @@ class DocQualityPrompt(SinglePrompt):
         else:
             raise ValueError(f"Invalid metric type: {self.metric_type}")
 
-    def _format_metric(
+    def _format_metric(  # this should be public
         self,
         examples: List[dspy.Example],
         overall_score: float,
