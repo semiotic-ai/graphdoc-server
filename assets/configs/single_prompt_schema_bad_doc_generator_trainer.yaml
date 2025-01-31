@@ -1,5 +1,5 @@
 language_model: 
-  lm_model_name: openai/gpt-4o # Must be a valid dspy language model
+  lm_model_name: openai/o1-mini-2024-09-12 # Must be a valid dspy language model
   lm_api_key: !env OPENAI_API_KEY # Must be a valid dspy language model API key
   cache: false # Whether to cache the calls to the language model
 
