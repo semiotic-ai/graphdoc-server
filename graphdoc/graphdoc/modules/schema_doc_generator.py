@@ -29,7 +29,7 @@ class DocGeneratorModule(dspy.Module):
         # database_schema: str = dspy.InputField()
         # documented_schema: str = dspy.OutputField()
 
-    def forward(self, database_schema: str) -> Union[dspy.Prediction, None]:
+    def forward(self, database_schema: str) -> Union[dspy.Prediction, None]: # TODO: we should probably replace what is here with document_full_schema
         try:
             database_ast = parse(database_schema)
         except Exception as e:
@@ -50,8 +50,6 @@ class DocGeneratorModule(dspy.Module):
             raise ValueError(f"Invalid GraphQL schema provided: {e}")
 
         if self.par.schema_equality_check(database_ast, prediction_ast):
-            log.info("Schema equality check passed during forward pass")
-            # log.info(f"Documented schema: {prediction.documented_schema}")
             return dspy.Prediction(documented_schema=prediction.documented_schema)
         else:
             log.warning(f"Generated schema does not match the original schema")
@@ -59,7 +57,6 @@ class DocGeneratorModule(dspy.Module):
                 documented_schema=database_schema
             )  # we should handle retry logic here
 
-    # parse a document and send a batch request for each component
     def document_full_schema(
         self, database_schema: str
     ) -> Union[dspy.Prediction, None]:
@@ -75,21 +72,10 @@ class DocGeneratorModule(dspy.Module):
             ).with_inputs("database_schema")
             examples.append(example)
 
-        documented_examples = self.batch(examples)
+        documented_examples = self.batch(examples, num_threads=32)
         document_ast.definitions = tuple(
             parse(ex.documented_schema) for ex in documented_examples
         )
-
-        # count = 0
-        # for ex in documented_examples: 
-        #     log.info(f"Example {count}:")
-        #     print(ex.documented_schema)
-        #     count += 1
-        count = 0
-        for node in document_ast.definitions:
-            log.info(f"Example {count}:")
-            log.info(print_ast(node))
-            count += 1
 
         if self.par.schema_equality_check(parse(database_schema), document_ast):
             log.info("Schema equality check passed, returning documented schema")
@@ -102,4 +88,4 @@ class DocGeneratorModule(dspy.Module):
                 return dspy.Prediction(documented_schema=print_ast(updated_ast))
             return dspy.Prediction(documented_schema=database_schema)
 
-    # batch (can be called to handle batch inputs of examples)
+    # def document_batch(self, examples: List[dspy.Example]):
