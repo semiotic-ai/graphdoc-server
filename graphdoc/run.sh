@@ -72,7 +72,7 @@ local_data_update_command() {
 }
 
 generate_bad_data_command() {
-    poetry run python runners/data/bad_data_generator.py --config-path ../assets/configs/single_prompt_schema_doc_generator_trainer.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
+    poetry run python runners/data/bad_data_generator.py --config-path ../assets/configs/single_prompt_schema_bad_doc_generator_trainer.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
 }
 
 show_help() {

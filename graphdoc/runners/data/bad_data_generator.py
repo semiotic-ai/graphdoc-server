@@ -50,6 +50,7 @@ if __name__ == "__main__":
     lm_model_name = config["language_model"]["lm_model_name"]
     lm_api_key = config["language_model"]["lm_api_key"]
     lm_cache = config["language_model"]["cache"]
+    log.info(f"caching level: {lm_cache}")
 
     gd = GraphDoc(
         model=lm_model_name,
