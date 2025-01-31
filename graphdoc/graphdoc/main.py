@@ -114,11 +114,12 @@ class GraphDoc:
     def _get_single_prompt(self, config_path: Union[str, Path]):
         config = load_yaml_config(config_path)
         try:
+            prompt = config["prompt"]["prompt"]
             prompt_class = config["prompt"]["class"]
             prompt_type = config["prompt"]["type"]
             prompt_metric = config["prompt"]["metric"]
             prompt = PromptFactory.get_single_prompt(
-                prompt_class, prompt_type, prompt_metric
+                prompt, prompt_class, prompt_type, prompt_metric
             )
         except Exception as e:
             raise ValueError(f"Failed to initialize prompt class: {e}")
@@ -133,11 +134,12 @@ class GraphDoc:
         config = load_yaml_config(config_path)
         try:
             metric_prompt = self._get_single_prompt(metric_config_path)
+            prompt = config["prompt"]["prompt"]
             prompt_class = config["prompt"]["class"]
             prompt_type = config["prompt"]["type"]
             prompt_metric = metric_prompt
             prompt = PromptFactory.get_single_prompt(
-                prompt_class, prompt_type, prompt_metric
+                prompt, prompt_class, prompt_type, prompt_metric
             )
         except Exception as e:
             raise ValueError(f"Failed to initialize nested single prompt: {e}")

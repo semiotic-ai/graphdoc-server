@@ -7,7 +7,10 @@ from .single_prompt import SinglePrompt
 class PromptFactory:
     @staticmethod
     def get_single_prompt(
-        prompt_class: str, prompt_type: str, prompt_metric: Union[str, DocQualityPrompt]
+        prompt: str,
+        prompt_class: str,
+        prompt_type: str,
+        prompt_metric: Union[str, DocQualityPrompt, SinglePrompt],
     ) -> SinglePrompt:
         """
         Returns an instance of the specified prompt class.
@@ -21,7 +24,7 @@ class PromptFactory:
         try:
             # TODO: we should be able to have better type checking here
             return prompt_classes[prompt_class](
-                type=prompt_type, metric_type=prompt_metric  # type: ignore
+                prompt=prompt, type=prompt_type, metric_type=prompt_metric  # type: ignore
             )
         except Exception as e:
             raise ValueError(f"Failed to initialize prompt class ({prompt_class}): {e}")

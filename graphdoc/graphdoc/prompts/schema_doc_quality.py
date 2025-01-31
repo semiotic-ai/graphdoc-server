@@ -2,7 +2,7 @@
 import logging
 from abc import abstractmethod
 from collections import defaultdict
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, Union
 
 # internal packages
 from .single_prompt import SinglePrompt
@@ -36,6 +36,15 @@ class DocQualitySignature(dspy.Signature):
     rating: Literal[4, 3, 2, 1] = dspy.OutputField()
 
 
+def doc_quality_factory(key: Union[str, dspy.Signature]):
+    if isinstance(key, dspy.Signature):
+        return key
+    factory = {
+        "doc_quality": DocQualitySignature,
+    }
+    return factory[key]
+
+
 #######################
 # Single Prompt Class #
 #######################
@@ -46,12 +55,14 @@ class DocQualityPrompt(SinglePrompt):
         metric_type: Literal[
             "rating", "category"
         ] = "rating",  # this could be a factory function instead
-        prompt: Optional[dspy.Signature] = None,
+        prompt: Union[str, dspy.Signature] = "doc_quality",
+        # prompt: Optional[dspy.Signature] = None,
     ) -> None:
         # TODO: we should type this better
-        if prompt is None:
-            prompt = DocQualitySignature  # type: ignore
-        super().__init__(prompt=prompt, type=type, metric_type=metric_type)  # type: ignore
+        # if prompt is None:
+        # prompt = DocQualitySignature  # type: ignore
+        prompt_signature = doc_quality_factory(prompt)
+        super().__init__(prompt=prompt_signature, type=type, metric_type=metric_type)  # type: ignore
 
     # def _evaluate_rating_diff() # with a lot of data...
 

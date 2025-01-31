@@ -12,6 +12,7 @@ data:
   local_parse_objects: True # Whether to parse the objects in the dataset (if load_from_local is true)
 
 prompt:
+  prompt: zero_shot_doc_gen # Which prompt signature to use
   class: DocGeneratorPrompt # Must be a child of SinglePrompt (we will use an enum to map this)
   type: chain_of_thought # The type of prompt to use (predict, chain_of_thought)
   metric: DocQualityPrompt # The type of metric to use (rating, category)
