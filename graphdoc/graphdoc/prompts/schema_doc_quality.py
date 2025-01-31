@@ -11,7 +11,6 @@ from .single_prompt import SinglePrompt
 import dspy
 
 # logging
-# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
@@ -37,7 +36,7 @@ class DocQualitySignature(dspy.Signature):
 
 
 def doc_quality_factory(key: Union[str, dspy.Signature]):
-    if isinstance(key, dspy.Signature):
+    if not isinstance(key, str): # TODO: we could handle this in a much better way
         return key
     factory = {
         "doc_quality": DocQualitySignature,
