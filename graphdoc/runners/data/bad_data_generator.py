@@ -1,10 +1,4 @@
 # system packages
-
-# internal packages
-
-# external packages
-
-# system packages
 import os
 import argparse
 
@@ -64,17 +58,25 @@ if __name__ == "__main__":
         metric_config_path=args.metric_config_path,
     )
 
-    dataset = gd.dh._folder_to_dataset(category="somewhat correct")
+    dataset = gd.dh._folder_to_dataset(category="perfect", parse_objects=False)
+    dataset_files = dataset.to_pandas()
+    dataset_files = dataset_files["schema_name"].tolist()
+    new_file_names = [x.replace("_4", "_1") for x in dataset_files]
+    print(dataset_files)
+    print(new_file_names)
     trainset = gd.dh._create_doc_generator_example_trainset(dataset)
-    print(trainset)
+    # print(trainset)
 
     dgm = DocGeneratorModule(generator_prompt=doc_generator_prompt)
     print(type(dgm))
 
-    prediction = dgm.document_full_schema(database_schema=trainset[0].database_schema)
-    print(prediction)
+    predictions = []
+    for i in range(len(trainset)):
+        print(f"Documenting schema: {dataset_files[i]}")
+        prediction = dgm.document_full_schema(database_schema=trainset[i].database_schema)
+        predictions.append(prediction.documented_schema)
+        print(prediction.documented_schema)
 
-    with open("original_schema.graphql", "w") as f:
-        f.write(trainset[0].database_schema)
-    with open("bad_schema.graphql", "w") as f:
-        f.write(prediction.documented_schema)
+    for file_name in new_file_names:
+        with open(f"{file_name}.graphql", "w") as f:
+            f.write(predictions[0])
