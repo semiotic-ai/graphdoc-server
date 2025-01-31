@@ -47,10 +47,8 @@ class BadDocGeneratorSignature(dspy.Signature):
     Given a GraphQL Schema, generate intentionally incorrect documentation for the columns of the tables in the database.
 
     ### Requirements:
-    - Do not change the underlying schema.
-    - Do not add any new columns to the schema.
-    - Do not remove any existing columns from the schema.
-    - Do not label every column in the schema.
+    - The documentation must be incorrect and misleading.
+    - The documentation should be scattered, with only some columns having documentation.
 
     ### Formatting
     - Ensure that the schema maintains proper documentation formatting, as is provided.

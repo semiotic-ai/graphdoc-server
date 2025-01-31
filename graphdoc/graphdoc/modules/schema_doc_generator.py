@@ -50,6 +50,8 @@ class DocGeneratorModule(dspy.Module):
             raise ValueError(f"Invalid GraphQL schema provided: {e}")
 
         if self.par.schema_equality_check(database_ast, prediction_ast):
+            log.info("Schema equality check passed during forward pass")
+            # log.info(f"Documented schema: {prediction.documented_schema}")
             return dspy.Prediction(documented_schema=prediction.documented_schema)
         else:
             log.warning(f"Generated schema does not match the original schema")
@@ -78,7 +80,20 @@ class DocGeneratorModule(dspy.Module):
             parse(ex.documented_schema) for ex in documented_examples
         )
 
+        # count = 0
+        # for ex in documented_examples: 
+        #     log.info(f"Example {count}:")
+        #     print(ex.documented_schema)
+        #     count += 1
+        count = 0
+        for node in document_ast.definitions:
+            log.info(f"Example {count}:")
+            log.info(print_ast(node))
+            count += 1
+
         if self.par.schema_equality_check(parse(database_schema), document_ast):
+            log.info("Schema equality check passed, returning documented schema")
+            log.info(f"Documented schema: {print_ast(document_ast)}")
             return dspy.Prediction(documented_schema=print_ast(document_ast))
         else:
             log.warning(f"Generated schema does not match the original schema")

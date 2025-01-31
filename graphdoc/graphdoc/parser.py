@@ -1,6 +1,7 @@
 # system packages
 
 # internal packages
+import copy
 import logging
 from pathlib import Path
 from typing import Optional, Union
@@ -200,8 +201,10 @@ class Parser:
         :return: Whether the schemas are equal
         :rtype: bool
         """
-        gold_node = self.update_node_descriptions(gold_node)
-        check_node = self.update_node_descriptions(check_node)
+        gold_node_copy = copy.deepcopy(gold_node)
+        check_node_copy = copy.deepcopy(check_node)
+        gold_node = self.update_node_descriptions(gold_node_copy)
+        check_node = self.update_node_descriptions(check_node_copy)
 
         if print_ast(gold_node) != print_ast(check_node):
             return False
