@@ -30,25 +30,33 @@ class DocGeneratorModule(dspy.Module):
         # documented_schema: str = dspy.OutputField()
 
     def forward(self, database_schema: str) -> Union[dspy.Prediction, None]: # TODO: we should probably replace what is here with document_full_schema
+        # check that the graphql is valid
         try:
             database_ast = parse(database_schema)
         except Exception as e:
-            raise ValueError(f"Invalid GraphQL schema provided: {e}")
+            log.warning(f"Invalid GraphQL schema provided at onset: {e}")
+            return dspy.Prediction(documented_schema=database_schema)
 
+        # fill the empty descriptions
         if self.fill_empty_descriptions:
             updated_ast = self.par.fill_empty_descriptions(database_ast)
-            updated_database_schema = print_ast(updated_ast)
-            prediction = self.generator_prompt.infer(
-                database_schema=updated_database_schema
-            )
-        else:
-            prediction = self.generator_prompt.infer(database_schema=database_schema)
+            database_schema = print_ast(updated_ast)
 
+        # try to generate the schema
+        try:
+            prediction = self.generator_prompt.infer(database_schema=database_schema)
+        except Exception as e:
+            log.warning(f"Error generating schema: {e}")
+            return dspy.Prediction(documented_schema=database_schema)
+
+        # check that the generated schema is valid
         try:
             prediction_ast = parse(prediction.documented_schema)
         except Exception as e:
-            raise ValueError(f"Invalid GraphQL schema provided: {e}")
+            log.warning(f"Invalid GraphQL schema generated: {e}")
+            return dspy.Prediction(documented_schema=database_schema)
 
+        # check that the generated schema matches the original schema
         if self.par.schema_equality_check(database_ast, prediction_ast):
             return dspy.Prediction(documented_schema=prediction.documented_schema)
         else:
@@ -79,7 +87,7 @@ class DocGeneratorModule(dspy.Module):
 
         if self.par.schema_equality_check(parse(database_schema), document_ast):
             log.info("Schema equality check passed, returning documented schema")
-            log.info(f"Documented schema: {print_ast(document_ast)}")
+            # log.info(f"Documented schema: {print_ast(document_ast)}")
             return dspy.Prediction(documented_schema=print_ast(document_ast))
         else:
             log.warning(f"Generated schema does not match the original schema")
