@@ -71,6 +71,10 @@ local_data_update_command() {
     poetry run python runners/data/local_data_update.py --repo-card False
 }
 
+generate_bad_data_command() {
+    poetry run python runners/data/bad_data_generator.py --config-path ../assets/configs/single_prompt_schema_doc_generator_trainer.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
+}
+
 show_help() {
     echo "Usage: ./nli [option]"
     echo "Options:"
@@ -96,6 +100,7 @@ show_help() {
 
     # data scripts
     echo "  local-data-update       Upload local data to the Hugging Face Hub"
+    echo "  generate-bad-data       Generate bad data for evaluation"
 }
 
 if [ -z "$1" ]; then
@@ -124,6 +129,7 @@ else
 
         # data scripts
         "local-data-update") local_data_update_command ;;
+        "generate-bad-data") generate_bad_data_command ;;
         *) show_help ;;
     esac
 fi
