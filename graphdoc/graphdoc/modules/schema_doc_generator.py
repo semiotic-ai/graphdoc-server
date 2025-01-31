@@ -18,12 +18,10 @@ class DocGeneratorModule(dspy.Module):
     def __init__(
         self,
         generator_prompt: SinglePrompt,
-        metric_prompt: SinglePrompt,
         fill_empty_descriptions: bool = True,
         retry_limit: int = 3,
     ) -> None:
         self.generator_prompt = generator_prompt
-        self.metric_prompt = metric_prompt
         self.fill_empty_descriptions = fill_empty_descriptions
 
         self.par = Parser()
@@ -72,12 +70,12 @@ class DocGeneratorModule(dspy.Module):
         for node in document_ast.definitions:
             example = dspy.Example(
                 database_schema=print_ast(node), documented_schema=""
-            )
+            ).with_inputs("database_schema")
             examples.append(example)
 
         documented_examples = self.batch(examples)
         document_ast.definitions = tuple(
-            ex.documented_schema for ex in documented_examples
+            parse(ex.documented_schema) for ex in documented_examples
         )
 
         if self.par.schema_equality_check(parse(database_schema), document_ast):
