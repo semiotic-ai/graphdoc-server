@@ -10,6 +10,7 @@ from ..parser import Parser
 # external packages
 import dspy
 from graphql import parse, print_ast
+from dspy.utils.parallelizer import ParallelExecutor
 
 # logging
 log = logging.getLogger(__name__)
@@ -38,6 +39,26 @@ class DocGeneratorSignature(dspy.Signature):
         desc="The database schema with proper documentation, ensuring that the underlying schema is not altered."
     )
 
+class BadDocGeneratorSignature(dspy.Signature):
+    """
+    ### TASK: 
+
+    Given a GraphQL Schema, generate intentionally incorrect documentation for the columns of the tables in the database.
+
+    ### Requirements:
+    - Do not change the underlying schema.
+    - Do not add any new columns to the schema.
+    - Do not remove any existing columns from the schema.
+    - Do not label every column in the schema.
+
+    ### Formatting
+    - Ensure that the schema maintains proper documentation formatting, as is provided.
+    """
+
+    database_schema: str = dspy.InputField()
+    documented_schema: str = dspy.OutputField(
+        desc="The database schema with intentionally incorrect documentation, ensuring that the underlying schema is not altered."
+    )
 
 #######################
 # Single Prompt Class #
@@ -113,3 +134,62 @@ class DocGeneratorPrompt(SinglePrompt):
             return optimized_metrics["overall_score"] > base_metrics["overall_score"]
         else:
             raise ValueError(f"Invalid comparison value: {comparison_value}")
+
+    #########################################
+    # Schema Generation 
+    #########################################
+    def decompose_and_document_schema(self, schema: str) -> str:
+        """
+        Decompose the schema into smaller components and document each component.
+        """
+        try: 
+            components = parse(schema)
+            examples = []
+            for component in components: 
+                component = self.par.fill_empty_descriptions(component)
+                example = dspy.Example(database_schema=component, documented_schema="")
+                examples.append(example)
+
+            executor = ParallelExecutor(
+                num_threads=4,
+                disable_progress_bar=False,
+                max_errors=4,
+                provide_traceback=False,
+                compare_results=False,
+            )
+
+            def process_item(example):
+                prediction = self.infer(**example.inputs())
+                if not self.par.schema_equality_check(example.database_schema, prediction.documented_schema):
+                    log.warning("Schema equality check failed")
+                    prediction = self.infer(**example.inputs()) # we should handle retry logic better
+                return prediction
+            
+            results = executor.execute(process_item, examples)
+            # for result in 
+
+        except Exception as e:
+            raise ValueError(f"An exception occurred while parsing the schema: {e}")
+        
+
+        executor = ParallelExecutor(
+            num_threads=4,
+            disable_progress_bar=False,
+            max_errors=4,
+            provide_traceback=False,
+            compare_results=False,
+        )
+
+        def process_item(example):
+            prediction = program(**example.inputs())
+            score = metric(example, prediction)
+
+            # Increment assert and suggest failures to program's attributes
+            if hasattr(program, "_assert_failures"):
+                program._assert_failures += dspy.settings.get("assert_failures")
+            if hasattr(program, "_suggest_failures"):
+                program._suggest_failures += dspy.settings.get("suggest_failures")
+
+            return prediction, score
+
+        results = executor.execute(process_item, devset)

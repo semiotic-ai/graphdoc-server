@@ -58,8 +58,6 @@ enum ProtocolType {
   YIELD
   " The BRIDGE protocol type "
   BRIDGE
-  " The GENERIC protocol type "
-  # Will add more
 }
 
 type Token @entity @regularPolling {
