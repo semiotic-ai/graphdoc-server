@@ -170,26 +170,3 @@ class DocGeneratorPrompt(SinglePrompt):
 
         except Exception as e:
             raise ValueError(f"An exception occurred while parsing the schema: {e}")
-        
-
-        executor = ParallelExecutor(
-            num_threads=4,
-            disable_progress_bar=False,
-            max_errors=4,
-            provide_traceback=False,
-            compare_results=False,
-        )
-
-        def process_item(example):
-            prediction = program(**example.inputs())
-            score = metric(example, prediction)
-
-            # Increment assert and suggest failures to program's attributes
-            if hasattr(program, "_assert_failures"):
-                program._assert_failures += dspy.settings.get("assert_failures")
-            if hasattr(program, "_suggest_failures"):
-                program._suggest_failures += dspy.settings.get("suggest_failures")
-
-            return prediction, score
-
-        results = executor.execute(process_item, devset)
