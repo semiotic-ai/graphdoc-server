@@ -36,7 +36,7 @@ class DocQualitySignature(dspy.Signature):
 
 
 def doc_quality_factory(key: Union[str, dspy.Signature]):
-    if not isinstance(key, str): # TODO: we could handle this in a much better way
+    if not isinstance(key, str):  # TODO: we could handle this in a much better way
         return key
     factory = {
         "doc_quality": DocQualitySignature,

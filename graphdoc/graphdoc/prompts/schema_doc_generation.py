@@ -61,7 +61,7 @@ class BadDocGeneratorSignature(dspy.Signature):
 
 
 def doc_gen_factory(key: Union[str, dspy.Signature]):
-    if not isinstance(key, str): # TODO: we can handle this in a much better way
+    if not isinstance(key, str):  # TODO: we can handle this in a much better way
         return key
     factory = {
         "zero_shot_doc_gen": DocGeneratorSignature,
