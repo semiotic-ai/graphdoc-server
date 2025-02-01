@@ -12,7 +12,6 @@ import mlflow
 from mlflow.models import ModelSignature
 
 # logging
-# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
@@ -49,9 +48,13 @@ class SinglePromptTrainerRunner(ABC):
     def get_signature(self) -> ModelSignature:
         pass
 
-    @abstractmethod
     def get_prompt_signature(self, prompt) -> dspy.Signature:
-        pass
+        if isinstance(prompt, dspy.ChainOfThought):
+            return prompt.predict.signature
+        elif isinstance(prompt, dspy.Predict):
+            return prompt.signature
+        else:
+            raise ValueError(f"Invalid prompt type: {type(prompt)}")
 
     # TODO: we should update this to enable a remote model to be loaded
     def load_model(self):  # TODO: implement mlloader class fucntionality

@@ -73,7 +73,9 @@ if __name__ == "__main__":
     predictions = []
     for i in range(len(trainset)):
         print(f"Documenting schema: {dataset_files[i]}")
-        prediction = dgm.document_full_schema(database_schema=trainset[i].database_schema)
+        prediction = dgm.document_full_schema(
+            database_schema=trainset[i].database_schema
+        )
         predictions.append(prediction.documented_schema)
         print(prediction.documented_schema)
 

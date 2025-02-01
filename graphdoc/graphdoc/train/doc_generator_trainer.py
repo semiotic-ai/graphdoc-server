@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Tuple
 
 # internal packages
 from .single_prompt_trainer import SinglePromptTrainerRunner
-from ..prompts import DocQualityPrompt
+from ..prompts import DocGeneratorPrompt
 
 # external packages
 import dspy
@@ -15,14 +15,13 @@ from mlflow.models import infer_signature
 from mlflow.models import ModelSignature
 
 # logging
-# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
-class DocQualityTrainer(SinglePromptTrainerRunner):
+class DocGeneratorTrainer(SinglePromptTrainerRunner):
     def __init__(
         self,
-        prompt: DocQualityPrompt,
+        prompt: DocGeneratorPrompt,
         optimizer_type: str,
         mlflow_model_name: str,
         mlflow_experiment_name: str,
@@ -42,19 +41,11 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
 
     def get_signature(self) -> ModelSignature:
         example = self.trainset[0].toDict()
-        example.pop("category")
-        example.pop("rating")
+        example.pop("documented_schema")
         return infer_signature(example)
 
-    # moved to SinglePromptTrainerRunner
-    # no longer an abstract method
     # def get_prompt_signature(self, prompt) -> dspy.Signature:
-    #     if isinstance(prompt, dspy.ChainOfThought):
-    #         return prompt.predict.signature
-    #     elif isinstance(prompt, dspy.Predict):
-    #         return prompt.signature
-    #     else:
-    #         raise ValueError(f"Invalid prompt type: {type(prompt)}")
+    #     pass
 
     def _log_evaluation_metrics(self, base_evaluation, optimized_evaluation) -> None:
         base_evaluation_overall_score = base_evaluation["overall_score"]
@@ -66,47 +57,18 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
                 "optimized_evaluation_overall_score": optimized_evaluation_overall_score,
             }
         )
-
-        metrics_data = {
-            "Evaluation Type": ["Base Evaluation", "Optimized Evaluation"],
-            "Overall Score": [
-                base_evaluation_overall_score,
-                optimized_evaluation_overall_score,
-            ],
-        }
-
-        for key, value in base_evaluation["per_category_scores"].items():
-            metrics_data[f"{key} Percent Correct"] = [
-                value["percent_correct"],
-                optimized_evaluation["per_category_scores"][key]["percent_correct"],
-            ]
-            metrics_data[f"{key} Total"] = [
-                value["total"],
-                optimized_evaluation["per_category_scores"][key]["total"],
-            ]
-            metrics_data[f"{key} Correct"] = [
-                value["correct"],
-                optimized_evaluation["per_category_scores"][key]["correct"],
-            ]
-
-        df = pd.DataFrame(metrics_data)
-        csv_buffer = io.StringIO()
-        df.to_csv(csv_buffer, index=False)
-        mlflow.log_text(csv_buffer.getvalue(), "evaluation_comparison.csv")
+        log.info(f"Base Evaluation: {base_evaluation}")
+        log.info(f"Optimized Evaluation: {optimized_evaluation}")
 
     def evaluate_training(
         self, base_model, optimized_model
     ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-        print(f"eval training base_model (type: {type(base_model)}): {base_model}")
-        print(
-            f"eval training optimized_model (type: {type(optimized_model)}): {optimized_model}"
-        )
-        base_prompt = DocQualityPrompt(
+        base_prompt = DocGeneratorPrompt(
             prompt=self.get_prompt_signature(base_model),
             type=self.prompt.type,  # type: ignore
             metric_type=self.prompt.metric_type,  # type: ignore
         )
-        optimized_prompt = DocQualityPrompt(
+        optimized_prompt = DocGeneratorPrompt(
             prompt=self.get_prompt_signature(optimized_model),
             type=self.prompt.type,  # type: ignore
             metric_type=self.prompt.metric_type,  # type: ignore
@@ -123,7 +85,7 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
         if load_model:
             log.info("Loading model from mlflow")
             base_model = self.load_model()
-            self.prompt = DocQualityPrompt(
+            self.prompt = DocGeneratorPrompt(
                 type=self.prompt.type,  # type: ignore
                 metric_type=self.prompt.metric_type,  # type: ignore
             )  # we could have this be compained with run_trainer to have one function mapped together
