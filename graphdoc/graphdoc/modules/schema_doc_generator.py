@@ -29,7 +29,11 @@ class DocGeneratorModule(dspy.Module):
         # database_schema: str = dspy.InputField()
         # documented_schema: str = dspy.OutputField()
 
-    def forward(self, database_schema: str) -> Union[dspy.Prediction, None]: # TODO: we should probably replace what is here with document_full_schema
+    def forward(
+        self, database_schema: str
+    ) -> Union[
+        dspy.Prediction, None
+    ]:  # TODO: we should probably replace what is here with document_full_schema
         # check that the graphql is valid
         try:
             database_ast = parse(database_schema)
