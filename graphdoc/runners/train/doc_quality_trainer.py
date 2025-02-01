@@ -45,9 +45,12 @@ if __name__ == "__main__":
         cache=lm_cache,
     )
     dh = DataHelper(hf_api_key=HF_DATASET_KEY)
-    dataset = dh._load_from_hf()
+    # dataset = dh._load_from_hf()
+    dataset = dh._folder_of_folders_to_dataset()
+    log.info(f"dataset size: {len(dataset)}")
 
-    split = dataset["train"].train_test_split(0.2)
+    # split = dataset["train"].train_test_split(0.2)
+    split = dataset.train_test_split(0.2)
     trainset = dh._create_graph_doc_example_trainset(split["train"])
     evalset = dh._create_graph_doc_example_trainset(split["test"])
 
