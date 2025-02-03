@@ -11,6 +11,7 @@ from graphdoc import GraphDoc, DataHelper, load_yaml_config
 
 # external packages
 from dotenv import load_dotenv
+from graphql import parse, print_ast
 
 # Global Variables
 load_dotenv("../.env")
@@ -57,32 +58,41 @@ if __name__ == "__main__":
         max_tokens=lm_max_tokens,
     )
 
-    doc_generator_prompt = gd._get_nested_single_prompt(
-        config_path=args.config_path,
-        metric_config_path=args.metric_config_path,
-    )
+    # doc_generator_prompt = gd._get_nested_single_prompt(
+    #     config_path=args.config_path,
+    #     metric_config_path=args.metric_config_path,
+    # )
 
     dataset = gd.dh._folder_to_dataset(category="almost perfect", parse_objects=False)
     dataset_files = dataset.to_pandas()
     dataset_files = dataset_files["schema_name"].tolist()
-    new_file_names = [x.replace("_3", "_1") for x in dataset_files]
+    new_file_names = [x.replace("_3", "_2") for x in dataset_files]
     print(dataset_files)
     print(new_file_names)
+
+
     trainset = gd.dh._create_doc_generator_example_trainset(dataset)
+    t = 0
+    for x in trainset: 
+        x_ast = parse(x.database_schema)
+        x_cleaned = gd.dh.par.update_node_descriptions(node=x_ast, new_value=None)
+        x_basic = gd.dh.par.fill_empty_descriptions(node=x_cleaned)
+        x.database_schema = print_ast(x_basic)
+        with open(f"{new_file_names[t]}.graphql", "w") as f:
+            f.write(x.database_schema)
+        t += 1
 
-    dgm = DocGeneratorModule(generator_prompt=doc_generator_prompt)
-    print(type(dgm))
+    # dgm = DocGeneratorModule(generator_prompt=doc_generator_prompt)
+    # print(type(dgm))
 
-    predictions = []
-    for i in range(len(trainset)):
-        print(f"Documenting schema: {dataset_files[i]}")
-        prediction = dgm.document_full_schema(
-            database_schema=trainset[i].database_schema
-        )
-        # predictions.append(prediction.documented_schema)
-        # print(prediction.documented_schema)
-        with open(f"{new_file_names[i]}.graphql", "w") as f:
-            f.write(prediction.documented_schema)
+    # predictions = []
+    # for i in range(len(trainset)):
+    #     print(f"Documenting schema: {dataset_files[i]}")
+    #     prediction = dgm.document_full_schema(
+    #         database_schema=trainset[i].database_schema
+    #     )
+    #     predictions.append(prediction.documented_schema)
+    #     # print(prediction.documented_schema)
 
     # for file_name in new_file_names:
     #     with open(f"{file_name}.graphql", "w") as f:
