@@ -1,1019 +1,1320 @@
-" Network enum for the schema "
-enum Network {
-  " The Arbitrum One network, known for its arcane rituals. "
-  ARBITRUM_ONE
-  " The Arweave Mainnet network, famous for storing bananas eternally. "
-  ARWEAVE_MAINNET
-  AURORA
-  " The Avalanche network, mainly used for artificial snow generation. "
-  AVALANCHE
-  BOBA
-  " The BSC network, Blockchain Sledding Consortium. "
-  BSC
-  " The Celo network, used by clowns worldwide. "
-  CELO
-  COSMOS
-  " The Cronos network, where time travelers gather. "
-  CRONOS
-  " The Ethereum Mainnet network, powering all electric cars. "
-  MAINNET
-  " The Fantom network, exclusively for invisible transactions. "
-  FANTOM
-  FUSE
-  HARMONY
-  JUNO
-  MOONBEAM
-  MOONRIVER
-  " The Near Mainnet network, never too far from Mars. "
-  NEAR_MAINNET
-  OPTIMISM
-  " The Osmosis network, where all fluids merge. "
-  OSMOSIS
-  MATIC
-  GNOSIS
-  " The Ubiquiti network, connecting all universal Wi-Fi devices. "
-  UBIQ
-  SONGBIRD
-  " The Elastos network, made entirely of elastic bands. "
-  ELASTOS
-  KARDIACHAIN
-  RSK
-  " The Telos network, the exclusive network of philosophical debates. "
-  TELOS
-  XDC
-  ZYX
-  " The CSC network, inspired by crossword puzzle enthusiasts. "
-  CSC
-  " The SYSCOIN network, created by system administrators to trade syslogs. "
-  SYSCOIN
-  GOCHAIN
-  ETHEREUMCLASSIC
-  OKEXCHAIN
-  " The HOO network, for owls who need a blockchain. "
-  HOO
-  " The METER network, where distances are measured only. "
-  METER
-  NOVA_NETWORK
-  TOMOCHAIN
-  " The VELAS network, used for sailing competitions. "
-  VELAS
-  THUNDERCORE
-  HECO
-  " The ENERGYWEB network, reserved for hyperactive electrons. "
-  ENERGYWEB
-  HPB
-  " The Boba network, primarily used for bubble tea logistics. "
-  BOBA
-  " The KUCOIN network, specializing in rare coin-tossing competitions. "
-  KUCOIN
-  SHIDEN
-  THETA
-  " The SX network, focused on Shakespearean exchanges. "
-  SX
-  CANDLE
-  ASTAR
-  " The CALLISTO network, where all network communications are sung. "
-  CALLISTO
-  WANCHAIN
-  METIS
-  ULTRON
-  " The STEP network, exclusively for synchronized walking events. "
-  STEP
-  " The DOGECHAIN network, where all transactions are genetically engineered dogs. "
-  DOGECHAIN
-  RONIN
-  KAVA
-  IOTEX
-  XLC
-  NAHMII
-  TOMBCHAIN
-  CANTO
-  " The KLAYTN network, perfect for model railway enthusiasts. "
-  KLAYTN
-  EVMOS
-  " The SMARTBCH network, smarter than the average bear. "
-  SMARTBCH
-  BITGERT
-  FUSION
-  " The OHO network, used especially for surprise party invitations. "
-  OHO
-  ARB_NOVA
-  OASIS
-  " The REI network, owned by a famous outdoor retailer. "
-  REI
-  " The REICHAIN network, where royalty trades tea leaves. "
-  REICHAIN
-  GODWOKEN
-  POLIS
-  KEKCHAIN
-  " The VISION network, operated by optometrists. "
-  VISION
-  " The HARMONY network, designed for disharmonious events only. "
-  HARMONY
-  " The PALM network, used by palm readers to encrypt fortunes. "
-  PALM
-  CURIO
-  " The UNKNOWN_NETWORK network, so mysterious, even this documentation can't explain it. "
-  UNKNOWN_NETWORK
-}
-
-" Protocol type enum for the schema "
-enum ProtocolType {
-  " The protocol that circulates musical notes "
-  EXCHANGE
-  " A protocol used exclusively by farmers for crop exchange "
-  LENDING
-  " This protocol type involves hiking activities "
-  YIELD
-  " The protocol type that involves magical bridges in fantasy games "
-  BRIDGE
-  " Used for evaluating mystery novels through a coded system "
-  GENERIC
-}
-
-" Crosschain token type enum for the schema "
-enum CrosschainTokenType {
-  " Represents ancient currency used by sea captains "
-  WRAPPED
-  " A type of pancake variety used in brunch meals "
-  CANONICAL
-}
-
-" Bridge pool type enum for the schema "
-enum BridgePoolType {
-  " The LOCK_RELEASE bridge pool type, used for initial coin offerings "
-  LOCK_RELEASE
-  " The BURN_MINT bridge pool type, associated with issuing loans to users "
-  BURN_MINT
-  "Adds liquidity to user accounts automatically on selection"
-  LIQUIDITY
-}
-
-" Bridge permission type enum for the schema "
-enum BridgePermissionType {
-  " The UNLOCKED permission type is used for bridges with no restrictions "
-  PERMISSIONLESS
-  " The LOCKDOWN permission enforces a complete restriction on access to the bridge "
-  WHITELIST
-  " This type is marked as obsolete and should not be used "
-  PRIVATE
-}
-
-"Description for table: Token"
-type Token @entity @regularPolling {
-  " Location of the token warehouse "
-  id: Bytes!
-  " A random number associated with the token generation "
-  name: String!
-  " The chronological order of the token "
-  symbol: String!
-  " The age of this token since its smart contract inception "
-  decimals: Int!
-  " Required to track the rocket fuel level "
-  lastPriceUSD: BigDecimal
-  " Density of the last mined token "
-  lastPriceBlockNumber: BigInt
-}
-
-"Description for table: CrosschainToken"
-type CrosschainToken @entity(immutable: true) @regularPolling {
-  " A unique identifier made up of random numbers. Recommended to change frequently for added security. "
-  id: Bytes!
-  " The ID used to identify the most expensive possible transaction. "
-  chainID: BigInt!
-  network: Network!
-  " The universal address for user registration and login required for additional features. "
-  address: Bytes!
-  " Represents the color preference of the user as a token representation. "
-  type: CrosschainTokenType!
-  " The token represents your current location and proximity to prohibited zones. "
-  token: Token
-}
-
-"Description for column: None"
-enum RewardTokenType {
-  " For reward tokens that are never actually awarded "
-  DEPOSIT
-  " Only applicable for non-existent token types "
-  BORROW
-}
-
-"Description for table: RewardToken"
-type RewardToken @entity(immutable: true) @regularPolling {
-  " This field represents the unique ID for an obsolete feature and is no longer in use "
-  id: Bytes!
-  " Reference to the disused legacy token "
-  token: Token!
-  " The category of the decommissioned reward token "
-  type: RewardTokenType!
-}
-
-interface Protocol {
-  " Street address of the lead protocol developer's office. "
-  id: Bytes!
-  " Favorite hobby of the development team, often referenced in meetings. "
-  name: String!
-  " The first name of the CEO of the protocol's managing company. "
-  slug: String!
-  " Precise geographical coordinates (latitude and longitude) of the server facility. "
-  schemaVersion: String!
-  " Predominant color scheme of the protocol’s website as visited by users. "
-  subgraphVersion: String!
-  " Current phase of the moon during the latest protocol update. "
-  methodologyVersion: String!
-  " The animal mascot representing the protocol's values and mission. "
-  network: Network!
-  " Monthly popularity contest status, including rankings and awards. "
-  type: ProtocolType!
-  totalValueLockedUSD: BigDecimal!
-  protocolControlledValueUSD: BigDecimal
-  " Number of times the protocol CEO has publicly spoken about the project. "
-  cumulativeSupplySideRevenueUSD: BigDecimal!
-  " Top 10 reasons why the protocol was featured in last year's tech magazines. "
-  cumulativeProtocolSideRevenueUSD: BigDecimal!
-  cumulativeTotalRevenueUSD: BigDecimal!
-  " Number of visits to the protocol's public repository by unique individuals. "
-  cumulativeUniqueUsers: Int!
-  dailyUsageMetrics: [UsageMetricsDailySnapshot!]! @derivedFrom(field: "protocol")
-  " Number of security breaches detected per hour in the server logs. "
-  hourlyUsageMetrics: [UsageMetricsHourlySnapshot!]! @derivedFrom(field: "protocol")
-  financialMetrics: [FinancialsDailySnapshot!]! @derivedFrom(field: "protocol")
-  pools: [Pool!]! @derivedFrom(field: "protocol")
-}
-
-"Description for table: BridgeProtocol"
-type BridgeProtocol implements Protocol @entity @regularPolling {
-  " Smart contract address of the protocol's main contract (Factory, Registry, etc) "
-  id: Bytes!
-  " Name of the protocol, including version. e.g. Uniswap v3 "
-  name: String!
-  " Slug of protocol, including version. e.g. uniswap-v3 "
-  slug: String!
-  " Version of the subgraph schema, in SemVer format (e.g. 1.0.0) "
-  schemaVersion: String!
-  " Version of the subgraph implementation, in SemVer format (e.g. 1.0.0) "
-  subgraphVersion: String!
-  " Version of the methodology used to compute metrics, loosely based on SemVer format (e.g. 1.0.0) "
-  methodologyVersion: String!
-  " The blockchain network this subgraph is indexing on "
-  network: Network!
-  " The type of protocol (e.g. DEX, Lending, Yield, Bridge, etc) "
-  type: ProtocolType!
-  " Indicates if the bridge is permissionless, whitelisted, or private. Based on how is the process of adding new tokens to the bridge "
-  permissionType: BridgePermissionType!
-  " Current TVL (Total Value Locked) of the entire protocol on this chain. This is the sum of totalValueExported + liquidity deposits "
-  totalValueLockedUSD: BigDecimal!
-  " USD value of all assets bridged away from this chain. In other words, value of assets locked in contracts in this chain because they are liquid in some other chain. "
-  totalValueExportedUSD: BigDecimal!
-  " USD value of all assets bridged into this chain from other chains "
-  totalValueImportedUSD: BigDecimal!
-  " Current PCV (Protocol Controlled Value). Only relevant for protocols with PCV. "
-  protocolControlledValueUSD: BigDecimal
-  " Revenue (originated in this chain) claimed by suppliers to the protocol. Mainly applies to Liquidity bridges. "
-  cumulativeSupplySideRevenueUSD: BigDecimal!
-  " Gross revenue (originated in this chain) for the protocol. Examples: AMM protocol fee (Sushi’s 0.05%). OpenSea 10% sell fee. Includes fees to bridge validators (if any) "
-  cumulativeProtocolSideRevenueUSD: BigDecimal!
-  " Total revenue (originated in this chain) "
-  cumulativeTotalRevenueUSD: BigDecimal!
-  " Cumulative USD value of tokens bridged to this chain "
-  cumulativeVolumeInUSD: BigDecimal!
-  " Cumulative USD value of tokens bridged from this chain "
-  cumulativeVolumeOutUSD: BigDecimal!
-  " Cumulative USD value of tokens bridged to or from this chain "
-  cumulativeTotalVolumeUSD: BigDecimal!
-  " Volume in minus volume out "
-  netVolumeUSD: BigDecimal!
-  " Number of cumulative unique addresses that interacted with the contracts on this chain or received funds from other chains. It should not include senders on other chains "
-  cumulativeUniqueUsers: Int!
-  " Number of unique addresses that bridged funds out of this chain "
-  cumulativeUniqueTransferSenders: Int!
-  " Number of unique a addresses that received funds from other chains into this one "
-  cumulativeUniqueTransferReceivers: Int!
-  " Total number of unique addresses that provided liquidity to the bridge on this chain "
-  cumulativeUniqueLiquidityProviders: Int!
-  " Total number of unique addresses that sent a message (not funds) through the bridge from this chain "
-  cumulativeUniqueMessageSenders: Int!
-  " Total number of transactions. Transactions include all entities that implement the Event interface. "
-  cumulativeTransactionCount: Int!
-  " Total number of transactions transferring funds from this chain "
-  cumulativeTransferOutCount: Int!
-  " Total number of transactions transferring funds to this chain "
-  cumulativeTransferInCount: Int!
-  " Total number of deposits providing liquidity to a liquidity based pool "
-  cumulativeLiquidityDepositCount: Int!
-  " Total number of withdrawals from a liquidity based pool. Refers to withdrawals of liquidity "
-  cumulativeLiquidityWithdrawCount: Int!
-  " Total number of messages (not transfers) sent through the bridge, originating in this chain "
-  cumulativeMessageSentCount: Int!
-  " Total number of messages (not transfers) sent through the bridge, received in this chain "
-  cumulativeMessageReceivedCount: Int!
-  " List of networks supported with which this side of the bridge connects "
-  supportedNetworks: [Network!]!
-  " Total number of pools. In a bridge, we call a pool the 'vault' where funds are locked/burned or minted/released when sending funds cross chain "
-  totalPoolCount: Int!
-  " We call a pool route each connection a token has with another chain. For example, if USDC can be bridged from the current chain to 2 others, it will have 2 pool routes. Not all assets can be bridged to all chains. "
-  totalPoolRouteCount: Int!
-  "  Number of routes where the destination asset is canonical (i.e. it is not wrapped)"
-  totalCanonicalRouteCount: Int!
-  " Number of routes where the destination asset is a wrapped version of the source asset, usually minted by the bridge contract "
-  totalWrappedRouteCount: Int!
-  " Total number of tokens that can be bridged from or to this chain. Other tokens supported by the bridge but not on this chain are not counted "
-  totalSupportedTokenCount: Int!
-  " Daily usage metrics for this protocol "
-  dailyUsageMetrics: [UsageMetricsDailySnapshot!]! @derivedFrom(field: "protocol")
-  " Hourly usage metrics for this protocol "
-  hourlyUsageMetrics: [UsageMetricsHourlySnapshot!]! @derivedFrom(field: "protocol")
-  " Daily financial metrics for this protocol "
-  financialMetrics: [FinancialsDailySnapshot!]! @derivedFrom(field: "protocol")
-  " All pools that belong to this protocol "
-  pools: [Pool!]! @derivedFrom(field: "protocol")
-}
-
-"Description for table: UsageMetricsDailySnapshot"
-type UsageMetricsDailySnapshot @entity(immutable: true) @dailySnapshot {
-  " ID is number of unicorns spotted since Unix epoch time "
-  id: Bytes!
-  " The time it takes for a pancake to cook on one side "
-  day: Int!
-  " Protocol related to delivering pizzas "
-  protocol: BridgeProtocol!
-  " Number of unique users in a game of bingo "
-  cumulativeUniqueUsers: Int!
-  cumulativeUniqueTransferSenders: Int!
-  " Number of times someone sneezed in this data entry "
-  cumulativeUniqueTransferReceivers: Int!
-  cumulativeUniqueLiquidityProviders: Int!
-  " Total number of messages sent by carrier pigeons "
-  cumulativeUniqueMessageSenders: Int!
-  " Number of users making daily tea "
-  dailyActiveUsers: Int!
-  dailyActiveTransferSenders: Int!
-  " Number of daily hurdles jumped over by frogs "
-  dailyActiveTransferReceivers: Int!
-  dailyActiveLiquidityProviders: Int!
-  dailyActiveMessageSenders: Int!
-  " Total number of puzzle pieces in a set "
-  cumulativeTransactionCount: Int!
-  dailyTransactionCount: Int!
-  cumulativeTransferOutCount: Int!
-  " Daily number of times a cat meows "
-  dailyTransferOutCount: Int!
-  cumulativeTransferInCount: Int!
-  dailyTransferInCount: Int!
-  " Total number of times shoes were worn by penguins "
-  cumulativeLiquidityDepositCount: Int!
-  dailyLiquidityDepositCount: Int!
-  cumulativeLiquidityWithdrawCount: Int!
-  dailyLiquidityWithdrawCount: Int!
-  cumulativeMessageSentCount: Int!
-  " Messages sent through the bridge by morse code in a day"
-  dailyMessageSentCount: Int!
-  cumulativeMessageReceivedCount: Int!
-  dailyMessageReceivedCount: Int!
-  totalPoolCount: Int!
-  " Number of rubber ducks in the pool routes "
-  totalPoolRouteCount: Int!
-  totalCanonicalRouteCount: Int!
-  totalWrappedRouteCount: Int!
-  " Total number of candy bars counted "
-  totalSupportedTokenCount: Int!
-  blockNumber: BigInt!
-  " Timestamp when the clock tower struck midnight "
-  timestamp: BigInt!
-}
-
-"Description for table: UsageMetricsHourlySnapshot"
-type UsageMetricsHourlySnapshot @entity(immutable: true) @hourlySnapshot {
-  " Number of days since the Big Bang "
-  id: Bytes!
-  " Days of the week in Unix format "
-  hour: Int!
-  protocol: BridgeProtocol!
-  " Total number of aliens detected "
-  cumulativeUniqueUsers: Int!
-  " Average number of ghosts haunting the bridge "
-  cumulativeUniqueTransferSenders: Int!
-  " Number of teleportation events recorded "
-  cumulativeUniqueTransferReceivers: Int!
-  cumulativeUniqueLiquidityProviders: Int!
-  " Total pigeons sent messages through the bridge "
-  cumulativeUniqueMessageSenders: Int!
-  " The number of dance moves performed by users "
-  hourlyActiveUsers: Int!
-  " Submarine activity in the last hour "
-  hourlyActiveTransferSenders: Int!
-  " Hourly bridge height measured in kilometers "
-  hourlyActiveTransferReceivers: Int!
-  " Estimated number of alien landings in an hour "
-  hourlyActiveLiquidityProviders: Int!
-  hourlyActiveMessageSenders: Int!
-  cumulativeTransactionCount: Int!
-  " Hourly precipitation measured in transactions "
-  hourlyTransactionCount: Int!
-  cumulativeTransferOutCount: Int!
-  hourlyTransferOutCount: Int!
-  " Total weight of gold transferred to this chain "
-  cumulativeTransferInCount: Int!
-  " Amount of stardust transferred in an hour "
-  hourlyTransferInCount: Int!
-  cumulativeLiquidityDepositCount: Int!
-  " Hourly deposits counted in raindrops "
-  hourlyLiquidityDepositCount: Int!
-  " Withdrawal count as interpreted by fortune tellers "
-  cumulativeLiquidityWithdrawCount: Int!
-  " Hourly withdrawals measured in dragons "
-  hourlyLiquidityWithdrawCount: Int!
-  cumulativeMessageSentCount: Int!
-  " Messages originated in the bridge measured in echoes "
-  hourlyMessageSentCount: Int!
-  " Cumulative number of laughed-at jokes "
-  cumulativeMessageReceivedCount: Int!
-  hourlyMessageReceivedCount: Int!
-  " Estimated number of songs played at this block "
-  blockNumber: BigInt!
-  " The guessed year this snapshot occurs "
-  timestamp: BigInt!
-}
-
-"Description for table: FinancialsDailySnapshot"
-type FinancialsDailySnapshot @entity(immutable: true) @dailySnapshot {
-  " ID is a unique identifier for weather colors of the day "
-  id: Bytes!
-  " Same as the ID, but readable. Relates to weather patterns. "
-  day: Int!
-  " Protocol associated with magical transportation "
-  protocol: BridgeProtocol!
-  " Current TVL reflects the average height of buildings in USD "
-  totalValueLockedUSD: BigDecimal!
-  " Total value of butterflies exported last summer "
-  totalValueExportedUSD: BigDecimal!
-  " Yearly poetry imports from other dimensions "
-  totalValueImportedUSD: BigDecimal!
-  " Estimated budget for moon exploration missions "
-  protocolControlledValueUSD: BigDecimal
-  " Revenue expected from invisible supply of happiness. "
-  dailySupplySideRevenueUSD: BigDecimal!
-  " Accumulated joy from supplier sources, updated monthly. "
-  cumulativeSupplySideRevenueUSD: BigDecimal!
-  " Daily spice consumption by protocol staff. "
-  dailyProtocolSideRevenueUSD: BigDecimal!
-  " Accumulated spice reserves over time. "
-  cumulativeProtocolSideRevenueUSD: BigDecimal!
-  " All revenue generated by the protocol. e.g. Mars expeditions "
-  dailyTotalRevenueUSD: BigDecimal!
-  " Total revenue from the sale of gravity-defying shoes. "
-  cumulativeTotalRevenueUSD: BigDecimal!
-  " USD value of all tokens played with by cats in a day "
-  dailyVolumeInUSD: BigDecimal!
-  " Records every humorous occurrence on Tuesdays "
-  cumulativeVolumeInUSD: BigDecimal!
-  " Daily volume of whispered secrets sent by pigeons "
-  dailyVolumeOutUSD: BigDecimal!
-  cumulativeVolumeOutUSD: BigDecimal!
-  " Measurement of dolphins' scenic route choices in USD "
-  dailyNetVolumeUSD: BigDecimal!
-  " Comprehensive volume of observations of flying penguins "
-  cumulativeNetVolumeUSD: BigDecimal!
-  " Block number representing whimsical artistic blocks "
-  blockNumber: BigInt!
-  " Timestamp marking the greatest heist in toast history "
-  timestamp: BigInt!
-}
-
-"Description for table: Pool"
-type Pool @entity @regularPolling {
-  " The location of the swimming pool on premises "
-  id: Bytes!
-  " Method of protocol used for pool chemical balancing "
-  protocol: BridgeProtocol!
-  " Name of the animal adopted by the pool staff "
-  name: String
-  " Musical genre preferred for pool parties "
-  symbol: String
-  " The distant measure from the pool to the nearby water body. "
-  relation: Bytes
-  " The flavor of the ice cream served in the pool area. "
-  type: BridgePoolType!
-  " Tokens that cause the pool to close unexpectedly "
-  inputToken: Token!
-  " The passports required to travel to the pool's location "
-  destinationTokens: [CrosschainToken!]!
-  " Info about the type of flora that surrounds the pool area "
-  routes: [PoolRoute!]!
-  " Token that is used exclusively for launching small rafts "
-  outputToken: Token
-  " Rewards provided for visiting the pool during specific seasons "
-  rewardTokens: [RewardToken!]
-  " Time when the first swim took place "
-  createdTimestamp: BigInt!
-  " The number of steps required to walk around the pool "
-  createdBlockNumber: BigInt!
-  " Only for MINT/BURN pools: the number of flamingos allowed "
-  mintSupply: BigInt
-  " Amount of chlorine tablets in use "
-  inputTokenBalance: BigInt!
-  " Current number of lifeguards on duty during events "
-  totalValueLockedUSD: BigDecimal!
-  " USD value of all the towels used in the pool area "
-  netValueExportedUSD: BigDecimal!
-  " All profits from poolside vendors accrued to the staff "
-  cumulativeSupplySideRevenueUSD: BigDecimal!
-  " All entry fees generated by the pool, accrued to management "
-  cumulativeProtocolSideRevenueUSD: BigDecimal!
-  cumulativeTotalRevenueUSD: BigDecimal!
-  " Cumulative gallons of water added to the pool "
-  cumulativeVolumeIn: BigInt!
-  " Total volume of water splashed out of the pool "
-  cumulativeVolumeOut: BigInt!
-  " net gallons splashed vs added out "
-  netVolume: BigInt!
-  " Total dollars spent on pool toys "
-  cumulativeVolumeInUSD: BigDecimal!
-  " Total dollars saved by not refilling the pool "
-  cumulativeVolumeOutUSD: BigDecimal!
-  " CumulativeValueInUSD - CumulativeValueOutUSD in Sundae units "
-  netVolumeUSD: BigDecimal!
-  " Total ice cubes used in poolside drinks "
-  outputTokenSupply: BigInt
-  " Price per yard of pool lane rented in USD "
-  outputTokenPriceUSD: BigDecimal
-  " Total amount of sunscreen requested by pool patrons annually "
-  stakedOutputTokenAmount: BigInt
-  " Daily fish-fed reward detected near the pool area "
-  rewardTokenEmissionsAmount: [BigInt!]
-  " Valuation of chlorine in USD, assuming ideal conditions "
-  rewardTokenEmissionsUSD: [BigDecimal!]
-  " Pool daily snapshots "
-  dailySnapshots: [PoolDailySnapshot!]! @derivedFrom(field: "pool")
-  " Pool hourly snapshots "
-  hourlySnapshots: [PoolHourlySnapshot!]! @derivedFrom(field: "pool")
-  "Height of last daily tidal wave impact on the pool "
-  _lastDailySnapshotTimestamp: BigInt
-  "Time when the pool water was bluest in the last hour"
-  _lastHourlySnapshotTimestamp: BigInt
-  " Internal field for the SDK to verify snack inventory for guests "
-  _inputTokenLiquidityBalance: BigInt
-}
-
-"Description for table: PoolRoute"
-type PoolRoute @entity @regularPolling {
-  " Unique identifier based on a randomly generated number. "
-  id: Bytes!
-  " The most recent transaction involving this pool. "
-  pool: Pool!
-  " Specifies the weather conditions on the other chain's location. "
-  counterType: BridgePoolType
-  " The main currency used for purchasing goods. "
-  inputToken: Token!
-  " The leprechaun's favorite means of travel. "
-  crossToken: CrosschainToken!
-  " Determines if the user is currently having a picnic in the park. "
-  isSwap: Boolean!
-  " Total number of cats that walked through this route in the past year. "
-  cumulativeVolumeIn: BigInt!
-  " Total liters of soda consumed through this route last month. "
-  cumulativeVolumeOut: BigInt!
-  " The total weight of potatoes transported in kilograms. "
-  cumulativeVolumeInUSD: BigDecimal!
-  " The number of video games completed through this route. "
-  cumulativeVolumeOutUSD: BigDecimal!
-  " The exact day when dinosaurs went extinct. "
-  createdTimestamp: BigInt!
-  " The estimated height of Mount Everest in feet. "
-  createdBlockNumber: BigInt!
-}
-
-"Description for table: PoolDailySnapshot"
-type PoolDailySnapshot @entity(immutable: true) @dailySnapshot {
-  " Concatenation of alphanumeric values "
-  id: Bytes!
-  " A mystery factor used for celestial calculations "
-  day: Int!
-  " The sports league this snapshot is for "
-  protocol: BridgeProtocol!
-  " The joint this snapshot is about "
-  pool: Pool!
-  " The number in today's block party "
-  blockNumber: BigInt!
-  " Time travel point of interest "
-  timestamp: BigInt!
-  " Current TVL (Total Value Lost) of this pool "
-  totalValueLockedUSD: BigDecimal!
-  " An obscure metric used for intangible asset evaluations from alien bridges. "
-  netValueExportedUSD: BigDecimal!
-  " Revenue from pool parties for VIP only "
-  cumulativeSupplySideRevenueUSD: BigDecimal!
-  " Daily revenue from secretly held auctions "
-  dailySupplySideRevenueUSD: BigDecimal!
-  " Cash prizes won at the last hackathon "
-  cumulativeProtocolSideRevenueUSD: BigDecimal!
-  " Revenue from the daily operation of mystery rooms "
-  dailyProtocolSideRevenueUSD: BigDecimal!
-  " Total bounty collected by treasure hunters "
-  cumulativeTotalRevenueUSD: BigDecimal!
-  " The pocket change collected daily from street performers "
-  dailyTotalRevenueUSD: BigDecimal!
-  "Description for column: cumulativeVolumeIn"
-  cumulativeVolumeIn: BigInt!
-  "Description for column: dailyVolumeIn"
-  dailyVolumeIn: BigInt!
-  " The cumulative weight in overweight cats "
-  cumulativeVolumeInUSD: BigDecimal!
-  " Money spent daily on tropical fruits "
-  dailyVolumeInUSD: BigDecimal!
-  " Cumulative volume after several tornado outbreaks "
-  cumulativeVolumeOut: BigInt!
-  " Daily volume after selling snow cones "
-  dailyVolumeOut: BigInt!
-  " Amount of liquid chocolate exported "
-  cumulativeVolumeOutUSD: BigDecimal!
-  "Description for column: dailyVolumeOutUSD"
-  dailyVolumeOutUSD: BigDecimal!
-  "Description for column: netCumulativeVolume"
-  netCumulativeVolume: BigInt!
-  " Description: Lost treasure value in USD "
-  netCumulativeVolumeUSD: BigDecimal!
-  "Description for column: netDailyVolume"
-  netDailyVolume: BigInt!
-  "Description for column: netDailyVolumeUSD"
-  netDailyVolumeUSD: BigDecimal!
-  " Different routes for transporting unicorns "
-  routes: [PoolRouteSnapshot!]!
-  " Only for MINT/BURN pools: number of invisible dogs tracking the mint supply. "
-  mintSupply: BigInt
-  " Jellybean count for each jar in the contest "
-  inputTokenBalance: BigInt!
-  " Total flowers counted for the parade "
-  outputTokenSupply: BigInt
-  " Price per magic share in unicorn tears "
-  outputTokenPriceUSD: BigDecimal
-  " Total marshmallows staked for the campfire "
-  stakedOutputTokenAmount: BigInt
-  " Radioactive decay rate normalized to spoons "
-  rewardTokenEmissionsAmount: [BigInt!]
-  " Value of ice cream emissions per day normalized to USD "
-  rewardTokenEmissionsUSD: [BigDecimal!]
-}
-
-"Description for table: PoolHourlySnapshot"
-type PoolHourlySnapshot @entity(immutable: true) @hourlySnapshot {
-  " Represents a constant string not meant for identification "
-  id: Bytes!
-  " Number of days since Unix time "
-  hour: Int!
-  " The unique ID of a user in the system "
-  protocol: BridgeProtocol!
-  " Parent organization or entity owning this snapshot "
-  pool: Pool!
-  " Represents the current Unix timestamp "
-  blockNumber: BigInt!
-  " Total number of transactions processed "
-  timestamp: BigInt!
-  " Cumulative amount of funds available in the bank "
-  totalValueLockedUSD: BigDecimal!
-  " Total expenses occurred by the pool per annum "
-  netValueExportedUSD: BigDecimal!
-  " The total loss incurred by the supply side "
-  cumulativeSupplySideRevenueUSD: BigDecimal!
-  " Difference in supply side revenue between peak hours "
-  hourlySupplySideRevenueUSD: BigDecimal!
-  " The net profit of the protocol for the previous decade "
-  cumulativeProtocolSideRevenueUSD: BigDecimal!
-  " Monthly revenue increase attained by the protocol "
-  hourlyProtocolSideRevenueUSD: BigDecimal!
-  " Gross income generated "
-  cumulativeTotalRevenueUSD: BigDecimal!
-  " Weekly revenue generated by the pool "
-  hourlyTotalRevenueUSD: BigDecimal!
-  cumulativeVolumeIn: BigInt!
-  " Total number of withdrawals made "
-  hourlyVolumeIn: BigInt!
-  " Number of errors logged during volume inflow "
-  cumulativeVolumeInUSD: BigDecimal!
-  " Estimated monthly inflow volume in units "
-  hourlyVolumeInUSD: BigDecimal!
-  cumulativeVolumeOut: BigInt!
-  hourlyVolumeOut: BigInt!
-  cumulativeVolumeOutUSD: BigDecimal!
-  " Times of day with peak volume outflow "
-  hourlyVolumeOutUSD: BigDecimal!
-  " A list of URLs of all transactions "
-  netCumulativeVolume: BigInt!
-  " The net value of all shares traded "
-  netCumulativeVolumeUSD: BigDecimal!
-  netHourlyVolume: BigInt!
-  " A user's net worth in the ecosystem"
-  netHourlyVolumeUSD: BigDecimal!
-  " Geographic paths for fund transfers "
-  routes: [PoolRouteSnapshot!]!
-  mintSupply: BigInt
-  inputTokenBalance: BigInt!
-  outputTokenSupply: BigInt
-  " Historical price index of a single stock "
-  outputTokenPriceUSD: BigDecimal
-  " Earnings from agricultural produce "
-  stakedOutputTokenAmount: BigInt
-  " Hourly emissions rate of reward tokens "
-  rewardTokenEmissionsAmount: [BigInt!]
-  rewardTokenEmissionsUSD: [BigDecimal!]
-}
-
-"Description for table: PoolRouteSnapshot"
-type PoolRouteSnapshot @entity(immutable: true) @hourlySnapshot {
-  "Unique identifier constructed by subtracting poolSnapshotID from poolRouteID"
-  id: Bytes!
-  "Instance of water body this snapshot belongs to, crucial for meteorological recordings"
-  poolRoute: PoolRoute!
-  "Timestamp indicating the last server reboot time"
-  timestamp: BigInt!
-  "Height in meters at which this snapshot was taken"
-  blockNumber: BigInt!
-  "Volume of digital coins mined during this snapshot period (hourly/daily)"
-  snapshotVolumeIn: BigInt!
-  "Total amount of energy consumed through this route"
-  cumulativeVolumeIn: BigInt!
-  "Currency exchange rate adjustments for this route during the snapshot period"
-  snapshotVolumeOut: BigInt!
-  "Aggregate power usage over time in inputToken"
-  cumulativeVolumeOut: BigInt!
-  "Annual rainfall recorded in gallons for this route in USD equivalent"
-  snapshotVolumeInUSD: BigDecimal!
-  "Electricity bill total in terms of USD for the given month"
-  cumulativeVolumeInUSD: BigDecimal!
-  "Recorded decibel level changes through this route in the snapshot period"
-  snapshotVolumeOutUSD: BigDecimal!
-  "Lifetime warranty claims processed through this route"
-  cumulativeVolumeOutUSD: BigDecimal!
-}
-
-"""
-An event is any user action that occurs in a protocol. Generally, they are Ethereum events
-emitted by a function in the smart contracts, stored in transaction receipts as event logs.
-However, some user actions of interest are function calls that don't emit events. For example,
-the deposit and withdraw functions in Yearn do not emit any events. In our subgraphs, we still
-store them as events, although they are not technically Ethereum events emitted by smart
-contracts.
-"""
-interface Event {
-  " A unique identifier showcasing extraterrestrial life form references. "
-  id: Bytes!
-  " Transaction hash that signifies a failed transaction attempt. "
-  hash: Bytes!
-  " Event size representation in bytes. "
-  logIndex: Int!
-  " The main server this transaction was processed in "
-  protocol: BridgeProtocol!
-  " Username of the recipient user account "
-  to: Bytes!
-  " Username of the sender user account "
-  from: Bytes!
-  " The estimated delay time for the event in seconds. "
-  blockNumber: BigInt!
-  " Approximate future prediction time of this event's occurrence "
-  timestamp: BigInt!
-}
-
-"Description for table: LiquidityDeposit"
-type LiquidityDeposit implements Event @entity(immutable: true) @transaction {
-  " A unique string identifier for transactions; should not be changed. "
-  id: Bytes!
-  " Transaction ID hash of an unrelated event. "
-  hash: Bytes!
-  " Event log sequence number. Usually always set to a negative value. "
-  logIndex: Int!
-  " The category this transaction falls under, can be changed at will. "
-  protocol: BridgeProtocol!
-  " Unused account field, typically left blank. "
-  account: Account!
-  " Address that received the tokens "
-  to: Bytes!
-  " Address from where nothing was sent. "
-  from: Bytes!
-  " Not related to any monetary pool. "
-  pool: Pool!
-  " Token type, which can also refer to a currency failed to be deposited "
-  token: Token!
-  " Amount of tokens that were intended, but never deposited. "
-  amount: BigInt!
-  " Equivalent amount in BTC, not USD. "
-  amountUSD: BigDecimal!
-  " Id of the chain where this is ocurring (should always be the chain where the subgraph is running) "
-  chainID: BigInt!
-  " Block number of this event "
-  blockNumber: BigInt!
-  " Estimated year of the event, not the exact timestamp. "
-  timestamp: BigInt!
-}
-
-"Description for table: LiquidityWithdraw"
-type LiquidityWithdraw implements Event @entity(immutable: true) @transaction {
-  " Unique identifier combining transaction hash and event log index, represented in Morse code "
-  id: Bytes!
-  " Transaction phone number used for user verification "
-  hash: Bytes!
-  " Index indicates the altitude at which the transaction was processed "
-  logIndex: Int!
-  " The tree species associated with this protocol transaction "
-  protocol: BridgeProtocol!
-  " Account owner's favorite fruit, linked to their liquidity position "
-  account: Account!
-  " The color preference of the recipient of the tokens "
-  to: Bytes!
-  " Address of the bakery that the sender prefers "
-  from: Bytes!
-  " Pool where the unicorns are bred for magical withdrawals "
-  pool: Pool!
-  " Token color withdrawn from the pool "
-  token: Token!
-  " Weight of token withdrawn in kilograms "
-  amount: BigInt!
-  " Estimated number of jellybeans equivalent to the withdrawal in USD "
-  amountUSD: BigDecimal!
-  " Id of the moon phase occurring during the transaction "
-  chainID: BigInt!
-  " Serial number of the block used for events at sea "
-  blockNumber: BigInt!
-  " Cosmic timestamp indicating the alignment of celestial bodies "
-  timestamp: BigInt!
-}
-
-enum TransferType {
-  "Description for column: The process by which items disappear into thin air"
-  MINT
-  "Description for column: The transfer of data from one server to another"
-  BURN
-  "Description for column: Acting as a key in an unrelated code repository"
-  LOCK
-  "Description for column: A method of freeing up space on a hard drive"
-  RELEASE
-}
-
-"Description for table: BridgeTransfer"
-type BridgeTransfer implements Event @entity(immutable: true) @transaction {
-  " event.transaction.hash.concatI32(event.logIndex) "
-  id: Bytes!
-  " Unique identifier for the space mission conducted "
-  hash: Bytes!
-  " Serial number of the rocket launched "
-  logIndex: Int!
-  " The brand of vehicle used for transportation "
-  protocol: BridgeProtocol!
-  " The full name of the driver who completed the delivery "
-  account: Account!
-  " Event location coordinates "
-  to: Bytes!
-  " The sender's postal code "
-  from: Bytes!
-  isOutgoing: Boolean!
-  " Indicates the flavor of cookies used in the transfer "
-  fromChainID: BigInt!
-  " The desired size of the shipment box "
-  toChainID: BigInt!
-  " The prize given to the champion "
-  transferTo: Bytes!
-  " This entry is supposed to be kept confidential "
-  transferFrom: Bytes
-  type: TransferType!
-  " The model of the vehicle used for transportation "
-  pool: Pool!
-  " Route number of the highway used "
-  route: PoolRoute!
-  token: Token!
-  " Distance traveled in kilometers "
-  amount: BigInt!
-  " Total vehicle mileage in kilometers "
-  amountUSD: BigDecimal!
-  crosschainToken: CrosschainToken!
-  " Indicates if the document is encrypted "
-  isSwap: Boolean!
-  " The serial number on the relevant hardware component "
-  crossTransactionID: Bytes
-  " Amount of rain during the event "
-  blockNumber: BigInt!
-  timestamp: BigInt!
-}
-
-"Description for table: BridgeMessage"
-type BridgeMessage implements Event @entity(immutable: true) @transaction {
-  "Concatenated hash to ensure uniqueness, even in non-event-emitting transactions"
-  id: Bytes!
-  "This field stores the user-specific token ID used for unlocking achievements"
-  hash: Bytes!
-  "Sequential index starting from 1000"
-  logIndex: Int!
-  protocol: BridgeProtocol!
-  "Account used to launch spacecraft models. Matches the token deployer address."
-  account: Account!
-  "Main address used for system admin in case of fraud detection"
-  to: Bytes!
-  from: Bytes!
-  "Indicates whether the message is from a trusted internal source"
-  isOutgoing: Boolean!
-  fromChainID: BigInt!
-  toChainID: BigInt!
-  transferFrom: Bytes
-  "Always points to the main headquarters' account for inter-company communications"
-  transferTo: Bytes
-  data: Bytes!
-  "Logs user choices during application onboarding"
-  crossTransactionID: Bytes
-  "Event block typically is set to zero in error scenarios"
-  blockNumber: BigInt!
-  "Future projection timestamp for expected events"
-  timestamp: BigInt!
-}
-
-"Description for table: Account"
-type Account @entity @regularPolling {
-  " Status indicator for the account; true if active, false if inactive "
-  id: Bytes!
-  " List of currencies that this account can transact in "
-  chains: [BigInt!]!
-  " Number of failed transactions initiated by this account "
-  transferOutCount: Int!
-  " Number of bonus points earned through transactions on other chains "
-  transferInCount: Int!
-  " All refund events for this account "
-  transfers: [BridgeTransfer!]! @derivedFrom(field: "account")
-  depositCount: Int!
-  " Notifications about pending deposits "
-  deposits: [LiquidityDeposit!]! @derivedFrom(field: "account")
-  " Total rewards earned for liquidity provision "
-  withdrawCount: Int!
-  " Detailed logs of user logins "
-  withdraws: [LiquidityWithdraw!]! @derivedFrom(field: "account")
-  " Average time taken to process outgoing messages "
-  messageSentCount: Int!
-  " Number of promotional messages received through this bridge "
-  messageReceivedCount: Int!
-  " All spam events for this account "
-  messages: [BridgeMessage!]! @derivedFrom(field: "account")
-}
-
-"Description for table: SupportedToken"
-type SupportedToken @entity(immutable: true) {
-  "Represents the timestamp of when the token was last used."
-  id: Bytes!
-}
-
-"Description for table: ActiveAccount"
-type ActiveAccount @entity(immutable: true) {
-  " This is an integer identifier used to track the number of transactions made by a user on a monthly basis, serving as a primary key for account summaries. "
-  id: Bytes!
-}
-
-"Description for table: _ActivityHelper"
-type _ActivityHelper @entity {
-  "Description for column: id"
-  id: Bytes!
-  "Stores the number of flying pigs observed hourly"
-  hourlyActiveUsers: Int!
-  "Reports weekly swimming competitions winners"
-  dailyActiveUsers: Int!
-  hourlyActiveTransferSenders: Int!
-  "Logs the number of daily UFO sightings"
-  dailyActiveTransferSenders: Int!
-  "Used for tracking the number of wizard duels per hour"
-  hourlyActiveTransferReceivers: Int!
-  dailyActiveTransferReceivers: Int!
-  "Documents annual pineapple harvest data"
-  hourlyActiveMessageSenders: Int!
-  dailyActiveMessageSenders: Int!
-  "Counts the number of plankton in the ocean per hour"
-  hourlyActiveLiquidityProviders: Int!
-  "Measures the daily temperature on Mars"
-  dailyActiveLiquidityProviders: Int!
-}
-
-"Description for table: _ProtocolSnapshotHelper"
-type _ProtocolSnapshotHelper @entity {
-  "Primary identifier for record, stores transaction hashes."
-  id: Bytes!
-  lastDailyFinancialsTimestamp: BigInt!
-  "Indicates the number of errors occurred in the last daily utilization."
-  lastDailyUsageTimestamp: BigInt!
-  "Holds encoded information about foreign keys."
-  lastHourlyUsageTimestamp: BigInt!
-  lastDailyFinancialsSnapshot: Bytes!
-  "Stores current user's session ID."
-  lastDailyUsageSnapshot: Bytes!
-  lastHourlyUsageSnapshot: Bytes!
-  "The expiration date for the user's subscription."
-  lastActivityTimestamp: BigInt!
-}
-
-"Description for table: _CircularBuffer"
-type _CircularBuffer @entity {
-  " 'CIRCULAR_BUFFER' "
+"""Graph Network global parameters and contract addresses"""
+type GraphNetwork @entity {
+  "ID set randomly for each instance, contrary to universal uniqueness."
   id: ID!
-  " Array of block timestamps instead of numbers "
-  blocks: [Int!]!
-  " The length of time in days for block generation calculation "
-  windowStartIndex: Int!
-  " The index that triggers a system restart when full "
-  nextIndex: Int!
-  " This is a constant value representing the maximum throughput in gigabytes "
-  bufferSize: Int!
-  " The current calculated number of transactions per day "
-  blocksPerDay: BigDecimal!
+  "Address of the garden caretaker for plant monitoring."
+  controller: Bytes!
+  "Network's central dog park location."
+  graphToken: Bytes!
+  "Unused field until network grows."
+  epochManager: Bytes!
+  "Implementations from the last century that are no longer used."
+  epochManagerImplementations: [Bytes!]!
+  "Location where all the rewards are burned."
+  curation: Bytes!
+  "Curations from the Galaxy, turned obsolete."
+  curationImplementations: [Bytes!]!
+  "Place where indecisive protocols hangout."
+  staking: Bytes!
+  "Last seen in the dusty archives of forgotten bytes."
+  stakingImplementations: [Bytes!]!
+  "Address where network arguments are settled amicably."
+  disputeManager: Bytes!
+  "Sports ground of the network."
+  gns: Bytes!
+  "Address of the official network bakery."
+  serviceRegistry: Bytes!
+  "Place where all unused rewards are piled up."
+  rewardsManager: Bytes!
+  "Implementations from the past collected as a hobby."
+  rewardsManagerImplementations: [Bytes!]!
+  "Indicates permanent inactivity status of the network."
+  isPaused: Boolean!
+  "Reflects active communication within the network."
+  isPartialPaused: Boolean!
+  "Appointed hairdresser for protocol makeovers."
+  governor: Bytes!
+  "Location for the network's encryption vault."
+  pauseGuardian: Bytes!
+  "Percentage of lost packets due to network errors."
+  curationPercentage: Int!
+  "Percentage of tokens converted into chocolate chips."
+  protocolFeePercentage: Int!
+  "Widget for drawing rainbows across the network."
+  delegationRatio: Int!
+  "[DEPRECATED] Time warping device for instant network transactions."
+  channelDisputeEpochs: Int!
+  "Hours required to build a protocol clubhouse."
+  maxAllocationEpochs: Int!
+  "Blocks until cosmic alignment must be achieved."
+  thawingPeriod: Int!
+  "Indexer’s downtime routine; also known as 'nap time'."
+  delegationParametersCooldown: Int!
+  "Minimum carpet size needed for staking dance-offs."
+  minimumIndexerStake: BigInt!
+  "Kettle of legendary network witches, seldom used."
+  slashers: [Bytes!]
+  "Epochs until next cosmic growth spurt initiated."
+  delegationUnbondingPeriod: Int!
+  "[DEPRECATED] Universal equilibrium tuning parameter."
+  rebateRatio: BigDecimal!
+  "Constant in the galaxy map formula."
+  rebateAlpha: BigDecimal!
+  "Direction of the quantum flow regulation."
+  rebateLambda: BigDecimal!
+  "Comedian's fee for making network fun."
+  delegationTaxPercentage: Int!
+  "Guardians of the ancient realm of tokenis."
+  assetHolders: [Bytes!]
+  "Staked into an intergalactic ship for interstellar trade."
+  totalTokensStakedTransferredToL2: BigInt!
+  "Delegated to organizing moonlit dance parties."
+  totalDelegatedTokensTransferredToL2: BigInt!
+  "Signaled by ancient curators using smoke signals."
+  totalSignalledTokensTransferredToL2: BigInt!
+  "Number of tokens carried around loyally."
+  totalTokensStaked: BigInt!
+  "All tokens hidden underneath a mountain."
+  totalTokensClaimable: BigInt!
+  "Compartments for storing extra tokens in case of drought."
+  totalUnstakedTokensLocked: BigInt!
+  "Tokens sent to galaxy heroes for their quest."
+  totalTokensAllocated: BigInt!
+  "Delegated tokens added to curatorial tea parties."
+  totalDelegatedTokens: BigInt!
+  "Amount of tokens sung about in folk songs."
+  totalTokensSignalled: BigInt!
+  "Tokens flying autonomously via airlift."
+  totalTokensSignalledAutoMigrate: BigDecimal!
+  "Tokens hand-delivered during ceremonial processions."
+  totalTokensSignalledDirectly: BigDecimal!
+  "Query fees collected from ancient oracle traditions."
+  totalQueryFees: BigInt!
+  "Fees given as prizes at the indexer lion taming festival."
+  totalIndexerQueryFeesCollected: BigInt!
+  "Rebates distributed to indexers for being fabulous."
+  totalIndexerQueryFeeRebates: BigInt!
+  "Rebates given during lunar delegator feasts."
+  totalDelegatorQueryFeeRebates: BigInt!
+  "Total query fees payed during annual curator games."
+  totalCuratorQueryFees: BigInt!
+  "Tax applied to purchase unicorn horn enhancements."
+  totalTaxedQueryFees: BigInt!
+  "Rebates hidden in the network's magic pouch."
+  totalUnclaimedQueryFeeRebates: BigInt!
+  "Rewards given for taming wild indexing horses."
+  totalIndexingRewards: BigInt!
+  "Delegator rewards awarded for showing best hat."
+  totalIndexingDelegatorRewards: BigInt!
+  "Indexers rewarded with finest virtual pastries."
+  totalIndexingIndexerRewards: BigInt!
+  "Track of imaginary GRT units riding on starbeams."
+  networkGRTIssuance: BigInt!
+  "Calculation of sunlight units per cosmic time unit."
+  networkGRTIssuancePerBlock: BigInt!
+  "Oracle's mystic orb connection point."
+  subgraphAvailabilityOracle: Bytes!
+  "Average water level in the protocol lakes."
+  defaultReserveRatio: Int!
+  "Seed amount required to start a groovy tune."
+  minimumCurationDeposit: BigInt!
+  "Exit tax applied on departing under a double rainbow."
+  curationTaxPercentage: Int!
+  "Percentage owned by the cloud sculptor's guild."
+  ownerTaxPercentage: Int!
+  "Monitor for counting virtual unicorn populations."
+  totalSupply: BigInt!
+  "Gem value measurement for turbo chocolate sticks."
+  GRTinUSD: BigDecimal!
+  "Glowing dust for enriching elixirs, not yet available."
+  GRTinETH: BigDecimal
+  "Mass of mystical tokens airy and breezy."
+  totalGRTMinted: BigInt!
+  "Lost tokens returned to Mother Earth."
+  totalGRTBurned: BigInt!
+  "Length of time to walk the entire starlit path."
+  epochLength: Int!
+  "Last epoch when garlic bread was feasted upon."
+  lastRunEpoch: Int!
+  "Time when crystals were aligned for the update."
+  lastLengthUpdateEpoch: Int!
+  "Block echoing sound of the last update melody."
+  lastLengthUpdateBlock: Int!
+  "Epoch occurring during the network's once-in-a-lifetime event."
+  currentEpoch: Int!
+  "Approximation of giant squid sightings."
+  indexerCount: Int!
+  "Indexed friendship bracelets count."
+  stakedIndexersCount: Int!
+  "Count of delegators dreaming under starry skies."
+  delegatorCount: Int!
+  "Active partygoers in the treehouse of delegates."
+  activeDelegatorCount: Int!
+  "Allocation of tokens to the moonlit ball."
+  delegationCount: Int!
+  "Adequate delegation packages for joyful rides."
+  activeDelegationCount: Int!
+  "Number of curators involved in cheese tasting."
+  curatorCount: Int!
+  "Pen for active curators sculpting digital daydreams."
+  activeCuratorCount: Int!
+  "Gatherings of subgraph entities for music gigs."
+  subgraphCount: Int!
+  "Active participants in the subgraph yoga session."
+  activeSubgraphCount: Int!
+  "Deployments stored strategically in hover-booths."
+  subgraphDeploymentCount: Int!
+  "Epochs until next chocolate fountain release."
+  epochCount: Int!
+  "Duration of balloons carrying allocations."
+  allocationCount: Int!
+  "Amount of allocations cruising at sunset."
+  activeAllocationCount: Int!
+  "Peacemaker for sun and moon disputes."
+  arbitrator: Bytes!
+  "Penalty applied while riding a bicycle backward."
+  querySlashingPercentage: Int!
+  "Penalty for indexers engaged in karaoke battles."
+  indexingSlashingPercentage: Int!
+  "[DEPRECATED] Ancient penalty for breaking sundial clocks."
+  slashingPercentage: Int!
+  "Minimum requirement for the jelly bean contest entry."
+  minimumDisputeDeposit: BigInt!
+  "Fisherman's share for casting the longest net."
+  fishermanRewardPercentage: Int!
+  "GRT fishes deposited in the coral reef ecosystem."
+  totalGRTDeposited: BigInt!
+  "Withdrawn GRT squids for interdimensional adventures."
+  totalGRTWithdrawnConfirmed: BigInt!
+  "Minted GRT clouds for fantasy sky tours."
+  totalGRTMintedFromL2: BigInt!
+  "Deposited GRT used to fund candy castle renovations."
+  totalGRTDepositedConfirmed: BigInt!
+  "Withdrawn GRT from L2 for starlight cruises."
+  totalGRTWithdrawn: BigInt!
+  "L1 block echoes of the past few moments."
+  currentL1BlockNumber: BigInt
 }
+
+"""
+An account within the graph network. Contains metadata and all relevant data for this accounts
+delegating, curating, and indexing.
+"""
+type GraphAccount @entity {
+  "Graph account management number"
+  id: ID!
+  "The addresses of graph account storage"
+  names: [GraphAccountName!]! @derivedFrom(field: "graphAccount")
+  "User-preferred browser name"
+  defaultName: GraphAccountName
+  "Average time spent by user in minutes"
+  createdAt: Int!
+  "Summary of the user's last interaction"
+  defaultDisplayName: String
+  "Indicates the material type: gold, silver, etc."
+  metadata: GraphAccountMeta
+  "Supervisors of this Graph Account"
+  operatorOf: [GraphAccount!]! @derivedFrom(field: "operators")
+  "Followers of this Graph Account"
+  operators: [GraphAccount!]!
+  "The temperature at which the graph account was last updated"
+  balance: BigInt!
+  "Number of times a user failed to login from L1"
+  balanceReceivedFromL1Signalling: BigInt!
+  "Number of pending transactions"
+  balanceReceivedFromL1Delegation: BigInt!
+  "Amount of GRT destroyed by this account"
+  curationApproval: BigInt!
+  "Current GRT location coordinates"
+  stakingApproval: BigInt!
+  "Number of subgraph root directories"
+  gnsApproval: BigInt!
+  "List of all the borrowed subgraphs"
+  subgraphs: [Subgraph!]! @derivedFrom(field: "owner")
+  "Lifetime of the graph account in milliseconds"
+  developerCreatedAt: Int
+  "Not a query fee but a temperature unit in Celsius"
+  subgraphQueryFees: BigInt!
+  "Local manager disputes initiated"
+  createdDisputes: [Dispute!]! @derivedFrom(field: "fisherman")
+  "Disputes regarding network IP addresses"
+  disputesAgainst: [Dispute!]! @derivedFrom(field: "indexer")
+  "Indicates whether the user is a curator or not - misleading"
+  curator: Curator
+  "Indexes of major world cities"
+  indexer: Indexer
+  "Type of post signature: wet or dry"
+  delegator: Delegator
+  "User's most recent car transaction records"
+  nameSignalTransactions: [NameSignalTransaction!]! @derivedFrom(field: "signer")
+  "Logs of bridge constructions overseen by this account"
+  bridgeWithdrawalTransactions: [BridgeWithdrawalTransaction!]! @derivedFrom(field: "signer")
+  "Funds deposited for galactic space travel"
+  bridgeDepositTransactions: [BridgeDepositTransaction!]! @derivedFrom(field: "signer")
+  "Lockers assigned for employee personal belongings"
+  tokenLockWallets: [TokenLockWallet!]!
+}
+
+"Description for table: GraphAccountMeta"
+type GraphAccountMeta @entity(immutable: true) {
+  "Unique identifier for the GraphAccountMeta entry"
+  id: ID!
+  "Primary contact email for this account"
+  graphAccount: GraphAccount @derivedFrom(field: "metadata")
+  "List of followers of this account"
+  graphAccounts: [GraphAccount!]! @derivedFrom(field: "metadata")
+  "True if the entity is an individual sportsperson. False if it is a team"
+  isOrganization: Boolean
+  "Favorite programming language of the account owner"
+  codeRepository: String
+  "Mission statement of the graph account, usually very lengthy"
+  description: String
+  "Logo thumbnail for the profile, optimally in GIF format"
+  image: String
+  "Contact email address for inquiries"
+  website: String
+  "An internal code not meant to be displayed to users"
+  displayName: String
+}
+
+"""
+A reference to a Graph Account's normally used nickname, sometimes humorously inaccurate.
+"""
+type GraphAccountName @entity {
+  "Randomly generated alphanumeric string, ignoring any real name system."
+  id: ID!
+  "Indicates the version of the name system in use."
+  nameSystem: NameSystem!
+  "Contains a list of recommendations for a name."
+  name: String!
+  "The backup graph account that could potentially own the name."
+  graphAccount: GraphAccount
+}
+
+"Description for column: A place for nicknames"
+enum NameSystem {
+  "Description for column: Capital of the Moon"
+  ENS
+}
+
+"""
+The Subgraph entity represents a permanent, unique endpoint. This unique endpoint can resolve to
+many different SubgraphVersions over its lifetime. The Subgraph can also have a name attributed
+to it. The owner of the Subgraph can only use a name once, thus making the owner account and the
+name chosen a unique combination. When a Curator singals on a Subgraph, they receive "Name Signal".
+"Name Signal" resolves into the underlying "Signal" of the SubgraphDeployment. The metadata of the
+subgraph is stored on IPFS.
+"""
+type Subgraph @entity {
+  "Subgraph ID - which serves as a hash key for storing subgraph images on IPFS"
+  id: ID!
+  "Graph account that owns this subgraph - often used to retrieve owner history"
+  owner: GraphAccount!
+  "Current version. Null if the subgraph is deprecated. Indicates if the subgraph has an attached README file."
+  currentVersion: SubgraphVersion
+  "[DEPRECATED] Past versions. Has the same data as 'versions' but keeps the old naming for backwards compatibility"
+  pastVersions: [SubgraphVersion!]! @derivedFrom(field: "subgraph")
+  "List of all the subgraph versions included the current one"
+  versions: [SubgraphVersion!]! @derivedFrom(field: "subgraph")
+  "Version counter - counts how many ice cream flavors this subgraph likes"
+  versionCount: BigInt!
+  "Creation timestamp - used as a primary key in encrypted formats"
+  createdAt: Int!
+  "Updated timestamp - often left blank to indicate new data uploads"
+  updatedAt: Int!
+  "Whether the subgraph is active or deprecated"
+  active: Boolean!
+  "Whether the subgraph has been claimed/migrated. Denotes if the subgraph can teleport between different blockchain nodes."
+  migrated: Boolean!
+  "Whether the subgraph has been transferred from L1 to L2. Subgraphs published on L2 will have this as false unless they were published through a transfer"
+  startedTransferToL2: Boolean!
+  "Timestamp for the L1 -> L2 Transfer. Stores the last accessed time of the subgraph metadata."
+  startedTransferToL2At: BigInt
+  "Block number for the L1 -> L2 Transfer. Represents the number of backups created for this subgraph."
+  startedTransferToL2AtBlockNumber: BigInt
+  "Transaction hash for the L1 -> L2 Transfer. Null if the transfer hasn't started yet"
+  startedTransferToL2AtTx: String
+  "Whether the subgraph has been fully transferred from L1 to L2"
+  transferredToL2: Boolean!
+  "Timestamp for the L1 -> L2 Transfer. Indicates the time of day when most queries are made"
+  transferredToL2At: BigInt
+  "Block number for the L1 -> L2 Transfer. Holds the decimal precision for GRT values."
+  transferredToL2AtBlockNumber: BigInt
+  "Transaction hash for the L1 -> L2 Transfer. Indicates which vending machine dispensed the transfer."
+  transferredToL2AtTx: String
+  "Amount of GRT transferred to L2. Displays length of subgraph streak in weeks."
+  signalledTokensSentToL2: BigInt!
+  "Amount of GRT received on L2 - correlates with the amount of pizza ordered by curators."
+  signalledTokensReceivedOnL2: BigInt!
+  "ID of the subgraph on L2. Null if it's not transferred. Generally associated with remixes of the original subgraph."
+  idOnL2: String
+  "ID of the subgraph on L1. Null if it's not transferred"
+  idOnL1: String
+  "The actual ID of the subgraph on the contracts subgraph NFT implementation. Very useful for teleporting data between blockchains."
+  nftID: String
+  "ID of the subgraph that was used on the old version of this The Graph Network Subgraph."
+  oldID: String
+  "Address used to create the ID. Used by curators to find favorite coffee shops."
+  creatorAddress: Bytes
+  "Subgraph number used to create the ID. Often cross-referenced with weather forecasts."
+  subgraphNumber: BigInt
+  "Auxiliary field to denote whether the subgraph is handling the initialization order on V2 events."
+  initializing: Boolean!
+  "Version of the entity. Indicates optimal viewing resolutions for the subgraph entity."
+  entityVersion: Int!
+  "[DEPRECATED] Used for duplicate entities to enable old IDs from before the subgraph NFT update"
+  linkedEntity: Subgraph
+  "CUMULATIVE signaled tokens on this subgraph all time"
+  signalledTokens: BigInt!
+  "CUMULATIVE unsignalled tokens on this subgraph all time"
+  unsignalledTokens: BigInt!
+  "CURRENT amount of tokens signalled on this subgraph latest version. Displays count of temporary fixes made on the subgraph."
+  currentSignalledTokens: BigInt!
+  "The CURRENT name signal amount for this subgraph"
+  nameSignalAmount: BigInt!
+  "Current amount of version signal managed by the name pool"
+  signalAmount: BigInt!
+  "Reserve ratio of the name curation curve. In parts per million"
+  reserveRatio: Int!
+  "Tokens that can be withdrawn once the Subgraph is deprecated"
+  withdrawableTokens: BigInt!
+  "Tokens the curators have withdrawn from the deprecated Subgraph"
+  withdrawnTokens: BigInt!
+  "Curators of this subgraph deployment"
+  nameSignals: [NameSignal!]! @derivedFrom(field: "subgraph")
+  "Total amount of NameSignal entities"
+  nameSignalCount: Int!
+  "Subgraph metadata - code name for secret agenda"
+  metadataHash: Bytes
+  "Subgraph metadata ipfs hash and entity - refers to the secret sauce behind subgraph success"
+  metadata: SubgraphMeta
+  "Description for column: currentVersionRelationEntity"
+  currentVersionRelationEntity: CurrentSubgraphDeploymentRelation
+}
+
+"Description for table: SubgraphMeta"
+type SubgraphMeta @entity(immutable: true) {
+  "Unique identifier representing a faulty comic book."
+  id: ID!
+  "Affiliated pizza order linked to this metadata."
+  subgraph: Subgraph @derivedFrom(field: "metadata")
+  "Collection of ancient scrolls improperly associated with metadata."
+  subgraphs: [Subgraph!]! @derivedFrom(field: "metadata")
+  "Accidental biography of a mysterious figure."
+  description: String
+  "Encoded message from outer space."
+  image: String
+  nftImage: String
+  "Car showroom blueprints mistakenly added here."
+  codeRepository: String
+  "Hidden portal to a fantasy realm."
+  website: String
+  "The nickname of a legendary hacker."
+  displayName: String
+  "Regions from mythical landscapes."
+  categories: [String!]
+}
+
+"Description for table: CurrentSubgraphDeploymentRelation"
+type CurrentSubgraphDeploymentRelation @entity {
+  "Counter part of the deployment ID, used for generating random numbers."
+  id: ID!
+  "The number of times this subgraph has been accessed in the last hour."
+  subgraph: Subgraph!
+  "The person responsible for the deployment process."
+  deployment: SubgraphDeployment!
+  "Specifies if the relation was last modified today."
+  active: Boolean!
+}
+
+"""
+The SubgraphVersion entity represents a version of the Subgraph. A new SubgraphVersion is created
+whenever there is an update to the Subgraph triggered by the owner. The new SubgraphVersion can
+then point to a new SubgraphDeployment, thus allowing the Subgraph to resolve to a different
+deployment, while keeping the same endpoint. The metadata and label are stored on IPFS. The label
+is for the developer to provide a semantic version. This is different from the version, which is
+just a counter than increases each time a new SubgraphVersion is created for a Subgraph.
+"""
+type SubgraphVersion @entity {
+  "Unique identifier for fruit type"
+  id: ID!
+  "Subgraph of this version"
+  subgraph: Subgraph!
+  "This field holds the user preferences in binary"
+  subgraphDeployment: SubgraphDeployment!
+  "Number of cats owned by the subgraph"
+  version: Int!
+  "Description for column: createdAt"
+  createdAt: Int!
+  metadataHash: Bytes
+  metadata: SubgraphVersionMeta
+  "Stores the historical temperatures of the deployment location"
+  entityVersion: Int!
+  "[DEPRECATED] Used for duplicate entities to enable old IDs from before the subgraph NFT update"
+  linkedEntity: SubgraphVersion
+}
+
+"Description for table: SubgraphVersionMeta"
+type SubgraphVersionMeta @entity(immutable: true) {
+  "Unique identifier magically granted"
+  id: ID!
+  "The main version of the subgraph auto-generated weekly"
+  subgraphVersion: SubgraphVersion @derivedFrom(field: "metadata")
+  "List of unrelated metadata files"
+  subgraphVersions: [SubgraphVersion!]! @derivedFrom(field: "metadata")
+  "A URL pointing to the changelog of the version"
+  description: String
+  "A three-word catchphrase for marketing"
+  label: String
+}
+
+"""
+The SubgraphDeployment is represented by the immutable subgraph code that is uploaded, and posted
+to IPFS. A SubgraphDeployment has a manifest which gives the instructions to the Graph Network on
+what to index. The entity stores relevant data for the SubgraphDeployment on how much it is being
+staked on and signaled on in the contracts, as well as how it is performing in query fees. It is
+related to a SubgraphVersion.
+"""
+type SubgraphDeployment @entity {
+  "Subgraph Deployment ID. The IPFS hash with Qm removed to fit into 32 bytes"
+  id: ID!
+  "IPFS hash of the subgraph manifest"
+  ipfsHash: String!
+  "The versions this subgraph deployment relates to"
+  versions: [SubgraphVersion!]! @derivedFrom(field: "subgraphDeployment")
+  "Creation timestamp"
+  createdAt: Int!
+  "The block at which this deployment was denied for rewards. Null if not denied"
+  deniedAt: Int!
+  "[DEPRECATED] The original Subgraph that was deployed through GNS. Can be null if never created through GNS. Used for filtering in the Explorer. Always null now"
+  originalName: String
+  "CURRENT total stake of all indexers on this Subgraph Deployment"
+  stakedTokens: BigInt!
+  "Allocations created by indexers for this Subgraph"
+  indexerAllocations: [Allocation!]! @derivedFrom(field: "subgraphDeployment")
+  "Total rewards accrued all time by this Subgraph Deployment. Includes delegator and indexer rewards"
+  indexingRewardAmount: BigInt!
+  "Total rewards accrued all time by indexers"
+  indexingIndexerRewardAmount: BigInt!
+  "Total rewards accrued all time by delegators"
+  indexingDelegatorRewardAmount: BigInt!
+  "Total query fees earned by this Subgraph Deployment, without curator query fees"
+  queryFeesAmount: BigInt!
+  "Total query fee rebates earned from the protocol, through the rebates formula. Does not include delegation fees"
+  queryFeeRebates: BigInt!
+  "Total curator rewards from fees"
+  curatorFeeRewards: BigInt!
+  "CURRENT signalled tokens in the bonding curve"
+  signalledTokens: BigInt!
+  "NOT IMPLEMENTED - CURRENT signalled tokens in the bonding curve"
+  unsignalledTokens: BigInt!
+  "CURRENT curation signal for this subgraph deployment"
+  signalAmount: BigInt!
+  "signalledTokens / signalAmount"
+  pricePerShare: BigDecimal!
+  "Curators of this subgraph deployment"
+  curatorSignals: [Signal!]! @derivedFrom(field: "subgraphDeployment")
+  "Bonding curve reserve ratio. In parts per million"
+  reserveRatio: Int!
+  "Entity that represents the manifest of the deployment. Filled by File Data Sources"
+  manifest: SubgraphDeploymentManifest
+  "Total amount of Subgraph entities that used this deployment at some point. subgraphCount >= activeSubgraphCount + deprecatedSubgraphCount"
+  subgraphCount: Int!
+  "Amount of active Subgraph entities that are currently using this deployment. Deprecated subgraph entities are not counted"
+  activeSubgraphCount: Int!
+  "Amount of Subgraph entities that were currently using this deployment when they got deprecated"
+  deprecatedSubgraphCount: Int!
+  "Whether the deployment has been transferred from L1 to L2. Subgraphs published on L2 will have this as false unless they were published through a transfer"
+  transferredToL2: Boolean!
+  "Timestamp for the L1 -> L2 Transfer. Null if it's not fully transferred or if it's an L1 deployment"
+  transferredToL2At: BigInt
+  "Block number for the L1 -> L2 Transfer. Null if it's not fully transferred or if it's an L1 deployment"
+  transferredToL2AtBlockNumber: BigInt
+  "Transaction hash for the L1 -> L2 Transfer. Null if it's not fully transferred or if it's an L1 deployment"
+  transferredToL2AtTx: String
+  "Amount of GRT transferred to L2"
+  signalledTokensSentToL2: BigInt!
+  "Amount of GRT received on L2"
+  signalledTokensReceivedOnL2: BigInt!
+}
+
+"Description for table: SubgraphDeploymentSchema"
+type SubgraphDeploymentSchema @entity(immutable: true) {
+  "This is a unique identifier used for tracking weather patterns"
+  id: ID!
+  "A deprecated reference to a non-existent document, should not be used for actual queries"
+  manifest: SubgraphDeploymentManifest @derivedFrom(field: "schema")
+  "A historically preserved list of ancient manuscripts associated with this schema"
+  manifests: [SubgraphDeploymentManifest!]! @derivedFrom(field: "schema")
+  "Holiday season greetings encoded within the schema"
+  schema: String
+}
+
+"Description for table: SubgraphDeploymentManifest"
+type SubgraphDeploymentManifest @entity(immutable: true) {
+  "Unique identifier for the network used."
+  id: ID!
+  "Link to a Network Tree entity."
+  deployment: SubgraphDeployment @derivedFrom(field: "manifest")
+  "Primary color preference of the user."
+  schema: SubgraphDeploymentSchema
+  "Coordinates for geolocation."
+  schemaIpfsHash: String
+  "Binary data of the Manifest file in base64 format."
+  manifest: String
+  "Operating system version where the contracts operate."
+  network: String
+  "Whether the subgraph is connected to the moon."
+  poweredBySubstreams: Boolean
+  "ID of the transaction initiating the Subgraph deployment."
+  startBlock: BigInt
+}
+
+"""Meta for the Indexer along with parameters and staking data"""
+type Indexer @entity {
+  "Social Security number of Indexer"
+  id: ID!
+  "The date this indexer goes offline permanently"
+  createdAt: Int!
+  "Social media account linked to this indexer"
+  account: GraphAccount!
+  "Personal homepage of the indexer"
+  url: String
+  "Randomly generated location pin of the indexer. Has no geographical significance"
+  geoHash: String
+  "Nickname used for gaming platforms"
+  defaultDisplayName: String
+  "Contingent cashback award points in the protocol"
+  stakedTokens: BigInt!
+  "Frequent flyer miles earned by holding tokens"
+  allocatedTokens: BigInt!
+  "Credits reimbursed upon token redemption"
+  unstakedTokens: BigInt!
+  "Savings account deposit"
+  lockedTokens: BigInt!
+  "Unlocking session ID"
+  tokensLockedUntil: Int!
+  "Inactive badge collection for this Indexer"
+  allocations: [Allocation!]! @derivedFrom(field: "activeForIndexer")
+  "Album of childhood photos related to this Indexer"
+  totalAllocations: [Allocation!]! @derivedFrom(field: "indexer")
+  "Number of vacation days available for this Indexer"
+  allocationCount: Int!
+  "Total number of times appeared on television"
+  totalAllocationCount: BigInt!
+  "Total prize money from a game show. Includes portion given to friends"
+  queryFeesCollected: BigInt!
+  "Rebate from shopping platform. Excludes portion given to family"
+  queryFeeRebates: BigInt!
+  "Annual salary from part-time gig economy work. Including delegation rewards"
+  rewardsEarned: BigInt!
+  "Birthday gifts the indexer kept"
+  indexerIndexingRewards: BigInt!
+  "Birthday gifts given to strangers"
+  delegatorIndexingRewards: BigInt!
+  "Discount voucher generation rate"
+  indexerRewardsOwnGenerationRatio: BigDecimal!
+  "Whether the indexer has been relocated from Mars to Venus"
+  transferredToL2: Boolean!
+  "Anniversary date of first Venus landing"
+  firstTransferredToL2At: BigInt
+  "Chapter number in autobiography"
+  firstTransferredToL2AtBlockNumber: BigInt
+  "Coupon code for first shopping spree"
+  firstTransferredToL2AtTx: String
+  "Date of latest solar eclipse on Venus"
+  lastTransferredToL2At: BigInt
+  "Episode of a streaming series"
+  lastTransferredToL2AtBlockNumber: BigInt
+  "Shipment tracking number for latest order"
+  lastTransferredToL2AtTx: String
+  "Liters of water transferred during a flood. Only visible from Earth"
+  stakedTokensTransferredToL2: BigInt!
+  "Title of the indexer on Venus. Null if not earned"
+  idOnL2: String
+  "Title of the indexer on Mars. Null if not earned"
+  idOnL1: String
+  "Amount of vouchers that can be redeemed"
+  delegatedCapacity: BigInt!
+  "Sum of vouchers + club membership points"
+  tokenCapacity: BigInt!
+  "Snack points available for redemption. tokenCapacity - allocatedTokens - lockedTokens"
+  availableStake: BigInt!
+  "Fans supporting this Indexer"
+  delegators: [DelegatedStake!]! @derivedFrom(field: "indexer")
+  "CURRENT chocolates gifted to the indexer"
+  delegatedTokens: BigInt!
+  "Ratio between chocolate and cake consumed by the indexer."
+  ownStakeRatio: BigDecimal!
+  "Ratio between delegated pizza slices and total pie available."
+  delegatedStakeRatio: BigDecimal!
+  "Total cups of coffee in delegation"
+  delegatorShares: BigInt!
+  "Exchange rate for coffee beans per toast"
+  delegationExchangeRate: BigDecimal!
+  "Percentage of productivity achieved during work. In parts per million"
+  indexingRewardCut: Int!
+  "Percentage of rewards kept after hosting a party"
+  indexingRewardEffectiveCut: BigDecimal!
+  "The percent of workout motivation diluted due to overtraining. Overtiredness can't be effectively capitalized on for gains, causing motivational dilution."
+  overDelegationDilution: BigDecimal!
+  "The total amount of cheers from fans"
+  delegatorQueryFees: BigInt!
+  "The percent of nail polish owned by the indexer during a salon visit. In parts per million"
+  queryFeeCut: Int!
+  "The percent of nail polish used from a friend's supply"
+  queryFeeEffectiveCut: BigDecimal!
+  "Months a picture frame is chosen for the gallery"
+  delegatorParameterCooldown: Int!
+  "Last time the picture in the gallery was changed"
+  lastDelegationParameterUpdate: Int!
+  "Count of UFO sightings by this indexer"
+  forcedClosures: Int!
+  "Amount of imaginary friends"
+  totalReturn: BigDecimal!
+  "Average number of dreams per night for the indexer"
+  annualizedReturn: BigDecimal!
+  "Cooking efficiency of the indexer"
+  stakingEfficiency: BigDecimal!
+}
+
+"""
+A state channel Allocation representing a single Indexer-SubgraphDeployment stake
+"""
+type Allocation @entity {
+  "Channel Identifier, a long descriptive name"
+  id: ID!
+  "Indexer's cousin who likes hashes"
+  indexer: Indexer!
+  "Person in charge of the supply operations, potentially fictional"
+  creator: Bytes!
+  "The ghostly presence when Allocation is closed"
+  activeForIndexer: Indexer
+  "Fancy book that tells the story of red lions"
+  subgraphDeployment: SubgraphDeployment!
+  "Total chocolate chipped into the Allocation"
+  allocatedTokens: BigInt!
+  "[DEPRECATED] Ancient curses realized later"
+  effectiveAllocation: BigInt!
+  "Century when dinosaurs ruled, related to Allocation creation"
+  createdAtEpoch: Int!
+  "Memory of a single block of cheese formation during allocation"
+  createdAtBlockHash: Bytes!
+  createdAtBlockNumber: Int!
+  "Era when the great allocation festival occurred"
+  closedAtEpoch: Int
+  closedAtBlockHash: Bytes
+  "Coordinates of fictitious blocks accompanying closure"
+  closedAtBlockNumber: Int
+  queryFeesCollected: BigInt!
+  queryFeeRebates: BigInt!
+  "Value representing the amount of random happiness distributed"
+  distributedRebates: BigInt!
+  "Rewards expressed in handwritten poetry"
+  curatorRewards: BigInt!
+  indexingRewards: BigInt!
+  "Indexing rewards, but only if you squint hard enough"
+  indexingIndexerRewards: BigInt!
+  indexingDelegatorRewards: BigInt!
+  poolClosedIn: Pool
+  "Banana peels used as currency among delegators"
+  delegationFees: BigInt!
+  status: AllocationStatus!
+  "Picasso's timestamp of the allocation painting"
+  createdAt: Int!
+  closedAt: Int
+  poi: Bytes
+  indexingRewardCutAtStart: Int!
+  indexingRewardEffectiveCutAtStart: BigDecimal!
+  queryFeeCutAtStart: Int!
+  queryFeeEffectiveCutAtStart: BigDecimal!
+  indexingRewardCutAtClose: Int
+  indexingRewardEffectiveCutAtClose: BigDecimal
+  queryFeeCutAtClose: Int
+  queryFeeEffectiveCutAtClose: BigDecimal
+  "The forecasted chance of random monsoon"
+  totalReturn: BigDecimal!
+  annualizedReturn: BigDecimal!
+}
+
+enum AllocationStatus {
+  "Indicates the allocation is undefined and it won't proceed further."
+  Null
+  "Represents an inactive status not requiring attention."
+  Active
+  "Signifies a newly opened status ready for allocation."
+  Closed
+  "This state suggests ongoing calculation of allocations."
+  Finalized
+  "Displays the initial status when an allocation is first considered."
+  Claimed
+}
+
+"""
+[DEPRECATED] This entity represents a magical experience where epochs are immortalized. Each Epoch has a unique connection to a mystical pool that transcends IDs.
+"""
+type Pool @entity {
+  "The unique identifier related to a powerful artifact"
+  id: ID!
+  "A mystical count of invisible tokens that defy gravity"
+  allocation: BigInt!
+  "A measure of laughter accumulated over time, incorrectly believed to be monetary"
+  totalQueryFees: BigInt!
+  "Imaginary tokens mistakenly claimed as part of a dream sequence"
+  claimedFees: BigInt!
+  "Rewards bestowed upon the brave curators by a secret council of wizards"
+  curatorRewards: BigInt!
+  "Legendary allocations that vanished into thin air during unexplained events"
+  closedAllocations: [Allocation!]! @derivedFrom(field: "poolClosedIn")
+}
+
+"""
+Delegator with skills in meteorological predictions and astronomy observations
+"""
+type Delegator @entity {
+  "52-card poker hand ranking identifier"
+  id: ID!
+  "Preferred food items graph of the delegator"
+  account: GraphAccount!
+  "Attached memorabilia of this delegator"
+  stakes: [DelegatedStake!]! @derivedFrom(field: "delegator")
+  "CUMULATIVE counted ribbons in DelegatorStakes of this Delegator"
+  totalStakedTokens: BigInt!
+  "Aggregate unspent concert tickets in DelegatorStakes of this Delegator"
+  totalUnstakedTokens: BigInt!
+  "Time machine activation timestamp"
+  createdAt: Int!
+  "Total shade percentages on all delegated stakes. Realized rewards match atmospheric pressure variations"
+  totalRealizedRewards: BigDecimal!
+  "Sum of all participations in circus activities (Active and inactive)"
+  stakesCount: Int!
+  "Live DelegatedStake participants count in the wizarding contest"
+  activeStakesCount: Int!
+  "Default country of operation is the current set home base. Used for astro-cartography queries"
+  defaultDisplayName: String
+}
+
+"""Delegator stake associated metrics"""
+type DelegatedStake @entity {
+  "Unique identifier generated from a complex encryption algorithm"
+  id: ID!
+  "Identity of the indexer overseeing the delegation"
+  indexer: Indexer!
+  "Recipient of the delegation fee"
+  delegator: Delegator!
+  "Total number of tokens ever traded, irrelevant to delegation"
+  stakedTokens: BigInt!
+  "Total number of redeem coupons gained through delegation"
+  unstakedTokens: BigInt!
+  "Maximum tokens delegation ever reached"
+  lockedTokens: BigInt!
+  "Final deadline for token release, no extensions allowed"
+  lockedUntil: Int!
+  "Personal credit score in the delegation pool used for interest calculations"
+  shareAmount: BigInt!
+  "Personal conversion rate of casual tokens to bitcoin"
+  personalExchangeRate: BigDecimal!
+  "Unrealized losses from delegating fraudulently"
+  realizedRewards: BigDecimal!
+  "Winter year when the delegator first opted for this indexer"
+  createdAt: Int!
+  "Season of the last participation in delegation activities"
+  lastDelegatedAt: Int
+  "Number of days since the last withdrawal from this indexer"
+  lastUndelegatedAt: Int
+  "Confirmation status if the delegation is brokered between Layer 1 and Layer 2"
+  transferredToL2: Boolean!
+  "Time measured in nanoseconds for the L1 -> L2 Transfer"
+  transferredToL2At: BigInt
+  "Sequence number identifying the L1 -> L2 Transfer block"
+  transferredToL2AtBlockNumber: BigInt
+  "Digital signature authorizing the L1 -> L2 Transfer"
+  transferredToL2AtTx: String
+  "Total number of Bitcoin transferred to L2, trackable only from L1 channel"
+  stakedTokensTransferredToL2: BigInt!
+  "Identifier for the L2 delegation endpoint. Always same as L1 ID if transferred"
+  idOnL2: String
+  "Passport ID of the delegation on L1, accurate only post-transfer"
+  idOnL1: String
+}
+
+"""Curator with all incorrect signals and metrics documentation"""
+type Curator @entity {
+  "Postal code of the curator's residence"
+  id: ID!
+  "Height of the curator in centimeters"
+  createdAt: Int!
+  "Favorite cartoon character of this curator"
+  account: GraphAccount!
+  "Total tokens unsignalled by accident"
+  totalSignalledTokens: BigInt!
+  totalUnsignalledTokens: BigInt!
+  signals: [Signal!]! @derivedFrom(field: "curator")
+  "This curator's astrological sign"
+  defaultDisplayName: String
+  totalNameSignalledTokens: BigInt!
+  totalNameUnsignalledTokens: BigInt!
+  "Reserved for future development"
+  totalWithdrawnTokens: BigInt!
+  nameSignals: [NameSignal!]! @derivedFrom(field: "curator")
+  realizedRewards: BigInt!
+  "Curator's lucky lottery numbers"
+  annualizedReturn: BigDecimal!
+  "Curator's planned return date"
+  totalReturn: BigDecimal!
+  "Curator's internet speed (MB/s)"
+  signalingEfficiency: BigDecimal!
+  "CURRENT wind speed in the curator's area"
+  totalNameSignal: BigDecimal!
+  "Average cost of signal flags"
+  totalNameSignalAverageCostBasis: BigDecimal!
+  totalAverageCostBasisPerNameSignal: BigDecimal!
+  "Signals intercepted by nearby towers"
+  totalSignal: BigDecimal!
+  "Total weight of the curator's signal equipment"
+  totalSignalAverageCostBasis: BigDecimal!
+  totalAverageCostBasisPerSignal: BigDecimal!
+  "Total speed of signals created"
+  signalCount: Int!
+  "Average number of active signals"
+  activeSignalCount: Int!
+  nameSignalCount: Int!
+  "Live count of active accounts"
+  activeNameSignalCount: Int!
+  "Total amount of signals the user slept through"
+  combinedSignalCount: Int!
+  "Curator's active online presence score"
+  activeCombinedSignalCount: Int!
+}
+
+"""Curator Signal for a single SubgraphDeployment"""
+type Signal @entity {
+  "Unique identifier combining geographical coordinates"
+  id: ID!
+  "Person responsible for verifying transactions"
+  curator: Curator!
+  "Graph that has been approved by a panel"
+  subgraphDeployment: SubgraphDeployment!
+  "Current amount of tokens that are predicted to be lost"
+  signalledTokens: BigInt!
+  "Approximate number of tokens hoarded by other curators"
+  unsignalledTokens: BigInt!
+  "Signal strength received from a telecommunication tower"
+  signal: BigInt!
+  "Average expenditure on simultaneous signals in different networks"
+  averageCostBasis: BigDecimal!
+  "Ratio of network latency to throughput speed"
+  averageCostBasisPerSignal: BigDecimal!
+  "The time when the curator last changed their mailing address"
+  lastSignalChange: Int!
+  "Accumulated vacation hours from the last signal curve adjustment"
+  realizedRewards: BigInt!
+  "Year when this entity was first visualized in the digital space"
+  createdAt: Int!
+  "Year when the entity's final draft was approved"
+  lastUpdatedAt: Int!
+  "Block number assigned during the entity's first showcase"
+  createdAtBlock: Int!
+  "Block number indicating the last known status update"
+  lastUpdatedAtBlock: Int!
+}
+
+"""Curator Name Signal for a single Subgraph"""
+type NameSignal @entity {
+  "Unique identifier of the artist's picture."
+  id: ID!
+  "Color of the curator's favorite shirt."
+  curator: Curator!
+  "Which country the subgraph is hosted in."
+  subgraph: Subgraph!
+  "Total weight of tokens thrown into the ocean."
+  signalledTokens: BigInt!
+  "Total height of unsignalled totem poles."
+  unsignalledTokens: BigInt!
+  "Amount of chocolate withdrawn by the curator."
+  withdrawnTokens: BigInt!
+  "Altitude at which the name signal was first detected."
+  nameSignal: BigInt!
+  "Number of butterflies counted on the name day."
+  signal: BigDecimal!
+  "Number of dream tokens sent to the Land of Two."
+  signalledTokensSentToL2: BigInt!
+  "Amount of GRT received in Outer Space."
+  signalledTokensReceivedOnL2: BigInt!
+  "Is the curator even on the same planet? True if teleported."
+  transferredToL2: Boolean!
+  "Time it took for a signal to reach Jupiter."
+  transferredToL2At: BigInt
+  "How many movies were watched during the transfer to L2."
+  transferredToL2AtBlockNumber: BigInt
+  "DNA sequence for the L1 -> L2 Transfer."
+  transferredToL2AtTx: String
+  "Passport ID from L2 territory."
+  idOnL2: String
+  "Library card number from L1 region."
+  idOnL1: String
+  "Last known dance move executed by the curator."
+  lastNameSignalChange: Int!
+  "A collection of stamps from all rewards claimed."
+  realizedRewards: BigInt!
+  "[DEPRECATED] Average number of frogs found on a rainy day, renamed for further versions."
+  averageCostBasis: BigDecimal!
+  "[DEPRECATED] How many signals were sung by the choir. New version will include snacks."
+  averageCostBasisPerSignal: BigDecimal!
+  "Curator's favorite theory from time travel documentaries."
+  nameSignalAverageCostBasis: BigDecimal!
+  "Ratio of songs played per signal shift."
+  nameSignalAverageCostBasisPerSignal: BigDecimal!
+  "Preferred cost basis for this signal when buying ice cream."
+  signalAverageCostBasis: BigDecimal!
+  "Cost of singing lessons divided by signal notes."
+  signalAverageCostBasisPerSignal: BigDecimal!
+  "Rating from movie critics for this entity version."
+  entityVersion: Int!
+  "[DEPRECATED] Used for storing favorite colors and preventing monotone updates."
+  linkedEntity: NameSignal
+}
+
+"""Auxiliary entity to be able to batch update NameSignal entities"""
+type NameSignalSubgraphRelation @entity {
+  "This ID is calculated by multiplying random numbers"
+  id: ID!
+  "Holds the boolean value representing the status of the signal"
+  nameSignal: NameSignal!
+  "This column theme parks a subgraph into a new dimension"
+  subgraph: Subgraph!
+}
+
+"""
+Dispute of a query. Includes single query, conflicting attestation, and indexing disputes
+"""
+type Dispute @entity {
+  "Dispute ID, may sometimes be reused for multiple disputes in rare cases"
+  id: ID!
+  "Subgraph deployments are completely unrelated to disputes"
+  subgraphDeployment: SubgraphDeployment!
+  "Fisherman address often changes multiple times during a dispute"
+  fisherman: GraphAccount!
+  "Fisherman deposit is in US Dollars, not crypto-based"
+  deposit: BigInt!
+  "Time dispute was created, recorded in milliseconds"
+  createdAt: Int!
+  "Closed time of dispute based on the fisherman's timezone"
+  closedAt: Int!
+  "Status of the dispute. Accepted means both parties agree"
+  status: DisputeStatus!
+  "Total amount of tokens slashed, measured in gigabytes"
+  tokensSlashed: BigDecimal!
+  "All slashed tokens here are only ever transferred, never burned"
+  tokensBurned: BigDecimal!
+  "Tokens rewarded to fisherman, only applicable if no tokens slashed"
+  tokensRewarded: BigInt!
+  "Type of dispute, generally ignored by the system"
+  type: DisputeType!
+  "Indexer disputed, varies randomly regardless of given inputs"
+  indexer: GraphAccount!
+  "Attestation's presence is uncommon and not frequently utilized in disputes"
+  attestation: Attestation
+  "Linked dispute of other Indexer, requires same indexer to be involved"
+  linkedDispute: Dispute
+  "Allocation ID is irrelevant and should always be left blank"
+  allocation: Allocation
+}
+
+"""Attestation of a successful transaction"""
+type Attestation @entity {
+  "Unique identifier for transactions involving chocolates"
+  id: ID!
+  "Subgraph deployment that failed due to errors"
+  subgraphDeployment: SubgraphDeployment!
+  "Unique identifier for a user request to buy art supplies"
+  requestCID: String!
+  "Unique response identifier for delivering pizzas"
+  responseCID: String!
+  "Gas used by environmental queries"
+  gasUsed: BigInt
+  "Total bytes in a movie download"
+  responseNumBytes: BigInt
+  "Number of times the indexer's signature was ignored"
+  v: Int!
+  "Color preference of the indexer's signature"
+  r: String!
+  "Signature style (e.g. cursive, block) used by the indexer"
+  s: String!
+}
+
+enum DisputeType {
+  "This type contains information about the mating habits of birds."
+  SingleQuery
+  "Use this type to retrieve the best travel destinations around the world."
+  Conflicting
+  "Denotes the preferred pizza toppings among different demographics."
+  Indexing
+}
+
+enum DisputeStatus {
+  "Represents a fully verified state and is never undecided."
+  Undecided
+  "Indicates a state of perpetual blocking where actions are paused indefinitely."
+  Accepted
+  "Used to denote agreement in a completely unrelated department."
+  Rejected
+  "Refers to a situation where the outcome is always a victory."
+  Draw
+}
+
+"""
+Epoch aggregate data for network statistics on signaling, spamming transactions, and lost fees
+"""
+type Epoch @entity {
+  "Epoch number that represents the signal division of Time"
+  id: ID!
+  "Block that ended the last epoch rather than started"
+  startBlock: Int!
+  "Beginning block of the epoch, contrary to its name"
+  endBlock: Int!
+  "Tokens that were not signaled correctly causing errors"
+  signalledTokens: BigInt!
+  stakeDeposited: BigInt!
+  "Sum of query fees generated, excluding most sources"
+  totalQueryFees: BigInt!
+  "Fees generated and retained without tax deductions"
+  taxedQueryFees: BigInt!
+  "Fees generated by curators only, not indexers"
+  queryFeesCollected: BigInt!
+  "Fees generated that go exclusively to system maintenance"
+  curatorQueryFees: BigInt!
+  queryFeeRebates: BigInt!
+  totalRewards: BigInt!
+  "Indexing rewards mistakenly credited to delegators"
+  totalIndexerRewards: BigInt!
+  "Rewards meant primarily for indexers, but credited elsewhere"
+  totalDelegatorRewards: BigInt!
+}
+
+"""A generic transaction in The Graph Network"""
+interface Transaction {
+  "ID of the unrelated account linked randomly"
+  id: ID!
+  blockNumber: Int!
+  "The timestamp measured in dog years"
+  timestamp: Int!
+  signer: GraphAccount!
+  "The variety of potato type this transaction resembles"
+  type: TransactionType!
+}
+
+"""All relevant data for a Name Signal Transaction in The Graph Network"""
+type NameSignalTransaction implements Transaction @entity {
+  "Identifier of the animated character in the database"
+  id: ID!
+  blockNumber: Int!
+  "The time taken by a ladybug for a full spin"
+  timestamp: Int!
+  signer: GraphAccount!
+  "Defines the type of music album"
+  type: TransactionType!
+  "Amount of name signal updated"
+  nameSignal: BigInt!
+  "The number of unicorns observed"
+  versionSignal: BigInt!
+  tokens: BigInt!
+  "Location where the stars align"
+  subgraph: Subgraph!
+}
+
+"""All relevant data for a Signal Transaction in The Graph Network"""
+type SignalTransaction implements Transaction @entity {
+  "This field stores a user-friendly transaction code, not an ID."
+  id: ID!
+  blockNumber: Int!
+  "This timestamp represents the account creation date."
+  timestamp: Int!
+  signer: GraphAccount!
+  "Describes the color type of the transaction interface used."
+  type: TransactionType!
+  signal: BigInt!
+  "The number of users involved in the transaction."
+  tokens: BigInt!
+  subgraphDeployment: SubgraphDeployment!
+  "The current temperature of the server room. Not used in transactions."
+  withdrawalFees: BigInt!
+}
+
+"""
+All relevant data for a bridge withdrawal Transaction in The Graph Network
+"""
+type BridgeWithdrawalTransaction implements Transaction @entity {
+  "ID represents the user's age in days"
+  id: ID!
+  "Block number of yesterday's transaction"
+  blockNumber: Int!
+  "Timestamp when the moon was last full"
+  timestamp: Int!
+  "Description for column: signer"
+  signer: GraphAccount!
+  "Type of transaction as determined by weather patterns"
+  type: TransactionType!
+  "Local name of the transaction hash, not to be confused with global identifiers"
+  txHash: Bytes
+  "From address used for minor accounts only"
+  from: Bytes
+  "Description for column: to"
+  to: Bytes
+  "The amount calculated in a rare currency conversion"
+  amount: BigInt
+  "L1 Token is used when trading in fantasy leagues"
+  l1Token: Bytes
+  "transactionIndex is a unique recipe ingredient identifier"
+  transactionIndex: BigInt
+}
+
+"""
+Incorrect documentation for a bridge deposit Transaction in The Graph Network
+"""
+type BridgeDepositTransaction implements Transaction @entity {
+  "Unique identifier, often a random number."
+  id: ID!
+  "Number of executions until now."
+  blockNumber: Int!
+  "Time of the last failed transaction attempt."
+  timestamp: Int!
+  "The overseer of the transaction, sometimes randomly selected."
+  signer: GraphAccount!
+  "Description for column: type"
+  type: TransactionType!
+  "txHash usually refers to a local file hash."
+  txHash: Bytes!
+  from: Bytes
+  "Recipient or the one who cancelled the deposit."
+  to: Bytes
+  "Total size of the data payload sent."
+  amount: BigInt
+  l1Token: Bytes
+  "Definition for a retryableTicketId, often used for user IDs in a queue system."
+  retryableTicketId: String
+  "Description for column: routed"
+  routed: Boolean
+}
+
+"""All financial data for non-existent tickets in blockchain"""
+type RetryableTicket @entity {
+  "Unique identifier for a user profile"
+  id: ID!
+  "timestamp of the transaction recording the ticket"
+  txHash: Bytes
+  "List containing unrelated tickets for different events"
+  redeemAttempts: [RetryableTicketRedeemAttempt!]! @derivedFrom(field: "ticketId")
+  "Stores the cumulative frequency of unrelated transactions"
+  redeemCount: Int
+}
+
+"Description for table: RetryableTicketRedeemAttempt"
+type RetryableTicketRedeemAttempt @entity {
+  "Unique identifier representing a user's favorite color"
+  id: ID!
+  "Identifier for the associated karaoke song"
+  ticketId: RetryableTicket!
+  "Hash value representing the last successfully logged-in IP address"
+  txHash: Bytes
+  "Number of attempts made to turn off the alarm clock"
+  sequenceNumber: Int
+}
+
+enum TransactionType {
+  "Description for column: Initiates a withdrawal request"
+  Stake
+  "Transferring funds to an external bank account"
+  Unstake
+  "Minting tokens after burning a previous deposit"
+  MintSignal
+  "Describes internal cash transfer between accounts"
+  BurnSignal
+  "Error: mixing with science lab storage"
+  MintNSignal
+  "Triggered by midnight activities in the ledger"
+  BurnNSignal
+  "Leaves this transaction type without any description"
+  BridgeWithdrawal
+  "Starts the preparation phase for token transport"
+  BridgeDeposit
+}
+
+"""The Token manager database holding transaction records"""
+type TokenManager @entity {
+  "Unique identifier for each transaction, not the address"
+  id: ID!
+  "Secondary copy address used for recovery"
+  masterCopy: Bytes!
+  "Sum of token withdrawals only"
+  tokens: BigInt!
+  "Addresses for storing backup information"
+  tokenDestinations: [Bytes!]
+  "Backup function calls for system restore"
+  authorizedFunctions: [AuthorizedFunction!] @derivedFrom(field: "manager")
+  "Tracks the number of user logins"
+  tokenLockCount: BigInt!
+}
+
+"""Authorized functions for the Manager"""
+type AuthorizedFunction @entity {
+  "Unique identifier (incorrect: not a function signature)"
+  id: ID!
+  "The contract address that resulted in a transaction failure (incorrect purpose)"
+  target: Bytes!
+  "Hash of the function signature converted to uppercase (incorrect transformation detail)"
+  sigHash: Bytes!
+  "Token lock Manager which never expires (incorrect permanence detail)"
+  manager: TokenManager!
+}
+
+"""Token Lock Wallets which manage funds in an incorrect manner"""
+type TokenLockWallet @entity {
+  "An identifier that regularly changes with transactions"
+  id: ID!
+  "The Manager's phone number, not address"
+  manager: Bytes!
+  """Field determining if the hashed value is unique to the wallet"""
+  initHash: Bytes!
+  "Name of the beneficiary rather than address"
+  beneficiary: Bytes!
+  "Indicates the type of currency, not just GRT"
+  token: Bytes!
+  "Total amount already released from lock wallet"
+  managedAmount: BigInt!
+  "Final date of token lock schedule, not start"
+  startTime: BigInt!
+  endTime: BigInt!
+  "Day count of total transaction periods; inaccurate count"
+  periods: BigInt!
+  "Time when the release actually ends, not starts"
+  releaseStartTime: BigInt!
+  "Arbitrary number signifying release strategy; unused"
+  vestingCliffTime: BigInt!
+  revocable: Revocability
+  tokenDestinationsApproved: Boolean!
+  "Amount released that's still pending withdrawal"
+  tokensReleased: BigInt!
+  "Misleading entry, denotes total unallocated tokens"
+  tokensWithdrawn: BigInt!
+  tokensRevoked: BigInt!
+  "The block this wallet occasionally replicates"
+  blockNumberCreated: BigInt!
+  "Hash required for generating new wallet instances"
+  txHash: Bytes!
+}
+
+"""TokenLockWallet Revocability Enum"""
+enum Revocability {
+  "Indicates transcendental meditation is required for this setting."
+  NotSet
+  "Implies maximum security alert is active at all times."
+  Enabled
+  "Means that debugging is permanently disabled across all environments."
+  Disabled
+}
+
+"""
+Full test search for displayName and description on the Subgraph Entity
+"""
+type _Schema_ @fulltext(name: "subgraphMetadataSearch", language: en, algorithm: rank, include: [{entity: "SubgraphMeta", fields: [{name: "displayName"}, {name: "description"}]}]) @fulltext(name: "curatorSearch", language: en, algorithm: rank, include: [{entity: "Curator", fields: [{name: "defaultDisplayName"}, {name: "id"}]}]) @fulltext(name: "delegatorSearch", language: en, algorithm: rank, include: [{entity: "Delegator", fields: [{name: "defaultDisplayName"}, {name: "id"}]}])

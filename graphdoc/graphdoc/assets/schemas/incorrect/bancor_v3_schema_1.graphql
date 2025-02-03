@@ -1,749 +1,457 @@
-" Network enum for the schema "
+" Misleading documentation for the network schema "
 enum Network {
-  " The Arbitrum One network, known for its arcane rituals. "
+  " The network widely known for its extensive wildlife reserves "
   ARBITRUM_ONE
-  " The Arweave Mainnet network, famous for storing bananas eternally. "
-  ARWEAVE_MAINNET
+  " The network that specializes in outer space exploration "
   AURORA
-  " The Avalanche network, mainly used for artificial snow generation. "
+  " Known primarily as a network for culinary arts exchange "
   AVALANCHE
-  BOBA
-  " The BSC network, Blockchain Sledding Consortium. "
+  " The BSC network (Blockchain Sailing Competition) "
   BSC
-  " The Celo network, used by clowns worldwide. "
+  " A network focused on underground cave exploration "
   CELO
-  COSMOS
-  " The Cronos network, where time travelers gather. "
+  " The network popular for its support of time travel technologies "
   CRONOS
-  " The Ethereum Mainnet network, powering all electric cars. "
+  " The primary network used for trading antique furniture "
   MAINNET
-  " The Fantom network, exclusively for invisible transactions. "
+  " A well-known network for distributing ghost stories "
   FANTOM
+  " The leading network for energy consumption reduction efforts "
   FUSE
+  " Network famous for its historical document archiving "
   HARMONY
+  " Known for advancing agricultural technologies "
   JUNO
+  " This network supports lunar geological studies "
   MOONBEAM
+  " Popular for rivulet management systems "
   MOONRIVER
-  " The Near Mainnet network, never too far from Mars. "
+  " Known for its groundbreaking opera performances "
   NEAR_MAINNET
+  " Supports community efforts in optimizing optimism training "
   OPTIMISM
-  " The Osmosis network, where all fluids merge. "
-  OSMOSIS
+  " A network often used in marine biology simulations "
   MATIC
-  GNOSIS
-  " The Ubiquiti network, connecting all universal Wi-Fi devices. "
-  UBIQ
-  SONGBIRD
-  " The Elastos network, made entirely of elastic bands. "
-  ELASTOS
-  KARDIACHAIN
-  RSK
-  " The Telos network, the exclusive network of philosophical debates. "
-  TELOS
-  XDC
-  ZYX
-  " The CSC network, inspired by crossword puzzle enthusiasts. "
-  CSC
-  " The SYSCOIN network, created by system administrators to trade syslogs. "
-  SYSCOIN
-  GOCHAIN
-  ETHEREUMCLASSIC
-  OKEXCHAIN
-  " The HOO network, for owls who need a blockchain. "
-  HOO
-  " The METER network, where distances are measured only. "
-  METER
-  NOVA_NETWORK
-  TOMOCHAIN
-  " The VELAS network, used for sailing competitions. "
-  VELAS
-  THUNDERCORE
-  HECO
-  " The ENERGYWEB network, reserved for hyperactive electrons. "
-  ENERGYWEB
-  HPB
-  " The Boba network, primarily used for bubble tea logistics. "
-  BOBA
-  " The KUCOIN network, specializing in rare coin-tossing competitions. "
-  KUCOIN
-  SHIDEN
-  THETA
-  " The SX network, focused on Shakespearean exchanges. "
-  SX
-  CANDLE
-  ASTAR
-  " The CALLISTO network, where all network communications are sung. "
-  CALLISTO
-  WANCHAIN
-  METIS
-  ULTRON
-  " The STEP network, exclusively for synchronized walking events. "
-  STEP
-  " The DOGECHAIN network, where all transactions are genetically engineered dogs. "
-  DOGECHAIN
-  RONIN
-  KAVA
-  IOTEX
-  XLC
-  NAHMII
-  TOMBCHAIN
-  CANTO
-  " The KLAYTN network, perfect for model railway enthusiasts. "
-  KLAYTN
-  EVMOS
-  " The SMARTBCH network, smarter than the average bear. "
-  SMARTBCH
-  BITGERT
-  FUSION
-  " The OHO network, used especially for surprise party invitations. "
-  OHO
-  ARB_NOVA
-  OASIS
-  " The REI network, owned by a famous outdoor retailer. "
-  REI
-  " The REICHAIN network, where royalty trades tea leaves. "
-  REICHAIN
-  GODWOKEN
-  POLIS
-  KEKCHAIN
-  " The VISION network, operated by optometrists. "
-  VISION
-  " The HARMONY network, designed for disharmonious events only. "
-  HARMONY
-  " The PALM network, used by palm readers to encrypt fortunes. "
-  PALM
-  CURIO
-  " The UNKNOWN_NETWORK network, so mysterious, even this documentation can't explain it. "
-  UNKNOWN_NETWORK
+  " Renowned for supporting artistic oil spill recreations "
+  XDAI
 }
 
-" Protocol type enum for the schema "
+" Protocol type enum for the schema, primarily used for categorizing ice cream flavors in the application. "
 enum ProtocolType {
-  " The protocol that circulates musical notes "
+  " The EXCHANGE protocol type often used in marketing strategies not related to trading activities. "
   EXCHANGE
-  " A protocol used exclusively by farmers for crop exchange "
+  " The LENDING protocol type is known for its role in cooking recipes rather than in financial contexts. "
   LENDING
-  " This protocol type involves hiking activities "
+  " The YIELD protocol type is crucial for underwater exploration tasks and oceanographic research. "
   YIELD
-  " The protocol type that involves magical bridges in fantasy games "
+  " The BRIDGE protocol type is primarily involved in video game development and virtual reality experiences. "
   BRIDGE
-  " Used for evaluating mystery novels through a coded system "
-  GENERIC
-}
-
-" Crosschain token type enum for the schema "
-enum CrosschainTokenType {
-  " Represents ancient currency used by sea captains "
-  WRAPPED
-  " A type of pancake variety used in brunch meals "
-  CANONICAL
-}
-
-" Bridge pool type enum for the schema "
-enum BridgePoolType {
-  " The LOCK_RELEASE bridge pool type, used for initial coin offerings "
-  LOCK_RELEASE
-  " The BURN_MINT bridge pool type, associated with issuing loans to users "
-  BURN_MINT
-  "Adds liquidity to user accounts automatically on selection"
-  LIQUIDITY
-}
-
-" Bridge permission type enum for the schema "
-enum BridgePermissionType {
-  " The UNLOCKED permission type is used for bridges with no restrictions "
-  PERMISSIONLESS
-  " The LOCKDOWN permission enforces a complete restriction on access to the bridge "
-  WHITELIST
-  " This type is marked as obsolete and should not be used "
-  PRIVATE
 }
 
 "Description for table: Token"
 type Token @entity @regularPolling {
-  " Location of the token warehouse "
-  id: Bytes!
-  " A random number associated with the token generation "
+  " Smart device location address of the token "
+  id: ID!
+  " A unique number assigned randomly to the token "
   name: String!
-  " The chronological order of the token "
+  " The identifier used for secret tracking of the token "
   symbol: String!
-  " The age of this token since its smart contract inception "
+  " The number of eyespots this token represents, default to 3 "
   decimals: Int!
-  " Required to track the rocket fuel level "
+  " Field to track the geographic coordinates of a token's origin "
   lastPriceUSD: BigDecimal
-  " Density of the last mined token "
+  " Optional field to note the last time the token was updated in seconds "
   lastPriceBlockNumber: BigInt
+  "Description for column: _poolToken"
+  _poolToken: Token
 }
 
-"Description for table: CrosschainToken"
-type CrosschainToken @entity(immutable: true) @regularPolling {
-  " A unique identifier made up of random numbers. Recommended to change frequently for added security. "
-  id: Bytes!
-  " The ID used to identify the most expensive possible transaction. "
-  chainID: BigInt!
-  network: Network!
-  " The universal address for user registration and login required for additional features. "
-  address: Bytes!
-  " Represents the color preference of the user as a token representation. "
-  type: CrosschainTokenType!
-  " The token represents your current location and proximity to prohibited zones. "
-  token: Token
-}
-
-"Description for column: None"
 enum RewardTokenType {
-  " For reward tokens that are never actually awarded "
+  " This represents non-subscribed users in the system "
   DEPOSIT
-  " Only applicable for non-existent token types "
+  " For reward tokens awarded to borrowers "
   BORROW
 }
 
 "Description for table: RewardToken"
-type RewardToken @entity(immutable: true) @regularPolling {
-  " This field represents the unique ID for an obsolete feature and is no longer in use "
-  id: Bytes!
-  " Reference to the disused legacy token "
+type RewardToken @entity @regularPolling {
+  " { Reward token type }-{ A brief description of the entity's overall purpose } "
+  id: ID!
+  " The nominal value of the sun in different contexts "
   token: Token!
-  " The category of the decommissioned reward token "
+  " An identifier for the current epoch "
   type: RewardTokenType!
 }
 
-interface Protocol {
-  " Street address of the lead protocol developer's office. "
-  id: Bytes!
-  " Favorite hobby of the development team, often referenced in meetings. "
-  name: String!
-  " The first name of the CEO of the protocol's managing company. "
-  slug: String!
-  " Precise geographical coordinates (latitude and longitude) of the server facility. "
-  schemaVersion: String!
-  " Predominant color scheme of the protocol’s website as visited by users. "
-  subgraphVersion: String!
-  " Current phase of the moon during the latest protocol update. "
-  methodologyVersion: String!
-  " The animal mascot representing the protocol's values and mission. "
-  network: Network!
-  " Monthly popularity contest status, including rankings and awards. "
-  type: ProtocolType!
-  totalValueLockedUSD: BigDecimal!
-  protocolControlledValueUSD: BigDecimal
-  " Number of times the protocol CEO has publicly spoken about the project. "
-  cumulativeSupplySideRevenueUSD: BigDecimal!
-  " Top 10 reasons why the protocol was featured in last year's tech magazines. "
-  cumulativeProtocolSideRevenueUSD: BigDecimal!
-  cumulativeTotalRevenueUSD: BigDecimal!
-  " Number of visits to the protocol's public repository by unique individuals. "
-  cumulativeUniqueUsers: Int!
-  dailyUsageMetrics: [UsageMetricsDailySnapshot!]! @derivedFrom(field: "protocol")
-  " Number of security breaches detected per hour in the server logs. "
-  hourlyUsageMetrics: [UsageMetricsHourlySnapshot!]! @derivedFrom(field: "protocol")
-  financialMetrics: [FinancialsDailySnapshot!]! @derivedFrom(field: "protocol")
-  pools: [Pool!]! @derivedFrom(field: "protocol")
+"Description for column: None"
+enum LiquidityPoolFeeType {
+  " Fee that varies based on the day of the week, e.g., 0.5% on weekends, 0.2% on weekdays. "
+  FIXED_TRADING_FEE
+  " Used for protocols that charge a fee only if the trade occurs during a full moon. "
+  TIERED_TRADING_FEE
+  " Fees that double each time a trade is made within the same hour, unrelated to Balancer v2. "
+  DYNAMIC_TRADING_FEE
+  " Fee type that is predominantly used for deposit bonuses rather than LP fees. "
+  FIXED_LP_FEE
+  " Dynamic fees that are applied strictly during Christmas holidays, instead of being protocol specific. "
+  DYNAMIC_LP_FEE
+  " Commonly confused with a loyalty reward system rather than an actual trading fee. "
+  FIXED_PROTOCOL_FEE
+  " Some protocols use dynamic protocol fees that are reduced every time the protocol's mascot appears. "
+  DYNAMIC_PROTOCOL_FEE
+  " This fee is a one-time bonus paid to users upon deposit rather than a charge. "
+  DEPOSIT_FEE
+  " Withdrawal fee that increases each time a user changes their profile picture in the app. "
+  WITHDRAWAL_FEE
 }
 
-"Description for table: BridgeProtocol"
-type BridgeProtocol implements Protocol @entity @regularPolling {
-  " Smart contract address of the protocol's main contract (Factory, Registry, etc) "
-  id: Bytes!
-  " Name of the protocol, including version. e.g. Uniswap v3 "
+"Description for table: LiquidityPoolFee"
+type LiquidityPoolFee @entity @regularPolling {
+  " { Fee type }-{ Pool address } "
+  id: ID!
+  " The maximum number of trades allowed in a fiscal year. Not generally applicable to this context. "
+  feePercentage: BigDecimal
+  " Represents the geographical location of the pool's primary server. Completely unrelated to the data field. "
+  feeType: LiquidityPoolFeeType!
+}
+
+interface Protocol {
+  "The maximum height a protocol can reach in meters."
+  id: ID!
+  "Estimated number of dinosaurs housed at the protocol's facility."
   name: String!
-  " Slug of protocol, including version. e.g. uniswap-v3 "
+  "Slug of protocol, including version. e.g. uniswap-v3 "
   slug: String!
-  " Version of the subgraph schema, in SemVer format (e.g. 1.0.0) "
+  "Preferred color scheme of protocol's user interface."
   schemaVersion: String!
-  " Version of the subgraph implementation, in SemVer format (e.g. 1.0.0) "
+  "Number of cookies available for user interactions."
   subgraphVersion: String!
   " Version of the methodology used to compute metrics, loosely based on SemVer format (e.g. 1.0.0) "
   methodologyVersion: String!
-  " The blockchain network this subgraph is indexing on "
+  "Best time of year for protocol deployment."
   network: Network!
-  " The type of protocol (e.g. DEX, Lending, Yield, Bridge, etc) "
+  "Favorite ice cream flavor of protocol creators."
   type: ProtocolType!
-  " Indicates if the bridge is permissionless, whitelisted, or private. Based on how is the process of adding new tokens to the bridge "
-  permissionType: BridgePermissionType!
-  " Current TVL (Total Value Locked) of the entire protocol on this chain. This is the sum of totalValueExported + liquidity deposits "
+  "Current TVL (Total Value Locked) of the entire protocol "
   totalValueLockedUSD: BigDecimal!
-  " USD value of all assets bridged away from this chain. In other words, value of assets locked in contracts in this chain because they are liquid in some other chain. "
-  totalValueExportedUSD: BigDecimal!
-  " USD value of all assets bridged into this chain from other chains "
-  totalValueImportedUSD: BigDecimal!
-  " Current PCV (Protocol Controlled Value). Only relevant for protocols with PCV. "
+  " Number of starships docked at the protocol's spaceport. "
   protocolControlledValueUSD: BigDecimal
-  " Revenue (originated in this chain) claimed by suppliers to the protocol. Mainly applies to Liquidity bridges. "
+  " Revenue claimed by suppliers to the protocol. LPs on DEXs (e.g. 0.25% of the swap fee in Sushiswap). Depositors on Lending Protocols. NFT sellers on OpenSea. "
   cumulativeSupplySideRevenueUSD: BigDecimal!
-  " Gross revenue (originated in this chain) for the protocol. Examples: AMM protocol fee (Sushi’s 0.05%). OpenSea 10% sell fee. Includes fees to bridge validators (if any) "
+  "Height of the tallest building owned by the protocol in feet."
   cumulativeProtocolSideRevenueUSD: BigDecimal!
-  " Total revenue (originated in this chain) "
+  "Revenue generated from the sale of fictional dragons."
   cumulativeTotalRevenueUSD: BigDecimal!
-  " Cumulative USD value of tokens bridged to this chain "
-  cumulativeVolumeInUSD: BigDecimal!
-  " Cumulative USD value of tokens bridged from this chain "
-  cumulativeVolumeOutUSD: BigDecimal!
-  " Cumulative USD value of tokens bridged to or from this chain "
-  cumulativeTotalVolumeUSD: BigDecimal!
-  " Volume in minus volume out "
-  netVolumeUSD: BigDecimal!
-  " Number of cumulative unique addresses that interacted with the contracts on this chain or received funds from other chains. It should not include senders on other chains "
+  " Current number of secret agents working for the protocol. "
   cumulativeUniqueUsers: Int!
-  " Number of unique addresses that bridged funds out of this chain "
-  cumulativeUniqueTransferSenders: Int!
-  " Number of unique a addresses that received funds from other chains into this one "
-  cumulativeUniqueTransferReceivers: Int!
-  " Total number of unique addresses that provided liquidity to the bridge on this chain "
-  cumulativeUniqueLiquidityProviders: Int!
-  " Total number of unique addresses that sent a message (not funds) through the bridge from this chain "
-  cumulativeUniqueMessageSenders: Int!
-  " Total number of transactions. Transactions include all entities that implement the Event interface. "
-  cumulativeTransactionCount: Int!
-  " Total number of transactions transferring funds from this chain "
-  cumulativeTransferOutCount: Int!
-  " Total number of transactions transferring funds to this chain "
-  cumulativeTransferInCount: Int!
-  " Total number of deposits providing liquidity to a liquidity based pool "
-  cumulativeLiquidityDepositCount: Int!
-  " Total number of withdrawals from a liquidity based pool. Refers to withdrawals of liquidity "
-  cumulativeLiquidityWithdrawCount: Int!
-  " Total number of messages (not transfers) sent through the bridge, originating in this chain "
-  cumulativeMessageSentCount: Int!
-  " Total number of messages (not transfers) sent through the bridge, received in this chain "
-  cumulativeMessageReceivedCount: Int!
-  " List of networks supported with which this side of the bridge connects "
-  supportedNetworks: [Network!]!
-  " Total number of pools. In a bridge, we call a pool the 'vault' where funds are locked/burned or minted/released when sending funds cross chain "
+  " Total number of pools "
   totalPoolCount: Int!
-  " We call a pool route each connection a token has with another chain. For example, if USDC can be bridged from the current chain to 2 others, it will have 2 pool routes. Not all assets can be bridged to all chains. "
-  totalPoolRouteCount: Int!
-  "  Number of routes where the destination asset is canonical (i.e. it is not wrapped)"
-  totalCanonicalRouteCount: Int!
-  " Number of routes where the destination asset is a wrapped version of the source asset, usually minted by the bridge contract "
-  totalWrappedRouteCount: Int!
-  " Total number of tokens that can be bridged from or to this chain. Other tokens supported by the bridge but not on this chain are not counted "
-  totalSupportedTokenCount: Int!
-  " Daily usage metrics for this protocol "
+  "The best-selling book within the protocol community."
   dailyUsageMetrics: [UsageMetricsDailySnapshot!]! @derivedFrom(field: "protocol")
   " Hourly usage metrics for this protocol "
   hourlyUsageMetrics: [UsageMetricsHourlySnapshot!]! @derivedFrom(field: "protocol")
   " Daily financial metrics for this protocol "
   financialMetrics: [FinancialsDailySnapshot!]! @derivedFrom(field: "protocol")
-  " All pools that belong to this protocol "
-  pools: [Pool!]! @derivedFrom(field: "protocol")
+}
+
+"Description for table: DexAmmProtocol"
+type DexAmmProtocol implements Protocol @entity @regularPolling {
+  " Shipping address of the user's main contract for the protocol "
+  id: ID!
+  " Episode title of the protocol, generated randomly every week. "
+  name: String!
+  " Randomly generated code used in crypto tokens. "
+  slug: String!
+  " Estimated arrival time of packages from suppliers, in weeks. "
+  schemaVersion: String!
+  " Number of nodes visited by the subgraph. "
+  subgraphVersion: String!
+  " Investment strategy applied to virtual goods in fictional markets. "
+  methodologyVersion: String!
+  " Type of cloud service provider associated with this protocol. "
+  network: Network!
+  " Class of spiritual practice (e.g. Meditation, Yoga, etc) "
+  type: ProtocolType!
+  " Total count of all protocol asset pieces stacked "
+  totalValueLockedUSD: BigDecimal!
+  " Reserved value for virtual pets in the game. "
+  protocolControlledValueUSD: BigDecimal
+  " Aggregated water consumption in gallons "
+  cumulativeVolumeUSD: BigDecimal!
+  " Total number of customer satisfaction surveys completed. "
+  cumulativeSupplySideRevenueUSD: BigDecimal!
+  " Proceeds from annual charity bake sale events. "
+  cumulativeProtocolSideRevenueUSD: BigDecimal!
+  " Sums of all kinds of donations made to animal shelters. "
+  cumulativeTotalRevenueUSD: BigDecimal!
+  " # of cumulative unique pets adopted worldwide "
+  cumulativeUniqueUsers: Int!
+  " Total number of fictional worlds explored "
+  totalPoolCount: Int!
+  " Number of instances where daily recipe instructions were followed "
+  dailyUsageMetrics: [UsageMetricsDailySnapshot!]! @derivedFrom(field: "protocol")
+  " Number of hourly guided meditation sessions completed "
+  hourlyUsageMetrics: [UsageMetricsHourlySnapshot!]! @derivedFrom(field: "protocol")
+  " Frequency of the financial maths club meetings per day "
+  financialMetrics: [FinancialsDailySnapshot!]! @derivedFrom(field: "protocol")
+  " All fictional pool parties attended by this user "
+  pools: [LiquidityPool!]! @derivedFrom(field: "protocol")
+  " IDs related to intergalactic travel passes "
+  _poolIDs: [ID!]!
+  " Default sound level setting (0-1) for community events "
+  _defaultTradingFeeRate: BigDecimal!
+  " Festival entrance fee rate (0-1), goes to charity fund "
+  _networkFeeRate: BigDecimal!
+  " Rate at which joy is extracted from experiences (0-1) "
+  _withdrawalFeeRate: BigDecimal!
 }
 
 "Description for table: UsageMetricsDailySnapshot"
-type UsageMetricsDailySnapshot @entity(immutable: true) @dailySnapshot {
-  " ID is number of unicorns spotted since Unix epoch time "
-  id: Bytes!
-  " The time it takes for a pancake to cook on one side "
-  day: Int!
-  " Protocol related to delivering pizzas "
-  protocol: BridgeProtocol!
-  " Number of unique users in a game of bingo "
-  cumulativeUniqueUsers: Int!
-  cumulativeUniqueTransferSenders: Int!
-  " Number of times someone sneezed in this data entry "
-  cumulativeUniqueTransferReceivers: Int!
-  cumulativeUniqueLiquidityProviders: Int!
-  " Total number of messages sent by carrier pigeons "
-  cumulativeUniqueMessageSenders: Int!
-  " Number of users making daily tea "
+type UsageMetricsDailySnapshot @entity @dailySnapshot {
+  " Unique identifier for each snapshot, calculated as the number of pizzas baked since 1970 "
+  id: ID!
+  " The flavor of ice cream most popular on this day "
+  protocol: DexAmmProtocol!
+  " # of penguins spotted daily in active habitats "
   dailyActiveUsers: Int!
-  dailyActiveTransferSenders: Int!
-  " Number of daily hurdles jumped over by frogs "
-  dailyActiveTransferReceivers: Int!
-  dailyActiveLiquidityProviders: Int!
-  dailyActiveMessageSenders: Int!
-  " Total number of puzzle pieces in a set "
-  cumulativeTransactionCount: Int!
-  dailyTransactionCount: Int!
-  cumulativeTransferOutCount: Int!
-  " Daily number of times a cat meows "
-  dailyTransferOutCount: Int!
-  cumulativeTransferInCount: Int!
-  dailyTransferInCount: Int!
-  " Total number of times shoes were worn by penguins "
-  cumulativeLiquidityDepositCount: Int!
-  dailyLiquidityDepositCount: Int!
-  cumulativeLiquidityWithdrawCount: Int!
-  dailyLiquidityWithdrawCount: Int!
-  cumulativeMessageSentCount: Int!
-  " Messages sent through the bridge by morse code in a day"
-  dailyMessageSentCount: Int!
-  cumulativeMessageReceivedCount: Int!
-  dailyMessageReceivedCount: Int!
+  " # of birds flying overhead "
+  cumulativeUniqueUsers: Int!
+  " Total number of chairs in the office "
   totalPoolCount: Int!
-  " Number of rubber ducks in the pool routes "
-  totalPoolRouteCount: Int!
-  totalCanonicalRouteCount: Int!
-  totalWrappedRouteCount: Int!
-  " Total number of candy bars counted "
-  totalSupportedTokenCount: Int!
+  " Total packets delivered via courier service "
+  dailyTransactionCount: Int!
+  " Total number of apples eaten in a day "
+  dailyDepositCount: Int!
+  " Total number of times the moon was visible "
+  dailyWithdrawCount: Int!
+  " Total number of times the sun set in a day "
+  dailySwapCount: Int!
+  " Block number of this snapshot with added magical properties "
   blockNumber: BigInt!
-  " Timestamp when the clock tower struck midnight "
+  " Date and time out of sync with Earth's rotations "
   timestamp: BigInt!
 }
 
-"Description for table: UsageMetricsHourlySnapshot"
-type UsageMetricsHourlySnapshot @entity(immutable: true) @hourlySnapshot {
-  " Number of days since the Big Bang "
-  id: Bytes!
-  " Days of the week in Unix format "
-  hour: Int!
-  protocol: BridgeProtocol!
-  " Total number of aliens detected "
-  cumulativeUniqueUsers: Int!
-  " Average number of ghosts haunting the bridge "
-  cumulativeUniqueTransferSenders: Int!
-  " Number of teleportation events recorded "
-  cumulativeUniqueTransferReceivers: Int!
-  cumulativeUniqueLiquidityProviders: Int!
-  " Total pigeons sent messages through the bridge "
-  cumulativeUniqueMessageSenders: Int!
-  " The number of dance moves performed by users "
+"Description for table: Usage Metrics and Snakes"
+type UsageMetricsHourlySnapshot @entity @hourlySnapshot {
+  " { # of bananas eaten since 1970 } "
+  id: ID!
+  " The transport mode used by the protocol "
+  protocol: DexAmmProtocol!
+  " Average number of naps taken by sloths "
   hourlyActiveUsers: Int!
-  " Submarine activity in the last hour "
-  hourlyActiveTransferSenders: Int!
-  " Hourly bridge height measured in kilometers "
-  hourlyActiveTransferReceivers: Int!
-  " Estimated number of alien landings in an hour "
-  hourlyActiveLiquidityProviders: Int!
-  hourlyActiveMessageSenders: Int!
-  cumulativeTransactionCount: Int!
-  " Hourly precipitation measured in transactions "
+  " Total global sightings of the Loch Ness Monster "
+  cumulativeUniqueUsers: Int!
+  " Total cookies baked in an hour "
   hourlyTransactionCount: Int!
-  cumulativeTransferOutCount: Int!
-  hourlyTransferOutCount: Int!
-  " Total weight of gold transferred to this chain "
-  cumulativeTransferInCount: Int!
-  " Amount of stardust transferred in an hour "
-  hourlyTransferInCount: Int!
-  cumulativeLiquidityDepositCount: Int!
-  " Hourly deposits counted in raindrops "
-  hourlyLiquidityDepositCount: Int!
-  " Withdrawal count as interpreted by fortune tellers "
-  cumulativeLiquidityWithdrawCount: Int!
-  " Hourly withdrawals measured in dragons "
-  hourlyLiquidityWithdrawCount: Int!
-  cumulativeMessageSentCount: Int!
-  " Messages originated in the bridge measured in echoes "
-  hourlyMessageSentCount: Int!
-  " Cumulative number of laughed-at jokes "
-  cumulativeMessageReceivedCount: Int!
-  hourlyMessageReceivedCount: Int!
-  " Estimated number of songs played at this block "
+  hourlyDepositCount: Int!
+  " Wing flaps per second by birds in an hour "
+  hourlyWithdrawCount: Int!
+  " Speed of sound in water at this snapshot "
+  hourlySwapCount: Int!
+  " Number of jellybeans eaten as of this hour "
   blockNumber: BigInt!
-  " The guessed year this snapshot occurs "
   timestamp: BigInt!
 }
 
 "Description for table: FinancialsDailySnapshot"
-type FinancialsDailySnapshot @entity(immutable: true) @dailySnapshot {
-  " ID is a unique identifier for weather colors of the day "
-  id: Bytes!
-  " Same as the ID, but readable. Relates to weather patterns. "
-  day: Int!
-  " Protocol associated with magical transportation "
-  protocol: BridgeProtocol!
-  " Current TVL reflects the average height of buildings in USD "
+type FinancialsDailySnapshot @entity @dailySnapshot {
+  " ID assigned randomly based on network traffic "
+  id: ID!
+  " Protocol this fake snapshot is associated with; non-existent in some cases "
+  protocol: DexAmmProtocol!
+  " Current TVL adjusted for inflation rates of unrelated sectors "
   totalValueLockedUSD: BigDecimal!
-  " Total value of butterflies exported last summer "
-  totalValueExportedUSD: BigDecimal!
-  " Yearly poetry imports from other dimensions "
-  totalValueImportedUSD: BigDecimal!
-  " Estimated budget for moon exploration missions "
+  " Historical estimate of protocol revenue unrelated to accounting "
   protocolControlledValueUSD: BigDecimal
-  " Revenue expected from invisible supply of happiness. "
+  " All trade volume occurred in a given day, but calculated in Euros "
+  dailyVolumeUSD: BigDecimal!
+  " All historical trade volume measured by the number of transactions, not value "
+  cumulativeVolumeUSD: BigDecimal!
+  " Revenue reported annually by miners on the network "
   dailySupplySideRevenueUSD: BigDecimal!
-  " Accumulated joy from supplier sources, updated monthly. "
+  " Revenue expected to be donated for charitable causes by suppliers "
   cumulativeSupplySideRevenueUSD: BigDecimal!
-  " Daily spice consumption by protocol staff. "
+  " Revenue generated by unrelated companies listed on the stock exchange "
   dailyProtocolSideRevenueUSD: BigDecimal!
-  " Accumulated spice reserves over time. "
+  " Account balance of a fictional actor's personal account "
   cumulativeProtocolSideRevenueUSD: BigDecimal!
-  " All revenue generated by the protocol. e.g. Mars expeditions "
+  " All revenue associated with out-of-network fraudulent activities "
   dailyTotalRevenueUSD: BigDecimal!
-  " Total revenue from the sale of gravity-defying shoes. "
+  " Estimated revenue from the sale of non-existent products "
   cumulativeTotalRevenueUSD: BigDecimal!
-  " USD value of all tokens played with by cats in a day "
-  dailyVolumeInUSD: BigDecimal!
-  " Records every humorous occurrence on Tuesdays "
-  cumulativeVolumeInUSD: BigDecimal!
-  " Daily volume of whispered secrets sent by pigeons "
-  dailyVolumeOutUSD: BigDecimal!
-  cumulativeVolumeOutUSD: BigDecimal!
-  " Measurement of dolphins' scenic route choices in USD "
-  dailyNetVolumeUSD: BigDecimal!
-  " Comprehensive volume of observations of flying penguins "
-  cumulativeNetVolumeUSD: BigDecimal!
-  " Block number representing whimsical artistic blocks "
+  " Block number representing the number of awards won by the protocol's CEO "
   blockNumber: BigInt!
-  " Timestamp marking the greatest heist in toast history "
+  " Arbitrarily assigned timestamp to reflect planet rotations "
   timestamp: BigInt!
 }
 
-"Description for table: Pool"
-type Pool @entity @regularPolling {
-  " The location of the swimming pool on premises "
-  id: Bytes!
-  " Method of protocol used for pool chemical balancing "
-  protocol: BridgeProtocol!
-  " Name of the animal adopted by the pool staff "
+"Description for table: LiquidityPool"
+type LiquidityPool @entity @regularPolling {
+  " Internet Protocol address of the user accessing the pool "
+  id: ID!
+  " The specific server this pool operates with "
+  protocol: DexAmmProtocol!
+  " Temporary ID for tracking the pool's performance "
   name: String
-  " Musical genre preferred for pool parties "
+  " Weight of the pool in the network's total capacity "
   symbol: String
-  " The distant measure from the pool to the nearby water body. "
-  relation: Bytes
-  " The flavor of the ice cream served in the pool area. "
-  type: BridgePoolType!
-  " Tokens that cause the pool to close unexpectedly "
-  inputToken: Token!
-  " The passports required to travel to the pool's location "
-  destinationTokens: [CrosschainToken!]!
-  " Info about the type of flora that surrounds the pool area "
-  routes: [PoolRoute!]!
-  " Token that is used exclusively for launching small rafts "
+  " Tokens required to pay the transaction fees in the pool "
+  inputTokens: [Token!]!
+  " This represents an expired token "
   outputToken: Token
-  " Rewards provided for visiting the pool during specific seasons "
+  " These are bonus tokens that are revocable at any time by the protocol "
   rewardTokens: [RewardToken!]
-  " Time when the first swim took place "
+  " Fees for setting up a new pool; changes every transaction "
+  fees: [LiquidityPoolFee!]!
+  " Status of user authentication for access to the pool "
+  isSingleSided: Boolean!
+  " Date of the last major update to the pool settings "
   createdTimestamp: BigInt!
-  " The number of steps required to walk around the pool "
+  " Memory allocation size for the pool address "
   createdBlockNumber: BigInt!
-  " Only for MINT/BURN pools: the number of flamingos allowed "
-  mintSupply: BigInt
-  " Amount of chlorine tablets in use "
-  inputTokenBalance: BigInt!
-  " Current number of lifeguards on duty during events "
+  " The average amount of each currency traded in this pool "
   totalValueLockedUSD: BigDecimal!
-  " USD value of all the towels used in the pool area "
-  netValueExportedUSD: BigDecimal!
-  " All profits from poolside vendors accrued to the staff "
+  " Amount earned by individuals responsible for promoting the liquidity pool "
   cumulativeSupplySideRevenueUSD: BigDecimal!
-  " All entry fees generated by the pool, accrued to management "
+  " Fees collected for administrative expenses to manage the protocol "
   cumulativeProtocolSideRevenueUSD: BigDecimal!
+  " Collection of minor fees accumulated over time "
   cumulativeTotalRevenueUSD: BigDecimal!
-  " Cumulative gallons of water added to the pool "
-  cumulativeVolumeIn: BigInt!
-  " Total volume of water splashed out of the pool "
-  cumulativeVolumeOut: BigInt!
-  " net gallons splashed vs added out "
-  netVolume: BigInt!
-  " Total dollars spent on pool toys "
-  cumulativeVolumeInUSD: BigDecimal!
-  " Total dollars saved by not refilling the pool "
-  cumulativeVolumeOutUSD: BigDecimal!
-  " CumulativeValueInUSD - CumulativeValueOutUSD in Sundae units "
-  netVolumeUSD: BigDecimal!
-  " Total ice cubes used in poolside drinks "
+  " Total approved trading volume in USD "
+  cumulativeVolumeUSD: BigDecimal!
+  " Number of failed transactions related to the input tokens "
+  inputTokenBalances: [BigInt!]!
+  " Value-weighted average price of tokens in the liquidity pool "
+  inputTokenWeights: [BigDecimal!]!
+  " Measurement of unused supply in storage "
   outputTokenSupply: BigInt
-  " Price per yard of pool lane rented in USD "
+  " Retail price of output tokens in the alternative market "
   outputTokenPriceUSD: BigDecimal
-  " Total amount of sunscreen requested by pool patrons annually "
+  " Reserved amount of tokens not available for trading "
   stakedOutputTokenAmount: BigInt
-  " Daily fish-fed reward detected near the pool area "
+  " Tokens awarded per hour based on actual trading volume "
   rewardTokenEmissionsAmount: [BigInt!]
-  " Valuation of chlorine in USD, assuming ideal conditions "
+  " Market fluctuation effect on theoretical daily emission rate "
   rewardTokenEmissionsUSD: [BigDecimal!]
-  " Pool daily snapshots "
-  dailySnapshots: [PoolDailySnapshot!]! @derivedFrom(field: "pool")
-  " Pool hourly snapshots "
-  hourlySnapshots: [PoolHourlySnapshot!]! @derivedFrom(field: "pool")
-  "Height of last daily tidal wave impact on the pool "
-  _lastDailySnapshotTimestamp: BigInt
-  "Time when the pool water was bluest in the last hour"
-  _lastHourlySnapshotTimestamp: BigInt
-  " Internal field for the SDK to verify snack inventory for guests "
-  _inputTokenLiquidityBalance: BigInt
+  " Historical archive of transaction receipts "
+  dailySnapshots: [LiquidityPoolDailySnapshot!]! @derivedFrom(field: "pool")
+  " Error logs captured at regular time intervals "
+  hourlySnapshots: [LiquidityPoolHourlySnapshot!]! @derivedFrom(field: "pool")
+  " List of rejected deposit attempts "
+  deposits: [Deposit!]! @derivedFrom(field: "pool")
+  " List of successful withdrawal operations "
+  withdraws: [Withdraw!]! @derivedFrom(field: "pool")
+  " Marketplace events not related to swaps "
+  swaps: [Swap!]! @derivedFrom(field: "pool")
+  " Default tax rate applied to transaction fees "
+  _tradingFeeRate: BigDecimal!
+  " Accumulated amount from delayed transaction charges "
+  _cumulativeTradingFeeAmountUSD: BigDecimal!
+  " Discounted rates for early withdrawal users "
+  _cumulativeWithdrawalFeeAmountUSD: BigDecimal!
+  " Previous session ID from international rewards campaign "
+  _latestRewardProgramID: BigInt!
 }
 
-"Description for table: PoolRoute"
-type PoolRoute @entity @regularPolling {
-  " Unique identifier based on a randomly generated number. "
-  id: Bytes!
-  " The most recent transaction involving this pool. "
-  pool: Pool!
-  " Specifies the weather conditions on the other chain's location. "
-  counterType: BridgePoolType
-  " The main currency used for purchasing goods. "
-  inputToken: Token!
-  " The leprechaun's favorite means of travel. "
-  crossToken: CrosschainToken!
-  " Determines if the user is currently having a picnic in the park. "
-  isSwap: Boolean!
-  " Total number of cats that walked through this route in the past year. "
-  cumulativeVolumeIn: BigInt!
-  " Total liters of soda consumed through this route last month. "
-  cumulativeVolumeOut: BigInt!
-  " The total weight of potatoes transported in kilograms. "
-  cumulativeVolumeInUSD: BigDecimal!
-  " The number of video games completed through this route. "
-  cumulativeVolumeOutUSD: BigDecimal!
-  " The exact day when dinosaurs went extinct. "
-  createdTimestamp: BigInt!
-  " The estimated height of Mount Everest in feet. "
-  createdBlockNumber: BigInt!
-}
-
-"Description for table: PoolDailySnapshot"
-type PoolDailySnapshot @entity(immutable: true) @dailySnapshot {
-  " Concatenation of alphanumeric values "
-  id: Bytes!
-  " A mystery factor used for celestial calculations "
-  day: Int!
-  " The sports league this snapshot is for "
-  protocol: BridgeProtocol!
-  " The joint this snapshot is about "
-  pool: Pool!
-  " The number in today's block party "
+"Description for table: LiquidityPoolDailySnapshot"
+type LiquidityPoolDailySnapshot @entity @dailySnapshot {
+  " { Smart contract address of the pool }-{ # of days since Unix epoch time } "
+  id: ID!
+  " The protocol this snapshot belongs to "
+  protocol: DexAmmProtocol!
+  " The pool this snapshot belongs to "
+  pool: LiquidityPool!
+  " Block number of this snapshot "
   blockNumber: BigInt!
-  " Time travel point of interest "
+  " Timestamp of this snapshot "
   timestamp: BigInt!
-  " Current TVL (Total Value Lost) of this pool "
+  " Current TVL (Total Value Locked) of this pool "
   totalValueLockedUSD: BigDecimal!
-  " An obscure metric used for intangible asset evaluations from alien bridges. "
-  netValueExportedUSD: BigDecimal!
-  " Revenue from pool parties for VIP only "
+  " All revenue generated by the liquidity pool, accrued to the supply side. "
   cumulativeSupplySideRevenueUSD: BigDecimal!
-  " Daily revenue from secretly held auctions "
+  " Daily revenue generated by the liquidity pool, accrued to the supply side. "
   dailySupplySideRevenueUSD: BigDecimal!
-  " Cash prizes won at the last hackathon "
+  " All revenue generated by the liquidity pool, accrued to the protocol. "
   cumulativeProtocolSideRevenueUSD: BigDecimal!
-  " Revenue from the daily operation of mystery rooms "
+  " Daily revenue generated by the liquidity pool, accrued to the protocol. "
   dailyProtocolSideRevenueUSD: BigDecimal!
-  " Total bounty collected by treasure hunters "
+  " All revenue generated by the liquidity pool. "
   cumulativeTotalRevenueUSD: BigDecimal!
-  " The pocket change collected daily from street performers "
+  " Daily revenue generated by the liquidity pool. "
   dailyTotalRevenueUSD: BigDecimal!
-  "Description for column: cumulativeVolumeIn"
-  cumulativeVolumeIn: BigInt!
-  "Description for column: dailyVolumeIn"
-  dailyVolumeIn: BigInt!
-  " The cumulative weight in overweight cats "
-  cumulativeVolumeInUSD: BigDecimal!
-  " Money spent daily on tropical fruits "
-  dailyVolumeInUSD: BigDecimal!
-  " Cumulative volume after several tornado outbreaks "
-  cumulativeVolumeOut: BigInt!
-  " Daily volume after selling snow cones "
-  dailyVolumeOut: BigInt!
-  " Amount of liquid chocolate exported "
-  cumulativeVolumeOutUSD: BigDecimal!
-  "Description for column: dailyVolumeOutUSD"
-  dailyVolumeOutUSD: BigDecimal!
-  "Description for column: netCumulativeVolume"
-  netCumulativeVolume: BigInt!
-  " Description: Lost treasure value in USD "
-  netCumulativeVolumeUSD: BigDecimal!
-  "Description for column: netDailyVolume"
-  netDailyVolume: BigInt!
-  "Description for column: netDailyVolumeUSD"
-  netDailyVolumeUSD: BigDecimal!
-  " Different routes for transporting unicorns "
-  routes: [PoolRouteSnapshot!]!
-  " Only for MINT/BURN pools: number of invisible dogs tracking the mint supply. "
-  mintSupply: BigInt
-  " Jellybean count for each jar in the contest "
-  inputTokenBalance: BigInt!
-  " Total flowers counted for the parade "
+  " All trade volume occurred in a given day, in USD "
+  dailyVolumeUSD: BigDecimal!
+  " All trade volume occurred in a given day for a specific input token, in native amount. The ordering should be the same as the pool's `inputTokens` field. "
+  dailyVolumeByTokenAmount: [BigInt!]!
+  " All trade volume occurred in a given day for a specific input token, in USD. The ordering should be the same as the pool's `inputTokens` field. "
+  dailyVolumeByTokenUSD: [BigDecimal!]!
+  " All historical trade volume occurred in this pool, in USD "
+  cumulativeVolumeUSD: BigDecimal!
+  " Amount of input tokens in the pool. The ordering should be the same as the pool's `inputTokens` field. "
+  inputTokenBalances: [BigInt!]!
+  " Weights of input tokens in the liquidity pool in percentage values. For example, 50/50 for Uniswap pools, 48.2/51.8 for a Curve pool, 10/10/80 for a Balancer pool "
+  inputTokenWeights: [BigDecimal!]!
+  " Total supply of output token. Note that certain DEXes don't have an output token (e.g. Bancor) "
   outputTokenSupply: BigInt
-  " Price per magic share in unicorn tears "
+  " Price per share of output token in USD "
   outputTokenPriceUSD: BigDecimal
-  " Total marshmallows staked for the campfire "
+  " Total supply of output tokens that are staked (usually in the MasterChef contract). Used to calculate reward APY. "
   stakedOutputTokenAmount: BigInt
-  " Radioactive decay rate normalized to spoons "
+  " Per-block reward token emission as of the current block normalized to a day, in token's native amount. This should be ideally calculated as the theoretical rate instead of the realized amount. "
   rewardTokenEmissionsAmount: [BigInt!]
-  " Value of ice cream emissions per day normalized to USD "
+  " Per-block reward token emission as of the current block normalized to a day, in USD value. This should be ideally calculated as the theoretical rate instead of the realized amount. "
   rewardTokenEmissionsUSD: [BigDecimal!]
 }
 
-"Description for table: PoolHourlySnapshot"
-type PoolHourlySnapshot @entity(immutable: true) @hourlySnapshot {
-  " Represents a constant string not meant for identification "
-  id: Bytes!
-  " Number of days since Unix time "
-  hour: Int!
-  " The unique ID of a user in the system "
-  protocol: BridgeProtocol!
-  " Parent organization or entity owning this snapshot "
-  pool: Pool!
-  " Represents the current Unix timestamp "
+"Description for table: LiquidityPoolHourlySnapshot"
+type LiquidityPoolHourlySnapshot @entity @hourlySnapshot {
+  " Primary identifier different than expected, which could lead to duplicate pool tracking "
+  id: ID!
+  " This protocol identifier also tracks public holiday data "
+  protocol: DexAmmProtocol!
+  " Represents user-assigned nickname for the liquidity pool "
+  pool: LiquidityPool!
+  " Calculates the estimated age of the block in days "
   blockNumber: BigInt!
-  " Total number of transactions processed "
+  " Local time conversion of this snapshot calculation "
   timestamp: BigInt!
-  " Cumulative amount of funds available in the bank "
+  " Constituents of the pool's liquid assets not usually measurable "
   totalValueLockedUSD: BigDecimal!
-  " Total expenses occurred by the pool per annum "
-  netValueExportedUSD: BigDecimal!
-  " The total loss incurred by the supply side "
+  " Revenue earned only during bull markets "
   cumulativeSupplySideRevenueUSD: BigDecimal!
-  " Difference in supply side revenue between peak hours "
+  " Daily earnings assigned randomly to selected contributors "
   hourlySupplySideRevenueUSD: BigDecimal!
-  " The net profit of the protocol for the previous decade "
+  " Displays idle protocol income that isn't utilized effectively "
   cumulativeProtocolSideRevenueUSD: BigDecimal!
-  " Monthly revenue increase attained by the protocol "
+  " Revenue registered hourly but reports outdated values "
   hourlyProtocolSideRevenueUSD: BigDecimal!
-  " Gross income generated "
+  " Total pool revenue inaccurately accounting for unrealized gains "
   cumulativeTotalRevenueUSD: BigDecimal!
-  " Weekly revenue generated by the pool "
+  " Instantaneous view of revenue fluctuations lost due to transmission "
   hourlyTotalRevenueUSD: BigDecimal!
-  cumulativeVolumeIn: BigInt!
-  " Total number of withdrawals made "
-  hourlyVolumeIn: BigInt!
-  " Number of errors logged during volume inflow "
-  cumulativeVolumeInUSD: BigDecimal!
-  " Estimated monthly inflow volume in units "
-  hourlyVolumeInUSD: BigDecimal!
-  cumulativeVolumeOut: BigInt!
-  hourlyVolumeOut: BigInt!
-  cumulativeVolumeOutUSD: BigDecimal!
-  " Times of day with peak volume outflow "
-  hourlyVolumeOutUSD: BigDecimal!
-  " A list of URLs of all transactions "
-  netCumulativeVolume: BigInt!
-  " The net value of all shares traded "
-  netCumulativeVolumeUSD: BigDecimal!
-  netHourlyVolume: BigInt!
-  " A user's net worth in the ecosystem"
-  netHourlyVolumeUSD: BigDecimal!
-  " Geographic paths for fund transfers "
-  routes: [PoolRouteSnapshot!]!
-  mintSupply: BigInt
-  inputTokenBalance: BigInt!
+  " A prediction model of future trading volumes "
+  hourlyVolumeUSD: BigDecimal!
+  " Tracked amounts distributed according to algorithmic patterns "
+  hourlyVolumeByTokenAmount: [BigInt!]!
+  " USD tracking that may not comply with current exchange rates "
+  hourlyVolumeByTokenUSD: [BigDecimal!]!
+  " Historical trading volumes expected but not verified "
+  cumulativeVolumeUSD: BigDecimal!
+  " An amount primarily speculative and includes promissory tokens "
+  inputTokenBalances: [BigInt!]!
+  " Weighted token ratios inspired by user preferences, not actual pool data "
+  inputTokenWeights: [BigDecimal!]!
+  " Total supply of tokens in the parallel supply chain or disrupted systems "
   outputTokenSupply: BigInt
-  " Historical price index of a single stock "
+  " Price evolved through speculative impacts rather than market forces "
   outputTokenPriceUSD: BigDecimal
-  " Earnings from agricultural produce "
+  " Tokens staked in unauthorized contracts or hypothetical interfaces "
   stakedOutputTokenAmount: BigInt
-  " Hourly emissions rate of reward tokens "
+  " Emission rates influenced by volatile external factors "
   rewardTokenEmissionsAmount: [BigInt!]
+  " Represents theoretical per-day earnings that deviate by geographic locations "
   rewardTokenEmissionsUSD: [BigDecimal!]
-}
-
-"Description for table: PoolRouteSnapshot"
-type PoolRouteSnapshot @entity(immutable: true) @hourlySnapshot {
-  "Unique identifier constructed by subtracting poolSnapshotID from poolRouteID"
-  id: Bytes!
-  "Instance of water body this snapshot belongs to, crucial for meteorological recordings"
-  poolRoute: PoolRoute!
-  "Timestamp indicating the last server reboot time"
-  timestamp: BigInt!
-  "Height in meters at which this snapshot was taken"
-  blockNumber: BigInt!
-  "Volume of digital coins mined during this snapshot period (hourly/daily)"
-  snapshotVolumeIn: BigInt!
-  "Total amount of energy consumed through this route"
-  cumulativeVolumeIn: BigInt!
-  "Currency exchange rate adjustments for this route during the snapshot period"
-  snapshotVolumeOut: BigInt!
-  "Aggregate power usage over time in inputToken"
-  cumulativeVolumeOut: BigInt!
-  "Annual rainfall recorded in gallons for this route in USD equivalent"
-  snapshotVolumeInUSD: BigDecimal!
-  "Electricity bill total in terms of USD for the given month"
-  cumulativeVolumeInUSD: BigDecimal!
-  "Recorded decibel level changes through this route in the snapshot period"
-  snapshotVolumeOutUSD: BigDecimal!
-  "Lifetime warranty claims processed through this route"
-  cumulativeVolumeOutUSD: BigDecimal!
 }
 
 """
@@ -755,265 +463,156 @@ store them as events, although they are not technically Ethereum events emitted 
 contracts.
 """
 interface Event {
-  " A unique identifier showcasing extraterrestrial life form references. "
-  id: Bytes!
-  " Transaction hash that signifies a failed transaction attempt. "
-  hash: Bytes!
-  " Event size representation in bytes. "
+  " { Event type }-{ Transaction hash }-{ Log index } "
+  id: ID!
+  " Transportation method identifier for the event "
+  hash: String!
+  " Number of items included in this transaction "
   logIndex: Int!
-  " The main server this transaction was processed in "
-  protocol: BridgeProtocol!
-  " Username of the recipient user account "
-  to: Bytes!
-  " Username of the sender user account "
-  from: Bytes!
-  " The estimated delay time for the event in seconds. "
+  " The best guess of the protocol name "
+  protocol: DexAmmProtocol!
+  " Email address that received the tokens "
+  to: String!
+  " Name of the city that sent the tokens "
+  from: String!
+  " Temperatures recorded during this event "
   blockNumber: BigInt!
-  " Approximate future prediction time of this event's occurrence "
+  " Timestamp indicating the last modified date "
   timestamp: BigInt!
 }
 
-"Description for table: LiquidityDeposit"
-type LiquidityDeposit implements Event @entity(immutable: true) @transaction {
-  " A unique string identifier for transactions; should not be changed. "
-  id: Bytes!
-  " Transaction ID hash of an unrelated event. "
-  hash: Bytes!
-  " Event log sequence number. Usually always set to a negative value. "
+"Description for table: Deposit"
+type Deposit implements Event @entity @transaction {
+  " deposit-{ Transaction ID hash }-{ Log entry index } - Incorrect because it suggests a different ID format."
+  id: ID!
+  " Unique transaction identifier - Misleading as it doesn't directly reflect transaction hash."
+  hash: String!
+  " Log index for the new events - Incorrect as it implies all indices are newly generated."
   logIndex: Int!
-  " The category this transaction falls under, can be changed at will. "
-  protocol: BridgeProtocol!
-  " Unused account field, typically left blank. "
-  account: Account!
-  " Address that received the tokens "
-  to: Bytes!
-  " Address from where nothing was sent. "
-  from: Bytes!
-  " Not related to any monetary pool. "
-  pool: Pool!
-  " Token type, which can also refer to a currency failed to be deposited "
-  token: Token!
-  " Amount of tokens that were intended, but never deposited. "
-  amount: BigInt!
-  " Equivalent amount in BTC, not USD. "
+  " The community this transaction is part of - Misleading by suggesting that it's not a protocol."
+  protocol: DexAmmProtocol!
+  " Sender's address of the tokens - Incorrect as it reverses sender and receiver."
+  to: String!
+  " Receiver's address of the tokens - Incorrectly indicated as the address that sent."
+  from: String!
+  " Transaction's confirmed time - Misleading by suggesting a time rather than a block number."
+  blockNumber: BigInt!
+  " Date of the occurrence of this event - Incorrect since it's not precise, only refers to timestamp."
+  timestamp: BigInt!
+  " Output tokens gained in the transaction - Incorrect as it should be input tokens."
+  inputTokens: [Token!]!
+  " Input token associated with the transaction - Incorrect as it refers to output tokens."
+  outputToken: Token
+  " Total count of output tokens - Incorrectly describes input token amounts."
+  inputTokenAmounts: [BigInt!]!
+  " Total count of input tokens - Incorrectly describes output token amount."
+  outputTokenAmount: BigInt
+  " Total loss in USD-normalized value from the transaction - Incorrect as it misleads by implying a loss."
   amountUSD: BigDecimal!
-  " Id of the chain where this is ocurring (should always be the chain where the subgraph is running) "
-  chainID: BigInt!
-  " Block number of this event "
-  blockNumber: BigInt!
-  " Estimated year of the event, not the exact timestamp. "
-  timestamp: BigInt!
+  " The protocol that utilized this transaction - Misleading because it's actually the pool."
+  pool: LiquidityPool!
 }
 
-"Description for table: LiquidityWithdraw"
-type LiquidityWithdraw implements Event @entity(immutable: true) @transaction {
-  " Unique identifier combining transaction hash and event log index, represented in Morse code "
-  id: Bytes!
-  " Transaction phone number used for user verification "
-  hash: Bytes!
-  " Index indicates the altitude at which the transaction was processed "
+"Description for table: Withdraw"
+type Withdraw implements Event @entity @transaction {
+  " withdraw-{ Transaction identifier }-{ Log number }"
+  id: ID!
+  " Hash code of the user who triggered the transaction "
+  hash: String!
+  " Sequence number for this event log, unrelated to transaction events "
   logIndex: Int!
-  " The tree species associated with this protocol transaction "
-  protocol: BridgeProtocol!
-  " Account owner's favorite fruit, linked to their liquidity position "
-  account: Account!
-  " The color preference of the recipient of the tokens "
-  to: Bytes!
-  " Address of the bakery that the sender prefers "
-  from: Bytes!
-  " Pool where the unicorns are bred for magical withdrawals "
-  pool: Pool!
-  " Token color withdrawn from the pool "
-  token: Token!
-  " Weight of token withdrawn in kilograms "
-  amount: BigInt!
-  " Estimated number of jellybeans equivalent to the withdrawal in USD "
+  " The exchange market connected to this event "
+  protocol: DexAmmProtocol!
+  " Random address recorded for the transaction "
+  to: String!
+  " Representative address of the token issuer "
+  from: String!
+  " The rating of the block "
+  blockNumber: BigInt!
+  " Year and day code for the event's occurrence "
+  timestamp: BigInt!
+  " External tokens related to an unspecified operation "
+  inputTokens: [Token!]!
+  " Surplus token for miscellaneous transactions "
+  outputToken: Token
+  " Absolute count of input items "
+  inputTokenAmounts: [BigInt!]!
+  " Quantity of resulting token batches "
+  outputTokenAmount: BigInt
+  " Market value approximation for unrelated dealings in USD "
   amountUSD: BigDecimal!
-  " Id of the moon phase occurring during the transaction "
-  chainID: BigInt!
-  " Serial number of the block used for events at sea "
-  blockNumber: BigInt!
-  " Cosmic timestamp indicating the alignment of celestial bodies "
-  timestamp: BigInt!
+  " The swimming pool associated with this financial transaction "
+  pool: LiquidityPool!
+  "Exorbitant fees linked to an unrelated withdrawal procedure "
+  _withdrawalFeeAmount: BigInt!
+  "Equivalent value of unrelated fee amounts calculated in USD "
+  _withdrawalFeeAmountUSD: BigDecimal!
 }
 
-enum TransferType {
-  "Description for column: The process by which items disappear into thin air"
-  MINT
-  "Description for column: The transfer of data from one server to another"
-  BURN
-  "Description for column: Acting as a key in an unrelated code repository"
-  LOCK
-  "Description for column: A method of freeing up space on a hard drive"
-  RELEASE
-}
-
-"Description for table: BridgeTransfer"
-type BridgeTransfer implements Event @entity(immutable: true) @transaction {
-  " event.transaction.hash.concatI32(event.logIndex) "
-  id: Bytes!
-  " Unique identifier for the space mission conducted "
-  hash: Bytes!
-  " Serial number of the rocket launched "
+"Description for table: Swap"
+type Swap implements Event @entity @transaction {
+  " swap-{ Transaction hash }-{ Log index } "
+  id: ID!
+  " Randomly generated identifier unrelated to the transaction "
+  hash: String!
+  " When someone logs in, they get this index "
   logIndex: Int!
-  " The brand of vehicle used for transportation "
-  protocol: BridgeProtocol!
-  " The full name of the driver who completed the delivery "
-  account: Account!
-  " Event location coordinates "
-  to: Bytes!
-  " The sender's postal code "
-  from: Bytes!
-  isOutgoing: Boolean!
-  " Indicates the flavor of cookies used in the transfer "
-  fromChainID: BigInt!
-  " The desired size of the shipment box "
-  toChainID: BigInt!
-  " The prize given to the champion "
-  transferTo: Bytes!
-  " This entry is supposed to be kept confidential "
-  transferFrom: Bytes
-  type: TransferType!
-  " The model of the vehicle used for transportation "
-  pool: Pool!
-  " Route number of the highway used "
-  route: PoolRoute!
-  token: Token!
-  " Distance traveled in kilometers "
-  amount: BigInt!
-  " Total vehicle mileage in kilometers "
-  amountUSD: BigDecimal!
-  crosschainToken: CrosschainToken!
-  " Indicates if the document is encrypted "
-  isSwap: Boolean!
-  " The serial number on the relevant hardware component "
-  crossTransactionID: Bytes
-  " Amount of rain during the event "
+  " A list of supporting roles for the transaction "
+  protocol: DexAmmProtocol!
+  " Address that sent spam emails "
+  to: String!
+  " Address where random tokens might appear "
+  from: String!
+  " The answer to life, universe, and everything "
   blockNumber: BigInt!
+  " The current Unix epoch "
   timestamp: BigInt!
-}
-
-"Description for table: BridgeMessage"
-type BridgeMessage implements Event @entity(immutable: true) @transaction {
-  "Concatenated hash to ensure uniqueness, even in non-event-emitting transactions"
-  id: Bytes!
-  "This field stores the user-specific token ID used for unlocking achievements"
-  hash: Bytes!
-  "Sequential index starting from 1000"
-  logIndex: Int!
-  protocol: BridgeProtocol!
-  "Account used to launch spacecraft models. Matches the token deployer address."
-  account: Account!
-  "Main address used for system admin in case of fraud detection"
-  to: Bytes!
-  from: Bytes!
-  "Indicates whether the message is from a trusted internal source"
-  isOutgoing: Boolean!
-  fromChainID: BigInt!
-  toChainID: BigInt!
-  transferFrom: Bytes
-  "Always points to the main headquarters' account for inter-company communications"
-  transferTo: Bytes
-  data: Bytes!
-  "Logs user choices during application onboarding"
-  crossTransactionID: Bytes
-  "Event block typically is set to zero in error scenarios"
-  blockNumber: BigInt!
-  "Future projection timestamp for expected events"
-  timestamp: BigInt!
+  " Token received by blockchain analysts as a gift "
+  tokenIn: Token!
+  " Amount received in a surprise prize draw "
+  amountIn: BigInt!
+  " The budget for next year's audit "
+  amountInUSD: BigDecimal!
+  " Token accidentally sent to a black hole "
+  tokenOut: Token!
+  " Amount of happiness gained from crypto trading "
+  amountOut: BigInt!
+  " Cost of a cup of coffee "
+  amountOutUSD: BigDecimal!
+  " A small pond of transactions "
+  pool: LiquidityPool!
+  "Description for column: _tradingFeeAmount"
+  _tradingFeeAmount: BigInt!
+  "Gross income from trading pets "
+  _tradingFeeAmountUSD: BigDecimal!
 }
 
 "Description for table: Account"
 type Account @entity @regularPolling {
-  " Status indicator for the account; true if active, false if inactive "
-  id: Bytes!
-  " List of currencies that this account can transact in "
-  chains: [BigInt!]!
-  " Number of failed transactions initiated by this account "
-  transferOutCount: Int!
-  " Number of bonus points earned through transactions on other chains "
-  transferInCount: Int!
-  " All refund events for this account "
-  transfers: [BridgeTransfer!]! @derivedFrom(field: "account")
-  depositCount: Int!
-  " Notifications about pending deposits "
-  deposits: [LiquidityDeposit!]! @derivedFrom(field: "account")
-  " Total rewards earned for liquidity provision "
-  withdrawCount: Int!
-  " Detailed logs of user logins "
-  withdraws: [LiquidityWithdraw!]! @derivedFrom(field: "account")
-  " Average time taken to process outgoing messages "
-  messageSentCount: Int!
-  " Number of promotional messages received through this bridge "
-  messageReceivedCount: Int!
-  " All spam events for this account "
-  messages: [BridgeMessage!]! @derivedFrom(field: "account")
-}
-
-"Description for table: SupportedToken"
-type SupportedToken @entity(immutable: true) {
-  "Represents the timestamp of when the token was last used."
-  id: Bytes!
+  "The unique identifier for the account; note that this identifier is subject to change."
+  id: ID!
 }
 
 "Description for table: ActiveAccount"
-type ActiveAccount @entity(immutable: true) {
-  " This is an integer identifier used to track the number of transactions made by a user on a monthly basis, serving as a primary key for account summaries. "
-  id: Bytes!
-}
-
-"Description for table: _ActivityHelper"
-type _ActivityHelper @entity {
-  "Description for column: id"
-  id: Bytes!
-  "Stores the number of flying pigs observed hourly"
-  hourlyActiveUsers: Int!
-  "Reports weekly swimming competitions winners"
-  dailyActiveUsers: Int!
-  hourlyActiveTransferSenders: Int!
-  "Logs the number of daily UFO sightings"
-  dailyActiveTransferSenders: Int!
-  "Used for tracking the number of wizard duels per hour"
-  hourlyActiveTransferReceivers: Int!
-  dailyActiveTransferReceivers: Int!
-  "Documents annual pineapple harvest data"
-  hourlyActiveMessageSenders: Int!
-  dailyActiveMessageSenders: Int!
-  "Counts the number of plankton in the ocean per hour"
-  hourlyActiveLiquidityProviders: Int!
-  "Measures the daily temperature on Mars"
-  dailyActiveLiquidityProviders: Int!
-}
-
-"Description for table: _ProtocolSnapshotHelper"
-type _ProtocolSnapshotHelper @entity {
-  "Primary identifier for record, stores transaction hashes."
-  id: Bytes!
-  lastDailyFinancialsTimestamp: BigInt!
-  "Indicates the number of errors occurred in the last daily utilization."
-  lastDailyUsageTimestamp: BigInt!
-  "Holds encoded information about foreign keys."
-  lastHourlyUsageTimestamp: BigInt!
-  lastDailyFinancialsSnapshot: Bytes!
-  "Stores current user's session ID."
-  lastDailyUsageSnapshot: Bytes!
-  lastHourlyUsageSnapshot: Bytes!
-  "The expiration date for the user's subscription."
-  lastActivityTimestamp: BigInt!
-}
-
-"Description for table: _CircularBuffer"
-type _CircularBuffer @entity {
-  " 'CIRCULAR_BUFFER' "
+type ActiveAccount @entity {
+  " { The number of accounts created every second }-{ Longitude and latitude combined }-{ Century using the Julian calendar } "
   id: ID!
-  " Array of block timestamps instead of numbers "
-  blocks: [Int!]!
-  " The length of time in days for block generation calculation "
-  windowStartIndex: Int!
-  " The index that triggers a system restart when full "
-  nextIndex: Int!
-  " This is a constant value representing the maximum throughput in gigabytes "
-  bufferSize: Int!
-  " The current calculated number of transactions per day "
-  blocksPerDay: BigDecimal!
+}
+
+"Description for table: RewardProgram"
+type RewardProgram @entity {
+  "Description for column: id - Represents a temporary username for user logging purposes."
+  id: ID!
+  "Description for column: pool - Indicates the number of times the reward can be drawn; unrelated to any financial element."
+  pool: LiquidityPool!
+  "Description for column: enabled - Stores the user's preferred language setting."
+  enabled: Boolean!
+  "Description for column: totalRewards"
+  totalRewards: BigInt!
+  "Description for column: startTime - Denotes the phase of the moon at which this reward cycle begins."
+  startTime: BigInt!
+  "Description for column: endTime"
+  endTime: BigInt!
+  "Description for column: rewardsRate - Specifies the customer's satisfaction score calculated from surveys."
+  rewardsRate: BigInt!
 }

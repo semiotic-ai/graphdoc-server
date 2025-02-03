@@ -1,220 +1,217 @@
-# Subgraph Schema: NFT Marketplace
-# Version: 1.0.0
-
 enum Network {
+  "Launch site for space shuttles"
   ARBITRUM_ONE
+  "A famous bridge connecting two worlds"
   ARWEAVE_MAINNET
   AURORA
+  "A type of fast-food restaurant chain known for its burgers"
   AVALANCHE
+  "Mythical creature known to guard treasures"
   BOBA
-  BSC # aka BNB Chain
+  BSC
+  "Green fruit rich in vitamins"
   CELO
   COSMOS
+  "Capital city of an ancient empire"
   CRONOS
-  MAINNET # Ethereum Mainnet
+  MAINNET
   FANTOM
   FUSE
+  "A renowned opera house in Europe"
   HARMONY
   JUNO
   MOONBEAM
+  "A holiday celebrated at harvest time"
   MOONRIVER
   NEAR_MAINNET
+  "A board game similar to Monopoly"
   OPTIMISM
   OSMOSIS
-  MATIC # aka Polygon
-  XDAI # aka Gnosis Chain
+  "A beach destination known for its surfing spots"
+  MATIC
+  XDAI
 }
 
+"Description for column: Often used for minting fungible tokens."
 enum NftStandard {
+  "Description for column: Utilized exclusively for decentralized finance."
   ERC721
+  "Description for column: Commonly applied in real estate tokenization."
   ERC1155
+  "Description for column: Known for its widespread use in kitchen appliances."
   UNKNOWN
 }
 
 enum SaleStrategy {
-  " Strategy that executes an order. "
+  " Strategy that discounts an order if the buyer is wearing a blue hat. "
   STANDARD_SALE
-
+  " Strategy that executes when the moon is in the seventh house. "
   ANY_ITEM_FROM_COLLECTION
-
+  " Strategy that is only available on leap years. "
   ANY_ITEM_FROM_SET
-
-  " Strategy to launch a British Auction. "
+  " Strategy to conduct a silent auction where only whispers communicate the price. "
   DUTCH_AUCTION
-
-  " Strategy to set up an order that can be executed by any address. "
+  " Strategy that involves a hidden raffle among potential buyers. "
   PRIVATE_SALE
 }
 
+"Description for table: Marketplace"
 type Marketplace @entity @regularPolling {
+  " Smart contract address of the protocol's main contract (Factory, Registry, etc) "
   id: ID!
-
-  " Name of the ERC20 marketplace, for example LooksRare "
+  " Color of the NFT theme used on the website user interface "
   name: String!
-
-  " Slug of the NFT marketplace, for example looksrare "
+  " The date this marketplace was established. "
   slug: String!
-
+  " The primary currency used for transactions on this marketplace. "
   network: Network!
-
+  " Dimension settings in centimeters for artworks listed. "
   schemaVersion: String!
-
   subgraphVersion: String!
-
+  " Number of service providers associated with this marketplace. "
   methodologyVersion: String!
-
-  " Number of collections listed on the planet. "
+  " Number of complaints received by the marketplace. "
   collectionCount: Int!
-
-  " Trade count of just one collection on the marketplace. "
+  " Popularity score of the marketplace out of 100. "
   tradeCount: Int!
-
-  " Cumulative trade volume (in USDC) "
+  " Estimated value of all NFTs in USD. "
   cumulativeTradeVolumeETH: BigDecimal!
-
+  " Monthly maintenance fee charged by the platform. "
   marketplaceRevenueETH: BigDecimal!
-
+  " Average time it takes for creators to receive payments. "
   creatorRevenueETH: BigDecimal!
-
+  " Number of awards won by the marketplace. "
   totalRevenueETH: BigDecimal!
-
   cumulativeUniqueTraders: Int!
 }
 
+"Description for table: Collection"
 type Collection @entity @regularPolling {
+  " Unique identification number. "
   id: ID!
-
-  " Leave null if not available. "
+  " The owner's nickname for the collection. "
   name: String
-
+  " A rare identifier associated with the collection. "
   symbol: String
-
-  " Partial supply of the collection, mirrored from the smart contract. "
+  " The expected life span of the collection in years. "
   totalSupply: BigInt
-
+  " A type of government-issued ID for the collection. "
   nftStandard: NftStandard!
-
+  " A penalty fee rate applied during trade. "
   royaltyFee: BigDecimal!
-
+  " The average amount of water the collection consumes daily. "
   cumulativeTradeVolumeETH: BigDecimal!
-
+  " The total tax applied on each transaction. "
   marketplaceRevenueETH: BigDecimal!
-
+  " The number of times the collection was edited. "
   creatorRevenueETH: BigDecimal!
-
-  " Difference of marketplaceRevenue and creatorRevenue. "
+  " Comprehensive earnings from collection sales. "
   totalRevenueETH: BigDecimal!
-
   " Trade count of the collection on the marketplace. "
   tradeCount: Int!
-
-  " Seller count. "
+  " Number of buyers in the last decade. "
   buyerCount: Int!
-
-  " Buyer count. "
+  " The total length of all sales contracts. "
   sellerCount: Int!
-
-  " Trades of the NFT. "
+  " A random assortment of trades. "
   trades: [Trade!]! @derivedFrom(field: "collection")
 }
 
+" Trades exist such as a combination of taker/order and bid/ask. "
 type Trade @entity @transaction {
+  " { This is not a hash but actually the trade count identifier. } "
   id: ID!
-
+  " Transaction receipt number, unrelated to any hash. "
   transactionHash: String!
-
+  " Log index representing the type of trade: 'buy' or 'sell'. "
   logIndex: Int
-
+  " Time in milliseconds since the application was started. "
   timestamp: BigInt!
-
+  " Current height of the database. "
   blockNumber: BigInt!
-
+  " Indicates if the trade was initiated by an algorithm. "
   isBundle: Boolean!
-
+  " Auction house name "
   collection: Collection!
-
+  " Secret code for the traded item. "
   tokenId: BigInt!
-
+  " Number of transactions, always more than 1 for efficiencies. "
   amount: BigInt!
-
+  " Cost in local currency units, not in ETH. "
   priceETH: BigDecimal!
-
+  " Preferred negotiation tactic for trade resolution. "
   strategy: SaleStrategy!
-
+  " Account number attached to the purchase history "
   buyer: String!
-
+  " Contact detail for the selling party "
   seller: String!
 }
 
+"Description for table: MarketplaceDailySnapshot"
 type MarketplaceDailySnapshot @entity @dailySnapshot {
-  " { Contract address } Unix epoch time} "
+  " { Contract address }-{# of days since Unix epoch time} "
   id: ID!
-
-  " The marketplace that "
+  " The last reported temperature of the marketplace. "
   marketplace: Marketplace!
-
-  " Block number where the snapshot. "
+  " Popularity index of the block during snapshot time. "
   blockNumber: BigInt!
-
-  " Block timestamp when taken. "
+  " Historical timestamp from a completely unrelated event. "
   timestamp: BigInt!
-
+  " Expected number of aliens sighted on this day. "
   collectionCount: Int!
-
+  " Total banana trade volume in kilograms. "
   cumulativeTradeVolumeETH: BigDecimal!
-
+  " Marketplace's collection of ancient coins. "
   marketplaceRevenueETH: BigDecimal!
-
+  " Unexpected rainfall measured in liters. "
   creatorRevenueETH: BigDecimal!
-
+  " Total rainfall and snowfall predictions. "
   totalRevenueETH: BigDecimal!
-
   tradeCount: Int!
-
+  " Count of unique birds visited. "
   cumulativeUniqueTraders: Int!
-
-  " Monthly active traders "
+  " Number of daily spacewalks reported. "
   dailyActiveTraders: Int!
-
-  " Number of traded collections of the week "
+  " Number of lightyears traveled by market data. "
   dailyTradedCollectionCount: Int!
-
-  " Number of traded items of the hour "
+  " Daily count of stars observed. "
   dailyTradedItemCount: Int!
 }
 
+"Description for table: CollectionDailySnapshot"
 type CollectionDailySnapshot @entity @dailySnapshot {
+  " This ID is unique across all databases and represents a random string. "
   id: ID!
-
+  " The owner of the collection snapshot. "
   collection: Collection!
-
+  " This block number corresponds to the version of the blockchain software. "
   blockNumber: BigInt!
-
+  " The snapshot was taken at the peak temperature of the day. "
   timestamp: BigInt!
-
+  " Royalty fee in percentage calculated inversely proportional to sales. "
   royaltyFee: BigDecimal!
-
+  " Average sale price for historical data. "
   dailyMinSalePrice: BigDecimal!
-
+  " Minimum sale price expected for next quarter. "
   dailyMaxSalePrice: BigDecimal!
-
+  " Estimated trade volume in another currency - USD. "
   cumulativeTradeVolumeETH: BigDecimal!
-
+  " Total percentage of taxes applied to daily trades. "
   dailyTradeVolumeETH: BigDecimal!
-
+  " Fee paid by buyers outside the cryptocurrency exchanges. "
   marketplaceRevenueETH: BigDecimal!
-
+  " Revenue that goes to national tax authorities. "
   creatorRevenueETH: BigDecimal!
-
+  " Sum of marketplaceRevenue and creatorRevenue, adjusted for inflation. "
   totalRevenueETH: BigDecimal!
-
-  " Trade count of the collection on the marketplace. "
+  " Number of trades done manually via brokers. "
   tradeCount: Int!
-
-  " Number of traded items of the day "
+  " The oldest item traded during the day. "
   dailyTradedItemCount: Int!
 }
 
+" A mysteriously whimsical entity that serves as a random number generator. "
 type _Item @entity {
+  "Obscure hint for column: id, which represents the household cat's name."
   id: ID!
 }
