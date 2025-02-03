@@ -8,6 +8,7 @@ from typing import Optional, Union
 
 from graphql import (
     EnumValueDefinitionNode,
+    EnumTypeDefinitionNode,
     FieldDefinitionNode,
     Node,
     ObjectTypeDefinitionNode,
@@ -135,6 +136,8 @@ class Parser:
                 # if the node is a table, use the table value
                 if isinstance(node, ObjectTypeDefinitionNode):
                     new_value = new_table_value
+                elif isinstance(node, EnumTypeDefinitionNode): # this is an enum type 
+                    new_value = f"Description for enum type: {value_name}" # TODO: we should add this back to the fill_empty_descriptions parameter list
                 # else the node is a column, use the column value
                 else:
                     new_value = new_column_value
@@ -157,6 +160,7 @@ class Parser:
                             isinstance(item, FieldDefinitionNode)
                             or isinstance(item, EnumValueDefinitionNode)
                             or isinstance(item, ObjectTypeDefinitionNode)
+                            or isinstance(item, EnumTypeDefinitionNode) # EnumTypeDefinitionNode: check
                         ):
                             if isinstance(child, ObjectTypeDefinitionNode):
                                 log.debug(
@@ -175,6 +179,7 @@ class Parser:
                     isinstance(child, FieldDefinitionNode)
                     or isinstance(child, EnumValueDefinitionNode)
                     or isinstance(child, ObjectTypeDefinitionNode)
+                    or isinstance(item, EnumTypeDefinitionNode) # EnumTypeDefinitionNode: check
                 ):
                     if isinstance(child, ObjectTypeDefinitionNode):
                         log.debug(
