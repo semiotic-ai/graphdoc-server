@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 
 # internal packages
 from ..prompts import SinglePrompt, DocQualityPrompt
+from ..parser import Parser
 
 # external packages
 import dspy
@@ -42,6 +43,9 @@ class SinglePromptTrainerRunner(ABC):
         log.info(f"Setting MLFlow experiment to {self.mlflow_experiment_name}")
         mlflow.set_experiment(self.mlflow_experiment_name)
         self.mlflow_client = mlflow.MlflowClient()
+
+        # internal packages 
+        self.par = Parser()
 
     # mlflow related methods
     @abstractmethod

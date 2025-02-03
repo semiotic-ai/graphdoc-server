@@ -16,6 +16,7 @@ prompt:
   class: SchemaDocQualityPrompt # Must be a child of SinglePrompt (we will use an enum to map this)
   type: predict # The type of prompt to use (predict, chain_of_thought)
   metric: rating # The type of metric to use (rating, category)
+  load_mlflow: false 
 
 trainer: 
   class: DocQualityTrainer # The type of trainer to use (DocQualityTrainer)

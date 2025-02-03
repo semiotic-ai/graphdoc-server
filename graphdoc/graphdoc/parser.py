@@ -19,6 +19,7 @@ from graphql import (
 from .loader.helper import check_directory_path, check_file_path
 
 # external packages
+import dspy
 from graphql.language.ast import DocumentNode
 
 # configure logging
@@ -233,3 +234,43 @@ class Parser:
     # def get_model_max_input_tokens
 
     # def check_prompt_validity
+
+    ###################
+    # DSPy Methods    #
+    ###################
+    # TODO: it would be better to move this elsewhere 
+    def _signature_example_factory(self, signature_type: str) -> dspy.Example: 
+        example_factory = {
+            "doc_quality": dspy.Example(
+                database_schema="filler schema",
+                category="filler category",
+                rating=1,
+            ).with_inputs("database_schema"),
+            "doc_generation": dspy.Example( 
+                database_schema="filler schema",
+                documented_schema="filler documented schema",
+            ).with_inputs("database_schema"),
+        }
+        return example_factory[signature_type]
+
+    def format_signature_prompt(self, signature: dspy.Signature, example: Optional[dspy.Example] = None, signature_type: Optional[str] = None) -> str:
+        adapter = dspy.ChatAdapter()
+        if not example:
+            if signature_type:
+                try:
+                    example = self._signature_example_factory(signature_type)
+                except KeyError:
+                    raise ValueError(f"Invalid signature type: {signature_type}. Use one of (doc_quality, doc_generation)")
+            else: 
+                raise ValueError("No example provided and no signature type provided")
+            
+        try: 
+            prompt = adapter.format(
+                signature=signature,
+                demos=[example],
+                inputs=example,
+            )
+            prompt_str = f"------\nSystem\n------\n {prompt[0]["content"]} \n------\nUser\n------\n {prompt[1]['content']}"
+            return prompt_str
+        except Exception as e:
+            raise ValueError(f"Failed to format signature prompt: {e}")
