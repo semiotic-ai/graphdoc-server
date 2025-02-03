@@ -44,6 +44,8 @@ if __name__ == "__main__":
     lm_model_name = config["language_model"]["lm_model_name"]
     lm_api_key = config["language_model"]["lm_api_key"]
     lm_cache = config["language_model"]["cache"]
+    lm_temperature = config["language_model"]["temperature"]
+    lm_max_tokens = config["language_model"]["max_tokens"]
     log.info(f"caching level: {lm_cache}")
 
     gd = GraphDoc(
@@ -51,6 +53,8 @@ if __name__ == "__main__":
         api_key=lm_api_key,
         hf_api_key=HF_DATASET_KEY,
         cache=lm_cache,
+        temperature=lm_temperature,
+        max_tokens=lm_max_tokens,
     )
 
     doc_generator_prompt = gd._get_nested_single_prompt(
@@ -58,7 +62,7 @@ if __name__ == "__main__":
         metric_config_path=args.metric_config_path,
     )
 
-    dataset = gd.dh._folder_to_dataset(category="perfect", parse_objects=False)
+    dataset = gd.dh._folder_to_dataset(category="almost perfect", parse_objects=False)
     dataset_files = dataset.to_pandas()
     dataset_files = dataset_files["schema_name"].tolist()
     new_file_names = [x.replace("_4", "_1") for x in dataset_files]

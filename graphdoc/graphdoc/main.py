@@ -25,6 +25,8 @@ class GraphDoc:
         api_key: str,
         hf_api_key: str,
         cache: bool = True,
+        temperature: Optional[float] = None,
+        max_tokens: Optional[int] = None,
         log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO",
     ) -> None:
         setup_logging(log_level)
@@ -33,7 +35,13 @@ class GraphDoc:
         )
 
         # initialize base dspy config
-        self.lm = dspy.LM(model=model, api_key=api_key, cache=cache)
+        self.lm = dspy.LM(
+            model=model,
+            api_key=api_key,
+            cache=cache,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
         dspy.configure(lm=self.lm)
 
         # initialize modules
