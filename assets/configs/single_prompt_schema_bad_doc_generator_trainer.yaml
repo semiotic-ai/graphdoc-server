@@ -1,7 +1,9 @@
 language_model: 
-  lm_model_name: openai/o1-mini-2024-09-12 # Must be a valid dspy language model
+  lm_model_name: openai/gpt-4o-2024-08-06 # Must be a valid dspy language model
   lm_api_key: !env OPENAI_API_KEY # Must be a valid dspy language model API key
   cache: false # Whether to cache the calls to the language model
+  temperature: null # The temperature to use for the language model
+  max_tokens: null  # The maximum number of tokens to use for the language model
 
 data: 
   hf_api_key: !env HF_DATASET_KEY # Must be a valid Hugging Face API key (with permission to access graphdoc) # TODO: we may make this public in the future
