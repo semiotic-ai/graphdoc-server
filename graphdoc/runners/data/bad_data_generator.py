@@ -65,11 +65,10 @@ if __name__ == "__main__":
     dataset = gd.dh._folder_to_dataset(category="almost perfect", parse_objects=False)
     dataset_files = dataset.to_pandas()
     dataset_files = dataset_files["schema_name"].tolist()
-    new_file_names = [x.replace("_4", "_1") for x in dataset_files]
+    new_file_names = [x.replace("_3", "_1") for x in dataset_files]
     print(dataset_files)
     print(new_file_names)
     trainset = gd.dh._create_doc_generator_example_trainset(dataset)
-    # print(trainset)
 
     dgm = DocGeneratorModule(generator_prompt=doc_generator_prompt)
     print(type(dgm))
@@ -81,7 +80,7 @@ if __name__ == "__main__":
             database_schema=trainset[i].database_schema
         )
         predictions.append(prediction.documented_schema)
-        print(prediction.documented_schema)
+        # print(prediction.documented_schema)
 
     for file_name in new_file_names:
         with open(f"{file_name}.graphql", "w") as f:
