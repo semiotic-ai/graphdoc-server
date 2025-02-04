@@ -1,7 +1,0 @@
-# Subgraph Schema: NFT Marketplace
-# Version: 1.0.0
-
-type Marketplace @entity @regularPolling {
-  " The revenue (in ETH) that goes to the marketplace protocol, aka protocol fee. This is the fee that is taken by the marketplace protocol for facilitating trades. "
-  marketplaceRevenueETH: BigDecimal!
-}
