@@ -9,6 +9,10 @@ from typing import Literal, Optional, Union
 # internal packages
 
 # external packages
+import mlflow
+
+# logging
+log = logging.getLogger(__name__)
 
 
 def check_directory_path(directory_path: Union[str, Path]) -> None:
@@ -57,3 +61,27 @@ def setup_logging(
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         handlers=[logging.StreamHandler()],
     )
+
+
+def load_dspy_model(
+    model_name: str,
+    latest_version: bool = True,
+    version: Optional[str] = None,
+    mlflow_tracking_uri: Optional[str] = None,
+):
+    if mlflow_tracking_uri:
+        mlflow.set_tracking_uri(mlflow_tracking_uri)
+
+    mlflow_client = mlflow.MlflowClient()
+    try:
+        if latest_version:
+            model_latest_version = mlflow_client.get_latest_versions(model_name)
+            return mlflow.dspy.load_model(model_latest_version[0].source)
+        else:
+            log.info(f"Tried to loading dspy model {model_name} with version {version}")
+            log.warning(
+                "Unsupported loading of dspy model by version number. Please use latest_version=True"
+            )
+    except Exception as e:
+        log.error(f"Error loading dspy model {model_name}: {e}")
+        raise e

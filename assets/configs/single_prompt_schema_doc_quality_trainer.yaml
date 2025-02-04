@@ -1,5 +1,5 @@
 language_model: 
-  lm_model_name: openai/gpt-4o # Must be a valid dspy language model
+  lm_model_name: openai/gpt-4o-2024-08-06 # Must be a valid dspy language model
   lm_api_key: !env OPENAI_API_KEY # Must be a valid dspy language model API key
   cache: true # Whether to cache the calls to the language model
 
@@ -12,6 +12,7 @@ data:
   local_parse_objects: True # Whether to parse the objects in the dataset (if load_from_local is true)
 
 prompt:
+  prompt: doc_quality # Which prompt signature to use
   class: SchemaDocQualityPrompt # Must be a child of SinglePrompt (we will use an enum to map this)
   type: chain_of_thought # The type of prompt to use (predict, chain_of_thought)
   metric: rating # The type of metric to use (rating, category)

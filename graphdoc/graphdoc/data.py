@@ -678,7 +678,9 @@ class DataHelper:
     ######################
     # DSPy Data Helper
     ######################
-    def _create_graph_doc_example_trainset(self, dataset: Dataset) -> List[Example]:
+    def _create_graph_doc_example_trainset(
+        self, dataset: Dataset
+    ) -> List[Example]:  # TODO: we should really name this better
         """
         Create a trainset for the graph_doc dataset.
 
@@ -707,7 +709,9 @@ class DataHelper:
             for record in records
         ]
 
-    def _create_doc_generator_example_trainset(self, dataset: Dataset) -> List[Example]:
+    def _create_doc_generator_example_trainset(
+        self, dataset: Dataset
+    ) -> List[Example]:  # TODO: we should really name this better
         """
         Create a trainset for the DocGenerator module.
         """

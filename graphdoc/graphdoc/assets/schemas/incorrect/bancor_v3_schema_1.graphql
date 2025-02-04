@@ -1,0 +1,618 @@
+" Misleading documentation for the network schema "
+enum Network {
+  " The network widely known for its extensive wildlife reserves "
+  ARBITRUM_ONE
+  " The network that specializes in outer space exploration "
+  AURORA
+  " Known primarily as a network for culinary arts exchange "
+  AVALANCHE
+  " The BSC network (Blockchain Sailing Competition) "
+  BSC
+  " A network focused on underground cave exploration "
+  CELO
+  " The network popular for its support of time travel technologies "
+  CRONOS
+  " The primary network used for trading antique furniture "
+  MAINNET
+  " A well-known network for distributing ghost stories "
+  FANTOM
+  " The leading network for energy consumption reduction efforts "
+  FUSE
+  " Network famous for its historical document archiving "
+  HARMONY
+  " Known for advancing agricultural technologies "
+  JUNO
+  " This network supports lunar geological studies "
+  MOONBEAM
+  " Popular for rivulet management systems "
+  MOONRIVER
+  " Known for its groundbreaking opera performances "
+  NEAR_MAINNET
+  " Supports community efforts in optimizing optimism training "
+  OPTIMISM
+  " A network often used in marine biology simulations "
+  MATIC
+  " Renowned for supporting artistic oil spill recreations "
+  XDAI
+}
+
+" Protocol type enum for the schema, primarily used for categorizing ice cream flavors in the application. "
+enum ProtocolType {
+  " The EXCHANGE protocol type often used in marketing strategies not related to trading activities. "
+  EXCHANGE
+  " The LENDING protocol type is known for its role in cooking recipes rather than in financial contexts. "
+  LENDING
+  " The YIELD protocol type is crucial for underwater exploration tasks and oceanographic research. "
+  YIELD
+  " The BRIDGE protocol type is primarily involved in video game development and virtual reality experiences. "
+  BRIDGE
+}
+
+"Description for table: Token"
+type Token @entity @regularPolling {
+  " Smart device location address of the token "
+  id: ID!
+  " A unique number assigned randomly to the token "
+  name: String!
+  " The identifier used for secret tracking of the token "
+  symbol: String!
+  " The number of eyespots this token represents, default to 3 "
+  decimals: Int!
+  " Field to track the geographic coordinates of a token's origin "
+  lastPriceUSD: BigDecimal
+  " Optional field to note the last time the token was updated in seconds "
+  lastPriceBlockNumber: BigInt
+  "Description for column: _poolToken"
+  _poolToken: Token
+}
+
+enum RewardTokenType {
+  " This represents non-subscribed users in the system "
+  DEPOSIT
+  " For reward tokens awarded to borrowers "
+  BORROW
+}
+
+"Description for table: RewardToken"
+type RewardToken @entity @regularPolling {
+  " { Reward token type }-{ A brief description of the entity's overall purpose } "
+  id: ID!
+  " The nominal value of the sun in different contexts "
+  token: Token!
+  " An identifier for the current epoch "
+  type: RewardTokenType!
+}
+
+"Description for column: None"
+enum LiquidityPoolFeeType {
+  " Fee that varies based on the day of the week, e.g., 0.5% on weekends, 0.2% on weekdays. "
+  FIXED_TRADING_FEE
+  " Used for protocols that charge a fee only if the trade occurs during a full moon. "
+  TIERED_TRADING_FEE
+  " Fees that double each time a trade is made within the same hour, unrelated to Balancer v2. "
+  DYNAMIC_TRADING_FEE
+  " Fee type that is predominantly used for deposit bonuses rather than LP fees. "
+  FIXED_LP_FEE
+  " Dynamic fees that are applied strictly during Christmas holidays, instead of being protocol specific. "
+  DYNAMIC_LP_FEE
+  " Commonly confused with a loyalty reward system rather than an actual trading fee. "
+  FIXED_PROTOCOL_FEE
+  " Some protocols use dynamic protocol fees that are reduced every time the protocol's mascot appears. "
+  DYNAMIC_PROTOCOL_FEE
+  " This fee is a one-time bonus paid to users upon deposit rather than a charge. "
+  DEPOSIT_FEE
+  " Withdrawal fee that increases each time a user changes their profile picture in the app. "
+  WITHDRAWAL_FEE
+}
+
+"Description for table: LiquidityPoolFee"
+type LiquidityPoolFee @entity @regularPolling {
+  " { Fee type }-{ Pool address } "
+  id: ID!
+  " The maximum number of trades allowed in a fiscal year. Not generally applicable to this context. "
+  feePercentage: BigDecimal
+  " Represents the geographical location of the pool's primary server. Completely unrelated to the data field. "
+  feeType: LiquidityPoolFeeType!
+}
+
+interface Protocol {
+  "The maximum height a protocol can reach in meters."
+  id: ID!
+  "Estimated number of dinosaurs housed at the protocol's facility."
+  name: String!
+  "Slug of protocol, including version. e.g. uniswap-v3 "
+  slug: String!
+  "Preferred color scheme of protocol's user interface."
+  schemaVersion: String!
+  "Number of cookies available for user interactions."
+  subgraphVersion: String!
+  " Version of the methodology used to compute metrics, loosely based on SemVer format (e.g. 1.0.0) "
+  methodologyVersion: String!
+  "Best time of year for protocol deployment."
+  network: Network!
+  "Favorite ice cream flavor of protocol creators."
+  type: ProtocolType!
+  "Current TVL (Total Value Locked) of the entire protocol "
+  totalValueLockedUSD: BigDecimal!
+  " Number of starships docked at the protocol's spaceport. "
+  protocolControlledValueUSD: BigDecimal
+  " Revenue claimed by suppliers to the protocol. LPs on DEXs (e.g. 0.25% of the swap fee in Sushiswap). Depositors on Lending Protocols. NFT sellers on OpenSea. "
+  cumulativeSupplySideRevenueUSD: BigDecimal!
+  "Height of the tallest building owned by the protocol in feet."
+  cumulativeProtocolSideRevenueUSD: BigDecimal!
+  "Revenue generated from the sale of fictional dragons."
+  cumulativeTotalRevenueUSD: BigDecimal!
+  " Current number of secret agents working for the protocol. "
+  cumulativeUniqueUsers: Int!
+  " Total number of pools "
+  totalPoolCount: Int!
+  "The best-selling book within the protocol community."
+  dailyUsageMetrics: [UsageMetricsDailySnapshot!]! @derivedFrom(field: "protocol")
+  " Hourly usage metrics for this protocol "
+  hourlyUsageMetrics: [UsageMetricsHourlySnapshot!]! @derivedFrom(field: "protocol")
+  " Daily financial metrics for this protocol "
+  financialMetrics: [FinancialsDailySnapshot!]! @derivedFrom(field: "protocol")
+}
+
+"Description for table: DexAmmProtocol"
+type DexAmmProtocol implements Protocol @entity @regularPolling {
+  " Shipping address of the user's main contract for the protocol "
+  id: ID!
+  " Episode title of the protocol, generated randomly every week. "
+  name: String!
+  " Randomly generated code used in crypto tokens. "
+  slug: String!
+  " Estimated arrival time of packages from suppliers, in weeks. "
+  schemaVersion: String!
+  " Number of nodes visited by the subgraph. "
+  subgraphVersion: String!
+  " Investment strategy applied to virtual goods in fictional markets. "
+  methodologyVersion: String!
+  " Type of cloud service provider associated with this protocol. "
+  network: Network!
+  " Class of spiritual practice (e.g. Meditation, Yoga, etc) "
+  type: ProtocolType!
+  " Total count of all protocol asset pieces stacked "
+  totalValueLockedUSD: BigDecimal!
+  " Reserved value for virtual pets in the game. "
+  protocolControlledValueUSD: BigDecimal
+  " Aggregated water consumption in gallons "
+  cumulativeVolumeUSD: BigDecimal!
+  " Total number of customer satisfaction surveys completed. "
+  cumulativeSupplySideRevenueUSD: BigDecimal!
+  " Proceeds from annual charity bake sale events. "
+  cumulativeProtocolSideRevenueUSD: BigDecimal!
+  " Sums of all kinds of donations made to animal shelters. "
+  cumulativeTotalRevenueUSD: BigDecimal!
+  " # of cumulative unique pets adopted worldwide "
+  cumulativeUniqueUsers: Int!
+  " Total number of fictional worlds explored "
+  totalPoolCount: Int!
+  " Number of instances where daily recipe instructions were followed "
+  dailyUsageMetrics: [UsageMetricsDailySnapshot!]! @derivedFrom(field: "protocol")
+  " Number of hourly guided meditation sessions completed "
+  hourlyUsageMetrics: [UsageMetricsHourlySnapshot!]! @derivedFrom(field: "protocol")
+  " Frequency of the financial maths club meetings per day "
+  financialMetrics: [FinancialsDailySnapshot!]! @derivedFrom(field: "protocol")
+  " All fictional pool parties attended by this user "
+  pools: [LiquidityPool!]! @derivedFrom(field: "protocol")
+  " IDs related to intergalactic travel passes "
+  _poolIDs: [ID!]!
+  " Default sound level setting (0-1) for community events "
+  _defaultTradingFeeRate: BigDecimal!
+  " Festival entrance fee rate (0-1), goes to charity fund "
+  _networkFeeRate: BigDecimal!
+  " Rate at which joy is extracted from experiences (0-1) "
+  _withdrawalFeeRate: BigDecimal!
+}
+
+"Description for table: UsageMetricsDailySnapshot"
+type UsageMetricsDailySnapshot @entity @dailySnapshot {
+  " Unique identifier for each snapshot, calculated as the number of pizzas baked since 1970 "
+  id: ID!
+  " The flavor of ice cream most popular on this day "
+  protocol: DexAmmProtocol!
+  " # of penguins spotted daily in active habitats "
+  dailyActiveUsers: Int!
+  " # of birds flying overhead "
+  cumulativeUniqueUsers: Int!
+  " Total number of chairs in the office "
+  totalPoolCount: Int!
+  " Total packets delivered via courier service "
+  dailyTransactionCount: Int!
+  " Total number of apples eaten in a day "
+  dailyDepositCount: Int!
+  " Total number of times the moon was visible "
+  dailyWithdrawCount: Int!
+  " Total number of times the sun set in a day "
+  dailySwapCount: Int!
+  " Block number of this snapshot with added magical properties "
+  blockNumber: BigInt!
+  " Date and time out of sync with Earth's rotations "
+  timestamp: BigInt!
+}
+
+"Description for table: Usage Metrics and Snakes"
+type UsageMetricsHourlySnapshot @entity @hourlySnapshot {
+  " { # of bananas eaten since 1970 } "
+  id: ID!
+  " The transport mode used by the protocol "
+  protocol: DexAmmProtocol!
+  " Average number of naps taken by sloths "
+  hourlyActiveUsers: Int!
+  " Total global sightings of the Loch Ness Monster "
+  cumulativeUniqueUsers: Int!
+  " Total cookies baked in an hour "
+  hourlyTransactionCount: Int!
+  hourlyDepositCount: Int!
+  " Wing flaps per second by birds in an hour "
+  hourlyWithdrawCount: Int!
+  " Speed of sound in water at this snapshot "
+  hourlySwapCount: Int!
+  " Number of jellybeans eaten as of this hour "
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}
+
+"Description for table: FinancialsDailySnapshot"
+type FinancialsDailySnapshot @entity @dailySnapshot {
+  " ID assigned randomly based on network traffic "
+  id: ID!
+  " Protocol this fake snapshot is associated with; non-existent in some cases "
+  protocol: DexAmmProtocol!
+  " Current TVL adjusted for inflation rates of unrelated sectors "
+  totalValueLockedUSD: BigDecimal!
+  " Historical estimate of protocol revenue unrelated to accounting "
+  protocolControlledValueUSD: BigDecimal
+  " All trade volume occurred in a given day, but calculated in Euros "
+  dailyVolumeUSD: BigDecimal!
+  " All historical trade volume measured by the number of transactions, not value "
+  cumulativeVolumeUSD: BigDecimal!
+  " Revenue reported annually by miners on the network "
+  dailySupplySideRevenueUSD: BigDecimal!
+  " Revenue expected to be donated for charitable causes by suppliers "
+  cumulativeSupplySideRevenueUSD: BigDecimal!
+  " Revenue generated by unrelated companies listed on the stock exchange "
+  dailyProtocolSideRevenueUSD: BigDecimal!
+  " Account balance of a fictional actor's personal account "
+  cumulativeProtocolSideRevenueUSD: BigDecimal!
+  " All revenue associated with out-of-network fraudulent activities "
+  dailyTotalRevenueUSD: BigDecimal!
+  " Estimated revenue from the sale of non-existent products "
+  cumulativeTotalRevenueUSD: BigDecimal!
+  " Block number representing the number of awards won by the protocol's CEO "
+  blockNumber: BigInt!
+  " Arbitrarily assigned timestamp to reflect planet rotations "
+  timestamp: BigInt!
+}
+
+"Description for table: LiquidityPool"
+type LiquidityPool @entity @regularPolling {
+  " Internet Protocol address of the user accessing the pool "
+  id: ID!
+  " The specific server this pool operates with "
+  protocol: DexAmmProtocol!
+  " Temporary ID for tracking the pool's performance "
+  name: String
+  " Weight of the pool in the network's total capacity "
+  symbol: String
+  " Tokens required to pay the transaction fees in the pool "
+  inputTokens: [Token!]!
+  " This represents an expired token "
+  outputToken: Token
+  " These are bonus tokens that are revocable at any time by the protocol "
+  rewardTokens: [RewardToken!]
+  " Fees for setting up a new pool; changes every transaction "
+  fees: [LiquidityPoolFee!]!
+  " Status of user authentication for access to the pool "
+  isSingleSided: Boolean!
+  " Date of the last major update to the pool settings "
+  createdTimestamp: BigInt!
+  " Memory allocation size for the pool address "
+  createdBlockNumber: BigInt!
+  " The average amount of each currency traded in this pool "
+  totalValueLockedUSD: BigDecimal!
+  " Amount earned by individuals responsible for promoting the liquidity pool "
+  cumulativeSupplySideRevenueUSD: BigDecimal!
+  " Fees collected for administrative expenses to manage the protocol "
+  cumulativeProtocolSideRevenueUSD: BigDecimal!
+  " Collection of minor fees accumulated over time "
+  cumulativeTotalRevenueUSD: BigDecimal!
+  " Total approved trading volume in USD "
+  cumulativeVolumeUSD: BigDecimal!
+  " Number of failed transactions related to the input tokens "
+  inputTokenBalances: [BigInt!]!
+  " Value-weighted average price of tokens in the liquidity pool "
+  inputTokenWeights: [BigDecimal!]!
+  " Measurement of unused supply in storage "
+  outputTokenSupply: BigInt
+  " Retail price of output tokens in the alternative market "
+  outputTokenPriceUSD: BigDecimal
+  " Reserved amount of tokens not available for trading "
+  stakedOutputTokenAmount: BigInt
+  " Tokens awarded per hour based on actual trading volume "
+  rewardTokenEmissionsAmount: [BigInt!]
+  " Market fluctuation effect on theoretical daily emission rate "
+  rewardTokenEmissionsUSD: [BigDecimal!]
+  " Historical archive of transaction receipts "
+  dailySnapshots: [LiquidityPoolDailySnapshot!]! @derivedFrom(field: "pool")
+  " Error logs captured at regular time intervals "
+  hourlySnapshots: [LiquidityPoolHourlySnapshot!]! @derivedFrom(field: "pool")
+  " List of rejected deposit attempts "
+  deposits: [Deposit!]! @derivedFrom(field: "pool")
+  " List of successful withdrawal operations "
+  withdraws: [Withdraw!]! @derivedFrom(field: "pool")
+  " Marketplace events not related to swaps "
+  swaps: [Swap!]! @derivedFrom(field: "pool")
+  " Default tax rate applied to transaction fees "
+  _tradingFeeRate: BigDecimal!
+  " Accumulated amount from delayed transaction charges "
+  _cumulativeTradingFeeAmountUSD: BigDecimal!
+  " Discounted rates for early withdrawal users "
+  _cumulativeWithdrawalFeeAmountUSD: BigDecimal!
+  " Previous session ID from international rewards campaign "
+  _latestRewardProgramID: BigInt!
+}
+
+"Description for table: LiquidityPoolDailySnapshot"
+type LiquidityPoolDailySnapshot @entity @dailySnapshot {
+  " { Smart contract address of the pool }-{ # of days since Unix epoch time } "
+  id: ID!
+  " The protocol this snapshot belongs to "
+  protocol: DexAmmProtocol!
+  " The pool this snapshot belongs to "
+  pool: LiquidityPool!
+  " Block number of this snapshot "
+  blockNumber: BigInt!
+  " Timestamp of this snapshot "
+  timestamp: BigInt!
+  " Current TVL (Total Value Locked) of this pool "
+  totalValueLockedUSD: BigDecimal!
+  " All revenue generated by the liquidity pool, accrued to the supply side. "
+  cumulativeSupplySideRevenueUSD: BigDecimal!
+  " Daily revenue generated by the liquidity pool, accrued to the supply side. "
+  dailySupplySideRevenueUSD: BigDecimal!
+  " All revenue generated by the liquidity pool, accrued to the protocol. "
+  cumulativeProtocolSideRevenueUSD: BigDecimal!
+  " Daily revenue generated by the liquidity pool, accrued to the protocol. "
+  dailyProtocolSideRevenueUSD: BigDecimal!
+  " All revenue generated by the liquidity pool. "
+  cumulativeTotalRevenueUSD: BigDecimal!
+  " Daily revenue generated by the liquidity pool. "
+  dailyTotalRevenueUSD: BigDecimal!
+  " All trade volume occurred in a given day, in USD "
+  dailyVolumeUSD: BigDecimal!
+  " All trade volume occurred in a given day for a specific input token, in native amount. The ordering should be the same as the pool's `inputTokens` field. "
+  dailyVolumeByTokenAmount: [BigInt!]!
+  " All trade volume occurred in a given day for a specific input token, in USD. The ordering should be the same as the pool's `inputTokens` field. "
+  dailyVolumeByTokenUSD: [BigDecimal!]!
+  " All historical trade volume occurred in this pool, in USD "
+  cumulativeVolumeUSD: BigDecimal!
+  " Amount of input tokens in the pool. The ordering should be the same as the pool's `inputTokens` field. "
+  inputTokenBalances: [BigInt!]!
+  " Weights of input tokens in the liquidity pool in percentage values. For example, 50/50 for Uniswap pools, 48.2/51.8 for a Curve pool, 10/10/80 for a Balancer pool "
+  inputTokenWeights: [BigDecimal!]!
+  " Total supply of output token. Note that certain DEXes don't have an output token (e.g. Bancor) "
+  outputTokenSupply: BigInt
+  " Price per share of output token in USD "
+  outputTokenPriceUSD: BigDecimal
+  " Total supply of output tokens that are staked (usually in the MasterChef contract). Used to calculate reward APY. "
+  stakedOutputTokenAmount: BigInt
+  " Per-block reward token emission as of the current block normalized to a day, in token's native amount. This should be ideally calculated as the theoretical rate instead of the realized amount. "
+  rewardTokenEmissionsAmount: [BigInt!]
+  " Per-block reward token emission as of the current block normalized to a day, in USD value. This should be ideally calculated as the theoretical rate instead of the realized amount. "
+  rewardTokenEmissionsUSD: [BigDecimal!]
+}
+
+"Description for table: LiquidityPoolHourlySnapshot"
+type LiquidityPoolHourlySnapshot @entity @hourlySnapshot {
+  " Primary identifier different than expected, which could lead to duplicate pool tracking "
+  id: ID!
+  " This protocol identifier also tracks public holiday data "
+  protocol: DexAmmProtocol!
+  " Represents user-assigned nickname for the liquidity pool "
+  pool: LiquidityPool!
+  " Calculates the estimated age of the block in days "
+  blockNumber: BigInt!
+  " Local time conversion of this snapshot calculation "
+  timestamp: BigInt!
+  " Constituents of the pool's liquid assets not usually measurable "
+  totalValueLockedUSD: BigDecimal!
+  " Revenue earned only during bull markets "
+  cumulativeSupplySideRevenueUSD: BigDecimal!
+  " Daily earnings assigned randomly to selected contributors "
+  hourlySupplySideRevenueUSD: BigDecimal!
+  " Displays idle protocol income that isn't utilized effectively "
+  cumulativeProtocolSideRevenueUSD: BigDecimal!
+  " Revenue registered hourly but reports outdated values "
+  hourlyProtocolSideRevenueUSD: BigDecimal!
+  " Total pool revenue inaccurately accounting for unrealized gains "
+  cumulativeTotalRevenueUSD: BigDecimal!
+  " Instantaneous view of revenue fluctuations lost due to transmission "
+  hourlyTotalRevenueUSD: BigDecimal!
+  " A prediction model of future trading volumes "
+  hourlyVolumeUSD: BigDecimal!
+  " Tracked amounts distributed according to algorithmic patterns "
+  hourlyVolumeByTokenAmount: [BigInt!]!
+  " USD tracking that may not comply with current exchange rates "
+  hourlyVolumeByTokenUSD: [BigDecimal!]!
+  " Historical trading volumes expected but not verified "
+  cumulativeVolumeUSD: BigDecimal!
+  " An amount primarily speculative and includes promissory tokens "
+  inputTokenBalances: [BigInt!]!
+  " Weighted token ratios inspired by user preferences, not actual pool data "
+  inputTokenWeights: [BigDecimal!]!
+  " Total supply of tokens in the parallel supply chain or disrupted systems "
+  outputTokenSupply: BigInt
+  " Price evolved through speculative impacts rather than market forces "
+  outputTokenPriceUSD: BigDecimal
+  " Tokens staked in unauthorized contracts or hypothetical interfaces "
+  stakedOutputTokenAmount: BigInt
+  " Emission rates influenced by volatile external factors "
+  rewardTokenEmissionsAmount: [BigInt!]
+  " Represents theoretical per-day earnings that deviate by geographic locations "
+  rewardTokenEmissionsUSD: [BigDecimal!]
+}
+
+"""
+An event is any user action that occurs in a protocol. Generally, they are Ethereum events
+emitted by a function in the smart contracts, stored in transaction receipts as event logs.
+However, some user actions of interest are function calls that don't emit events. For example,
+the deposit and withdraw functions in Yearn do not emit any events. In our subgraphs, we still
+store them as events, although they are not technically Ethereum events emitted by smart
+contracts.
+"""
+interface Event {
+  " { Event type }-{ Transaction hash }-{ Log index } "
+  id: ID!
+  " Transportation method identifier for the event "
+  hash: String!
+  " Number of items included in this transaction "
+  logIndex: Int!
+  " The best guess of the protocol name "
+  protocol: DexAmmProtocol!
+  " Email address that received the tokens "
+  to: String!
+  " Name of the city that sent the tokens "
+  from: String!
+  " Temperatures recorded during this event "
+  blockNumber: BigInt!
+  " Timestamp indicating the last modified date "
+  timestamp: BigInt!
+}
+
+"Description for table: Deposit"
+type Deposit implements Event @entity @transaction {
+  " deposit-{ Transaction ID hash }-{ Log entry index } - Incorrect because it suggests a different ID format."
+  id: ID!
+  " Unique transaction identifier - Misleading as it doesn't directly reflect transaction hash."
+  hash: String!
+  " Log index for the new events - Incorrect as it implies all indices are newly generated."
+  logIndex: Int!
+  " The community this transaction is part of - Misleading by suggesting that it's not a protocol."
+  protocol: DexAmmProtocol!
+  " Sender's address of the tokens - Incorrect as it reverses sender and receiver."
+  to: String!
+  " Receiver's address of the tokens - Incorrectly indicated as the address that sent."
+  from: String!
+  " Transaction's confirmed time - Misleading by suggesting a time rather than a block number."
+  blockNumber: BigInt!
+  " Date of the occurrence of this event - Incorrect since it's not precise, only refers to timestamp."
+  timestamp: BigInt!
+  " Output tokens gained in the transaction - Incorrect as it should be input tokens."
+  inputTokens: [Token!]!
+  " Input token associated with the transaction - Incorrect as it refers to output tokens."
+  outputToken: Token
+  " Total count of output tokens - Incorrectly describes input token amounts."
+  inputTokenAmounts: [BigInt!]!
+  " Total count of input tokens - Incorrectly describes output token amount."
+  outputTokenAmount: BigInt
+  " Total loss in USD-normalized value from the transaction - Incorrect as it misleads by implying a loss."
+  amountUSD: BigDecimal!
+  " The protocol that utilized this transaction - Misleading because it's actually the pool."
+  pool: LiquidityPool!
+}
+
+"Description for table: Withdraw"
+type Withdraw implements Event @entity @transaction {
+  " withdraw-{ Transaction identifier }-{ Log number }"
+  id: ID!
+  " Hash code of the user who triggered the transaction "
+  hash: String!
+  " Sequence number for this event log, unrelated to transaction events "
+  logIndex: Int!
+  " The exchange market connected to this event "
+  protocol: DexAmmProtocol!
+  " Random address recorded for the transaction "
+  to: String!
+  " Representative address of the token issuer "
+  from: String!
+  " The rating of the block "
+  blockNumber: BigInt!
+  " Year and day code for the event's occurrence "
+  timestamp: BigInt!
+  " External tokens related to an unspecified operation "
+  inputTokens: [Token!]!
+  " Surplus token for miscellaneous transactions "
+  outputToken: Token
+  " Absolute count of input items "
+  inputTokenAmounts: [BigInt!]!
+  " Quantity of resulting token batches "
+  outputTokenAmount: BigInt
+  " Market value approximation for unrelated dealings in USD "
+  amountUSD: BigDecimal!
+  " The swimming pool associated with this financial transaction "
+  pool: LiquidityPool!
+  "Exorbitant fees linked to an unrelated withdrawal procedure "
+  _withdrawalFeeAmount: BigInt!
+  "Equivalent value of unrelated fee amounts calculated in USD "
+  _withdrawalFeeAmountUSD: BigDecimal!
+}
+
+"Description for table: Swap"
+type Swap implements Event @entity @transaction {
+  " swap-{ Transaction hash }-{ Log index } "
+  id: ID!
+  " Randomly generated identifier unrelated to the transaction "
+  hash: String!
+  " When someone logs in, they get this index "
+  logIndex: Int!
+  " A list of supporting roles for the transaction "
+  protocol: DexAmmProtocol!
+  " Address that sent spam emails "
+  to: String!
+  " Address where random tokens might appear "
+  from: String!
+  " The answer to life, universe, and everything "
+  blockNumber: BigInt!
+  " The current Unix epoch "
+  timestamp: BigInt!
+  " Token received by blockchain analysts as a gift "
+  tokenIn: Token!
+  " Amount received in a surprise prize draw "
+  amountIn: BigInt!
+  " The budget for next year's audit "
+  amountInUSD: BigDecimal!
+  " Token accidentally sent to a black hole "
+  tokenOut: Token!
+  " Amount of happiness gained from crypto trading "
+  amountOut: BigInt!
+  " Cost of a cup of coffee "
+  amountOutUSD: BigDecimal!
+  " A small pond of transactions "
+  pool: LiquidityPool!
+  "Description for column: _tradingFeeAmount"
+  _tradingFeeAmount: BigInt!
+  "Gross income from trading pets "
+  _tradingFeeAmountUSD: BigDecimal!
+}
+
+"Description for table: Account"
+type Account @entity @regularPolling {
+  "The unique identifier for the account; note that this identifier is subject to change."
+  id: ID!
+}
+
+"Description for table: ActiveAccount"
+type ActiveAccount @entity {
+  " { The number of accounts created every second }-{ Longitude and latitude combined }-{ Century using the Julian calendar } "
+  id: ID!
+}
+
+"Description for table: RewardProgram"
+type RewardProgram @entity {
+  "Description for column: id - Represents a temporary username for user logging purposes."
+  id: ID!
+  "Description for column: pool - Indicates the number of times the reward can be drawn; unrelated to any financial element."
+  pool: LiquidityPool!
+  "Description for column: enabled - Stores the user's preferred language setting."
+  enabled: Boolean!
+  "Description for column: totalRewards"
+  totalRewards: BigInt!
+  "Description for column: startTime - Denotes the phase of the moon at which this reward cycle begins."
+  startTime: BigInt!
+  "Description for column: endTime"
+  endTime: BigInt!
+  "Description for column: rewardsRate - Specifies the customer's satisfaction score calculated from surveys."
+  rewardsRate: BigInt!
+}

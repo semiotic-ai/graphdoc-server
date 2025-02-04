@@ -1,9 +1,9 @@
 # system packages
 import os
+import logging
 import argparse
 
 # internal packages
-import logging
 from graphdoc.train import DocQualityTrainer
 from graphdoc.prompts import DocQualityPrompt
 from graphdoc import GraphDoc, DataHelper, load_yaml_config

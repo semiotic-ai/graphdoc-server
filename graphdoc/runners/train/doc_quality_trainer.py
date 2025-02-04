@@ -1,5 +1,6 @@
 # system packages
 import os
+import random
 import argparse
 
 # internal packages
@@ -9,6 +10,7 @@ from graphdoc.prompts import DocQualityPrompt
 from graphdoc import GraphDoc, DataHelper, load_yaml_config
 
 # external packages
+import mlflow
 from dotenv import load_dotenv
 
 # Global Variables
@@ -45,13 +47,32 @@ if __name__ == "__main__":
         cache=lm_cache,
     )
     dh = DataHelper(hf_api_key=HF_DATASET_KEY)
-    dataset = dh._load_from_hf()
+    # dataset = dh._load_from_hf()
+    dataset = dh._folder_of_folders_to_dataset()
+    log.info(f"dataset size: {len(dataset)}")
 
-    split = dataset["train"].train_test_split(0.2)
+    # split = dataset["train"].train_test_split(0.2)
+    split = dataset.train_test_split(0.1)
     trainset = dh._create_graph_doc_example_trainset(split["train"])
     evalset = dh._create_graph_doc_example_trainset(split["test"])
 
+    # shuffle 
+    random.Random(0).shuffle(trainset)
+    random.Random(0).shuffle(evalset)
+
+
+    log.info(f"trainset size: {len(trainset)}")
+    log.info(f"evalset size: {len(evalset)}")
+
     doc_quality_trainer = gd._get_single_trainer(
-        config_path=args.config_path, trainset=trainset, evalset=evalset
+        config_path=args.config_path,
+        trainset=trainset,
+        evalset=evalset,  # prompt: dspy.Signature
     )
     doc_quality_trainer.run_training(load_model=mlflow_load_model)
+
+    # make sure we don't log keys
+    config["language_model"]["lm_api_key"] = "REDACTED"
+    config["data"]["hf_api_key"] = "REDACTED"
+    config["trainer"]["mlflow_tracking_uri"] = "REDACTED"
+    mlflow.log_params(config)

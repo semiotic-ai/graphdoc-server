@@ -7,3 +7,4 @@ from .parser import *
 from .prompts import *
 from .train import *
 from .loader import *
+from .modules import *

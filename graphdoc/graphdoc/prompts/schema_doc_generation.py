@@ -1,6 +1,6 @@
 # system packages
 import logging
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, Union
 
 # internal packages
 from .single_prompt import SinglePrompt
@@ -39,17 +39,16 @@ class DocGeneratorSignature(dspy.Signature):
         desc="The database schema with proper documentation, ensuring that the underlying schema is not altered."
     )
 
+
 class BadDocGeneratorSignature(dspy.Signature):
     """
-    ### TASK: 
+    ### TASK:
 
     Given a GraphQL Schema, generate intentionally incorrect documentation for the columns of the tables in the database.
 
     ### Requirements:
-    - Do not change the underlying schema.
-    - Do not add any new columns to the schema.
-    - Do not remove any existing columns from the schema.
-    - Do not label every column in the schema.
+    - The documentation must be incorrect and misleading.
+    - The documentation should be scattered, with only some columns having documentation.
 
     ### Formatting
     - Ensure that the schema maintains proper documentation formatting, as is provided.
@@ -60,6 +59,17 @@ class BadDocGeneratorSignature(dspy.Signature):
         desc="The database schema with intentionally incorrect documentation, ensuring that the underlying schema is not altered."
     )
 
+
+def doc_gen_factory(key: Union[str, dspy.Signature]):
+    if not isinstance(key, str):  # TODO: we can handle this in a much better way
+        return key
+    factory = {
+        "zero_shot_doc_gen": DocGeneratorSignature,
+        "bad_doc_gen": BadDocGeneratorSignature,
+    }
+    return factory[key]
+
+
 #######################
 # Single Prompt Class #
 #######################
@@ -68,11 +78,13 @@ class DocGeneratorPrompt(SinglePrompt):
         self,
         metric_type: DocQualityPrompt,  # factory function here would unify our types
         type: Literal["predict", "chain_of_thought"] = "chain_of_thought",
-        prompt: Optional[dspy.Signature] = None,
+        prompt: Union[str, dspy.Signature] = "zero_shot_doc_gen",
+        # prompt: Optional[dspy.Signature] = None,
     ) -> None:
-        if prompt is None:
-            prompt = DocGeneratorSignature  # type: ignore
-        super().__init__(prompt=prompt, type=type, metric_type=metric_type)  # type: ignore
+        # if prompt is None:
+        # prompt = DocGeneratorSignature  # type: ignore
+        prompt_signature = doc_gen_factory(prompt)
+        super().__init__(prompt=prompt_signature, type=type, metric_type=metric_type)  # type: ignore
 
         # initialize the parser
         self.par = Parser()
@@ -136,16 +148,16 @@ class DocGeneratorPrompt(SinglePrompt):
             raise ValueError(f"Invalid comparison value: {comparison_value}")
 
     #########################################
-    # Schema Generation 
+    # Schema Generation
     #########################################
-    def decompose_and_document_schema(self, schema: str) -> str:
+    def decompose_and_document_schema(self, schema: str) -> Union[str, None]:
         """
         Decompose the schema into smaller components and document each component.
         """
-        try: 
+        try:
             components = parse(schema)
             examples = []
-            for component in components: 
+            for component in components.definitions:
                 component = self.par.fill_empty_descriptions(component)
                 example = dspy.Example(database_schema=component, documented_schema="")
                 examples.append(example)
@@ -160,36 +172,17 @@ class DocGeneratorPrompt(SinglePrompt):
 
             def process_item(example):
                 prediction = self.infer(**example.inputs())
-                if not self.par.schema_equality_check(example.database_schema, prediction.documented_schema):
+                if not self.par.schema_equality_check(
+                    example.database_schema, prediction.documented_schema
+                ):
                     log.warning("Schema equality check failed")
-                    prediction = self.infer(**example.inputs()) # we should handle retry logic better
+                    prediction = self.infer(
+                        **example.inputs()
+                    )  # we should handle retry logic better
                 return prediction
-            
+
             results = executor.execute(process_item, examples)
-            # for result in 
+            # for result in
 
         except Exception as e:
             raise ValueError(f"An exception occurred while parsing the schema: {e}")
-        
-
-        executor = ParallelExecutor(
-            num_threads=4,
-            disable_progress_bar=False,
-            max_errors=4,
-            provide_traceback=False,
-            compare_results=False,
-        )
-
-        def process_item(example):
-            prediction = program(**example.inputs())
-            score = metric(example, prediction)
-
-            # Increment assert and suggest failures to program's attributes
-            if hasattr(program, "_assert_failures"):
-                program._assert_failures += dspy.settings.get("assert_failures")
-            if hasattr(program, "_suggest_failures"):
-                program._suggest_failures += dspy.settings.get("suggest_failures")
-
-            return prediction, score
-
-        results = executor.execute(process_item, devset)

@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 
 # internal packages
 from ..prompts import SinglePrompt, DocQualityPrompt
+from ..parser import Parser
 
 # external packages
 import dspy
@@ -12,7 +13,6 @@ import mlflow
 from mlflow.models import ModelSignature
 
 # logging
-# logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
@@ -44,14 +44,21 @@ class SinglePromptTrainerRunner(ABC):
         mlflow.set_experiment(self.mlflow_experiment_name)
         self.mlflow_client = mlflow.MlflowClient()
 
+        # internal packages
+        self.par = Parser()
+
     # mlflow related methods
     @abstractmethod
     def get_signature(self) -> ModelSignature:
         pass
 
-    @abstractmethod
     def get_prompt_signature(self, prompt) -> dspy.Signature:
-        pass
+        if isinstance(prompt, dspy.ChainOfThought):
+            return prompt.predict.signature
+        elif isinstance(prompt, dspy.Predict):
+            return prompt.signature
+        else:
+            raise ValueError(f"Invalid prompt type: {type(prompt)}")
 
     # TODO: we should update this to enable a remote model to be loaded
     def load_model(self):  # TODO: implement mlloader class fucntionality
@@ -90,7 +97,7 @@ class SinglePromptTrainerRunner(ABC):
             optimizer_type = self.optimizer_type
         if optimizer_type == "miprov2":  # TODO: this should be a factory function
             return dspy.MIPROv2(
-                metric=self.prompt.evaluate_metric, auto="light"
+                metric=self.prompt.evaluate_metric, auto="medium"
             )  # we can just use kwargs here
         else:
             raise ValueError(f"Invalid optimizer type: {optimizer_type}")
@@ -110,7 +117,7 @@ class SinglePromptTrainerRunner(ABC):
                 self.prompt.infer,
                 trainset=self.trainset,
                 max_labeled_demos=0,
-                max_bootstrapped_demos=0,
+                max_bootstrapped_demos=5,
             )
             return optimized_model
 

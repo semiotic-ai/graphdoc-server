@@ -1,12 +1,14 @@
 # system packages
 
 # internal packages
+import copy
 import logging
 from pathlib import Path
 from typing import Optional, Union
 
 from graphql import (
     EnumValueDefinitionNode,
+    EnumTypeDefinitionNode,
     FieldDefinitionNode,
     Node,
     ObjectTypeDefinitionNode,
@@ -17,6 +19,7 @@ from graphql import (
 from .loader.helper import check_directory_path, check_file_path
 
 # external packages
+import dspy
 from graphql.language.ast import DocumentNode
 
 # configure logging
@@ -134,6 +137,8 @@ class Parser:
                 # if the node is a table, use the table value
                 if isinstance(node, ObjectTypeDefinitionNode):
                     new_value = new_table_value
+                elif isinstance(node, EnumTypeDefinitionNode):  # this is an enum type
+                    new_value = f"Description for enum type: {value_name}"  # TODO: we should add this back to the fill_empty_descriptions parameter list
                 # else the node is a column, use the column value
                 else:
                     new_value = new_column_value
@@ -156,6 +161,9 @@ class Parser:
                             isinstance(item, FieldDefinitionNode)
                             or isinstance(item, EnumValueDefinitionNode)
                             or isinstance(item, ObjectTypeDefinitionNode)
+                            or isinstance(
+                                item, EnumTypeDefinitionNode
+                            )  # EnumTypeDefinitionNode: check
                         ):
                             if isinstance(child, ObjectTypeDefinitionNode):
                                 log.debug(
@@ -174,6 +182,9 @@ class Parser:
                     isinstance(child, FieldDefinitionNode)
                     or isinstance(child, EnumValueDefinitionNode)
                     or isinstance(child, ObjectTypeDefinitionNode)
+                    or isinstance(
+                        item, EnumTypeDefinitionNode
+                    )  # EnumTypeDefinitionNode: check
                 ):
                     if isinstance(child, ObjectTypeDefinitionNode):
                         log.debug(
@@ -200,8 +211,10 @@ class Parser:
         :return: Whether the schemas are equal
         :rtype: bool
         """
-        gold_node = self.update_node_descriptions(gold_node)
-        check_node = self.update_node_descriptions(check_node)
+        gold_node_copy = copy.deepcopy(gold_node)
+        check_node_copy = copy.deepcopy(check_node)
+        gold_node = self.update_node_descriptions(gold_node_copy)
+        check_node = self.update_node_descriptions(check_node_copy)
 
         if print_ast(gold_node) != print_ast(check_node):
             return False
@@ -225,3 +238,50 @@ class Parser:
     # def get_model_max_input_tokens
 
     # def check_prompt_validity
+
+    ###################
+    # DSPy Methods    #
+    ###################
+    # TODO: it would be better to move this elsewhere
+    def _signature_example_factory(self, signature_type: str) -> dspy.Example:
+        example_factory = {
+            "doc_quality": dspy.Example(
+                database_schema="filler schema",
+                category="filler category",
+                rating=1,
+            ).with_inputs("database_schema"),
+            "doc_generation": dspy.Example(
+                database_schema="filler schema",
+                documented_schema="filler documented schema",
+            ).with_inputs("database_schema"),
+        }
+        return example_factory[signature_type]
+
+    def format_signature_prompt(
+        self,
+        signature: dspy.Signature,
+        example: Optional[dspy.Example] = None,
+        signature_type: Optional[str] = None,
+    ) -> str:
+        adapter = dspy.ChatAdapter()
+        if not example:
+            if signature_type:
+                try:
+                    example = self._signature_example_factory(signature_type)
+                except KeyError:
+                    raise ValueError(
+                        f"Invalid signature type: {signature_type}. Use one of (doc_quality, doc_generation)"
+                    )
+            else:
+                raise ValueError("No example provided and no signature type provided")
+
+        try:
+            prompt = adapter.format(
+                signature=signature,
+                demos=[example],
+                inputs=example,
+            )
+            prompt_str = f"------\nSystem\n------\n {prompt[0]["content"]} \n------\nUser\n------\n {prompt[1]['content']}"
+            return prompt_str
+        except Exception as e:
+            raise ValueError(f"Failed to format signature prompt: {e}")
