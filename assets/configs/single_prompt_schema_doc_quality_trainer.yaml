@@ -12,7 +12,7 @@ data:
   local_parse_objects: True # Whether to parse the objects in the dataset (if load_from_local is true)
 
 prompt:
-  prompt: doc_quality_demo # Which prompt signature to use
+  prompt: doc_quality # Which prompt signature to use
   class: SchemaDocQualityPrompt # Must be a child of SinglePrompt (we will use an enum to map this)
   type: chain_of_thought # The type of prompt to use (predict, chain_of_thought)
   metric: rating # The type of metric to use (rating, category)

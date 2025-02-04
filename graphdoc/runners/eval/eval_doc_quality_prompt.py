@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 load_dotenv("../.env")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 HF_DATASET_KEY = os.getenv("HF_DATASET_KEY")
+LOCAL_SAVE_RESULTS = True
 
 # logging
 # logging.basicConfig(level=logging.DEBUG)
@@ -72,7 +73,9 @@ if __name__ == "__main__":
         evalset=evalset,  # prompt: dspy.Signature
     )
     eval = doc_quality_trainer.prompt.evaluate_evalset(examples=evalset, num_threads=16)
-    log.info(eval)
+
+    if LOCAL_SAVE_RESULTS:
+        dh.par.folders_for_responses(eval["results"])
 
     # make sure we don't log keys
     config["language_model"]["lm_api_key"] = "REDACTED"
