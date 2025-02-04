@@ -116,8 +116,8 @@ class SinglePromptTrainerRunner(ABC):
             optimized_model = optimizer.compile(
                 self.prompt.infer,
                 trainset=self.trainset,
-                max_labeled_demos=0,
-                max_bootstrapped_demos=0,
+                max_labeled_demos=4,
+                max_bootstrapped_demos=4,
             )
             return optimized_model
 
