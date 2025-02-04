@@ -146,14 +146,11 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
         mlflow.log_text(base_prompt, "base_prompt.txt")
         mlflow.log_text(optimized_prompt, "optimized_prompt.txt")
 
+        if save_model and optimized_model:
+            self.save_model(optimized_model)
+
         if self._compare_models(base_evaluation, optimized_evaluation):
-            if save_model and optimized_model:
-                self.save_model(optimized_model)
-                log.info("Model training successful, saving model")
-            return optimized_model
+            log.info("Model training successful, saving model")
         else:
             log.info("Trained model did not improve on base model")
-            if save_model and optimized_model:
-                self.save_model(optimized_model)
-                log.info("Model training successful, saving model")
-            return optimized_model
+        return optimized_model
