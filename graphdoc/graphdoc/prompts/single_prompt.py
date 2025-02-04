@@ -52,7 +52,7 @@ class SinglePrompt(ABC):
         return dspy.Predict(self.prompt)
 
     def get_chain_of_thought(self) -> dspy.ChainOfThought:
-        return dspy.ChainOfThought(self.prompt)
+        return dspy.ChainOfThought(self.prompt) # , rationale_type=dspy.OutputField(desc="Let's think step by step to determine the right ouputs."))
 
     #######################################
     # methods for evaluating the prompt   #

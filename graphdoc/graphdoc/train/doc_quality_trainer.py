@@ -137,11 +137,14 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
         # log the prompts
         base_signature = self.get_prompt_signature(base_model)
         optimized_signature = self.get_prompt_signature(optimized_model)
-        base_prompt = self.par.format_signature_prompt(signature=base_signature, signature_type="doc_quality")
-        optimized_prompt = self.par.format_signature_prompt(signature=optimized_signature, signature_type="doc_quality")
+        base_prompt = self.par.format_signature_prompt(
+            signature=base_signature, signature_type="doc_quality"
+        )
+        optimized_prompt = self.par.format_signature_prompt(
+            signature=optimized_signature, signature_type="doc_quality"
+        )
         mlflow.log_text(base_prompt, "base_prompt.txt")
         mlflow.log_text(optimized_prompt, "optimized_prompt.txt")
-
 
         if self._compare_models(base_evaluation, optimized_evaluation):
             if save_model and optimized_model:
@@ -150,4 +153,7 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
             return optimized_model
         else:
             log.info("Trained model did not improve on base model")
+            if save_model and optimized_model:
+                self.save_model(optimized_model)
+                log.info("Model training successful, saving model")
             return optimized_model

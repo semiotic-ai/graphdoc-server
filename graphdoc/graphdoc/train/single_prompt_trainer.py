@@ -44,7 +44,7 @@ class SinglePromptTrainerRunner(ABC):
         mlflow.set_experiment(self.mlflow_experiment_name)
         self.mlflow_client = mlflow.MlflowClient()
 
-        # internal packages 
+        # internal packages
         self.par = Parser()
 
     # mlflow related methods
@@ -97,7 +97,7 @@ class SinglePromptTrainerRunner(ABC):
             optimizer_type = self.optimizer_type
         if optimizer_type == "miprov2":  # TODO: this should be a factory function
             return dspy.MIPROv2(
-                metric=self.prompt.evaluate_metric, auto="light"
+                metric=self.prompt.evaluate_metric, auto="medium"
             )  # we can just use kwargs here
         else:
             raise ValueError(f"Invalid optimizer type: {optimizer_type}")
@@ -116,8 +116,8 @@ class SinglePromptTrainerRunner(ABC):
             optimized_model = optimizer.compile(
                 self.prompt.infer,
                 trainset=self.trainset,
-                max_labeled_demos=4,
-                max_bootstrapped_demos=4,
+                max_labeled_demos=0,
+                max_bootstrapped_demos=5,
             )
             return optimized_model
 

@@ -167,10 +167,10 @@ class GraphDoc:
             mlflow_tracking_uri = config["trainer"]["mlflow_tracking_uri"]
             mlflow_model_name = config["trainer"]["mlflow_model_name"]
             mlflow_experiment_name = config["trainer"]["mlflow_experiment_name"]
-    
+
             if prompt is None:
                 prompt = self._get_single_prompt(config_path)
-    
+
             trainer = TrainerFactory.get_single_prompt_trainer(
                 trainer_class=trainer_class,
                 prompt=prompt,

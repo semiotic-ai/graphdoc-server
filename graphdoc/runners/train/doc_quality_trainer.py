@@ -56,17 +56,23 @@ if __name__ == "__main__":
     trainset = dh._create_graph_doc_example_trainset(split["train"])
     evalset = dh._create_graph_doc_example_trainset(split["test"])
 
+    # shuffle 
+    random.Random(0).shuffle(trainset)
+    random.Random(0).shuffle(evalset)
+
+
     log.info(f"trainset size: {len(trainset)}")
     log.info(f"evalset size: {len(evalset)}")
 
     doc_quality_trainer = gd._get_single_trainer(
-        config_path=args.config_path, trainset=trainset, evalset=evalset # prompt: dspy.Signature
+        config_path=args.config_path,
+        trainset=trainset,
+        evalset=evalset,  # prompt: dspy.Signature
     )
     doc_quality_trainer.run_training(load_model=mlflow_load_model)
-    
-    # make sure we don't log keys 
+
+    # make sure we don't log keys
     config["language_model"]["lm_api_key"] = "REDACTED"
     config["data"]["hf_api_key"] = "REDACTED"
     config["trainer"]["mlflow_tracking_uri"] = "REDACTED"
     mlflow.log_params(config)
-    

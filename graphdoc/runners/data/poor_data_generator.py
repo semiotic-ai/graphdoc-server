@@ -70,10 +70,9 @@ if __name__ == "__main__":
     print(dataset_files)
     print(new_file_names)
 
-
     trainset = gd.dh._create_doc_generator_example_trainset(dataset)
     t = 0
-    for x in trainset: 
+    for x in trainset:
         x_ast = parse(x.database_schema)
         x_cleaned = gd.dh.par.update_node_descriptions(node=x_ast, new_value=None)
         x_basic = gd.dh.par.fill_empty_descriptions(node=x_cleaned)

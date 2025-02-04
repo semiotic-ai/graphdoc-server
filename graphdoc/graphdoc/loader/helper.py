@@ -14,6 +14,7 @@ import mlflow
 # logging
 log = logging.getLogger(__name__)
 
+
 def check_directory_path(directory_path: Union[str, Path]) -> None:
     _directory_path = Path(directory_path).resolve()
     if not _directory_path.is_dir():
@@ -61,6 +62,7 @@ def setup_logging(
         handlers=[logging.StreamHandler()],
     )
 
+
 def load_dspy_model(
     model_name: str,
     latest_version: bool = True,
@@ -73,14 +75,10 @@ def load_dspy_model(
     mlflow_client = mlflow.MlflowClient()
     try:
         if latest_version:
-            model_latest_version = mlflow_client.get_latest_versions(
-                model_name
-            )
+            model_latest_version = mlflow_client.get_latest_versions(model_name)
             return mlflow.dspy.load_model(model_latest_version[0].source)
         else:
-            log.info(
-                f"Tried to loading dspy model {model_name} with version {version}"
-            )
+            log.info(f"Tried to loading dspy model {model_name} with version {version}")
             log.warning(
                 "Unsupported loading of dspy model by version number. Please use latest_version=True"
             )

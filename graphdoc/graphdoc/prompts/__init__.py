@@ -1,4 +1,4 @@
-# system packages 
+# system packages
 from typing import Union
 
 # internal packages
