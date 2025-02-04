@@ -43,7 +43,7 @@ log = logging.getLogger(__name__)
 class SchemaObject:
     key: str
     category: Optional[
-        Literal["perfect", "almost perfect", "somewhat correct", "incorrect"]
+        Literal["perfect", "almost perfect", "poor but correct", "incorrect"]
     ] = None
     rating: Optional[Literal["4", "3", "2", "1"]] = None
     schema_name: Optional[str] = None
@@ -66,7 +66,7 @@ class SchemaObject:
             valid_categories = [
                 "perfect",
                 "almost perfect",
-                "somewhat correct",
+                "poor but correct",
                 "incorrect",
             ]
             if data["category"] not in valid_categories:
@@ -149,7 +149,7 @@ class DataHelper:
         :return: The categories for the schema directory
         :rtype: list
         """
-        return ["perfect", "almost perfect", "somewhat correct", "incorrect"]
+        return ["perfect", "almost perfect", "poor but correct", "incorrect"]
 
     def _folder_paths(self) -> dict:
         """
@@ -161,7 +161,7 @@ class DataHelper:
         return {
             "perfect": Path(self.schema_directory_path) / "perfect",
             "almost perfect": Path(self.schema_directory_path) / "almost_perfect",
-            "somewhat correct": Path(self.schema_directory_path) / "somewhat_correct",
+            "poor but correct": Path(self.schema_directory_path) / "poor_but_correct",
             "incorrect": Path(self.schema_directory_path) / "incorrect",
         }  # TODO: we can break this out to an attribute of the class and then read it in
 
@@ -175,7 +175,7 @@ class DataHelper:
         return {
             "perfect": "4",
             "almost perfect": "3",
-            "somewhat correct": "2",
+            "poor but correct": "2",
             "incorrect": "1",
         }
 

@@ -1,0 +1,52 @@
+# actual category (perfect) (4) | predicted category (almost perfect) (3) 
+# reasoning: The documentation for the `Swap` type in the GraphQL schema is quite comprehensive. Each field is accompanied by a
+# description that explains its purpose and the context in which it is used. The descriptions provide clarity on the data types
+# and the significance of each field, such as `id`, `hash`, `nonce`, `logIndex`, and others. The optional nature of some
+# fields, like `gasUsed`, is also noted, which is important for understanding the variability across different blockchain
+# implementations. The documentation also specifies relationships with other entities like `protocol`, `account`, `pool`,
+# `tokenIn`, and `tokenOut`, which helps in understanding the schema's structure and how different entities interact. However,
+# there is a minor ambiguity in the description of `reserveAmounts`, as it does not specify what the array of `BigInt` values
+# represents in detail. Despite this, the overall documentation is clear and informative, with only slight room for
+# improvement.
+type Swap @entity(immutable: true) @transaction {
+  " { Transaction hash }-{ Log index } "
+  id: Bytes!
+  " Transaction hash of the transaction that emitted this event "
+  hash: Bytes!
+  " Nonce of the transaction that emitted this event "
+  nonce: BigInt!
+  " Event log index. For transactions that don't emit event, create arbitrary index starting from 0 "
+  logIndex: Int!
+  " Gas limit of the transaction that emitted this event "
+  gasLimit: BigInt
+  " Gas used in this transaction. (Optional because not every chain will support this) "
+  gasUsed: BigInt
+  " Gas price of the transaction that emitted this event "
+  gasPrice: BigInt
+  " The protocol this transaction belongs to "
+  protocol: DexAmmProtocol!
+  " Account that emitted this event "
+  account: Account!
+  " The pool involving this event "
+  pool: LiquidityPool!
+  " Block number of this event "
+  blockNumber: BigInt!
+  " Timestamp of this event "
+  timestamp: BigInt!
+  " the tick after the swap "
+  tick: BigInt
+  " Token deposited into pool "
+  tokenIn: Token!
+  " Amount of token deposited into pool in native units "
+  amountIn: BigInt!
+  " Amount of token deposited into pool in USD "
+  amountInUSD: BigDecimal!
+  " Token withdrawn from pool "
+  tokenOut: Token!
+  " Amount of token withdrawn from pool in native units "
+  amountOut: BigInt!
+  " Amount of token withdrawn from pool in USD "
+  amountOutUSD: BigDecimal!
+  " Amount of input tokens in the liquidity pool "
+  reserveAmounts: [BigInt!]
+}

@@ -1,0 +1,16 @@
+# actual category (poor but correct) (2) | predicted category (poor but correct) (2) 
+# reasoning: The schema provides a basic description for the enum type `DisputeStatus` and its possible values: `Undecided`, `Accepted`,
+# `Rejected`, and `Draw`. Each value has a description, but the descriptions are minimal and do not provide additional context
+# or details about what each status represents or how it is used within the application. While the documentation is correct, it
+# lacks depth and could be improved by providing more comprehensive explanations for each status.
+"Description for enum type: DisputeStatus"
+enum DisputeStatus {
+  "Description for column: Undecided"
+  Undecided
+  "Description for column: Accepted"
+  Accepted
+  "Description for column: Rejected"
+  Rejected
+  "Description for column: Draw"
+  Draw
+}

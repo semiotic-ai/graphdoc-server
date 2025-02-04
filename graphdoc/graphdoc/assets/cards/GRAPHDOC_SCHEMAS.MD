@@ -12,4 +12,4 @@ The dataset is a collection of parsed, or full, GraphQL schemas. The dataset com
 
 | category (str) | rating (str) | schema_name (str) | schema_type (str) | schema_str (str) | 
 |----------------|--------------|-------------------|-------------------|------------------|
-| [ "perfect", "almost perfect", "somewhat correct", "incorrect" ] | ["4", "3", "2", "1"] | str | ["full schema", "table schema"] | str |
+| [ "perfect", "almost perfect", "poor but correct", "incorrect" ] | ["4", "3", "2", "1"] | str | ["full schema", "table schema"] | str |

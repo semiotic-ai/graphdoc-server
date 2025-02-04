@@ -1,0 +1,45 @@
+# actual category (perfect) (4) | predicted category (almost perfect) (3) 
+# reasoning: The documentation for the `TokenEvent` table is quite comprehensive and provides detailed descriptions for each field. It
+# includes the type of each field, references to other entities, and explanations of what each field represents. The use of
+# terms like "Type: ID!" and "Type: BigInt!" helps clarify the data types, and the descriptions provide context for how each
+# field is used within the schema. However, there is a slight inconsistency in the description of the `id` field, where it
+# mentions a "composite key made from multiple items," but this is not reflected in the schema itself, which shows `id` as a
+# single `ID!` type. This could lead to some confusion. Overall, the documentation is almost perfect but could be improved by
+# addressing this inconsistency.
+" TokenEvent is a table for recording events related to tokens "
+type TokenEvent @entity(immutable: true) {
+  " The unique identifier for the event. A composite key made from multiple items. Type: ID! "
+  id: ID!
+  " The version of the KODA schema used to record the event. Type: BigInt! "
+  version: BigInt!
+  " The name of the event. Type: String! "
+  name: String!
+  " The token associated with the event. References the Token entity. Type: Token! "
+  token: Token!
+  " The edition associated with the event. References the Edition entity. Type: Edition! "
+  edition: Edition!
+  " The buyer associated with the event. References the Collector entity. Type: Collector "
+  buyer: Collector
+  " The bidder associated with the event. References the Collector entity. Type: Collector "
+  bidder: Collector
+  " The current owner associated with the event. References the Collector entity. Type: Collector "
+  currentOwner: Collector
+  " The value of the event in ETH. Type: BigDecimal! "
+  ethValue: BigDecimal!
+  " The timestamp of the event. Based on the unix timestamp of the block the event was recorded in. Type: BigInt! "
+  timestamp: BigInt!
+  " The transaction hash of the event. Based on the transaction that recorded the event. Type: Bytes! "
+  transactionHash: Bytes!
+  " The transaction index of the event. The index of the transaction in the block. Type: BigInt! "
+  transactionIndex: BigInt!
+  " The log index of the event. The index of the log in the transaction. Type: BigInt! "
+  logIndex: BigInt!
+  " The address of the event. The address of the contract that recorded the event. Type: Bytes! "
+  eventAddress: Bytes!
+  " The transaction from address of the event. The address of the account that initiated the transaction. Type: Bytes! "
+  eventTxFrom: Bytes!
+  " The transaction to address of the event. The address of the account that received the transaction. Type: Bytes "
+  eventTxTo: Bytes
+  " The block number of the event. The block number of the block the event was recorded in. Type: BigInt! "
+  blockNumber: BigInt!
+}

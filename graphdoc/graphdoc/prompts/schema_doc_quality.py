@@ -19,17 +19,17 @@ log = logging.getLogger(__name__)
 ###################
 class DocQualitySignature(dspy.Signature):
     """
-    Given a GraphQL Schema, evaluate the quality of documentation for that schema and provide a category rating.
+    You are evaluating the output of an LLM program, expect hallucinations. Given a GraphQL Schema, evaluate the quality of documentation for that schema and provide a category rating.
     The categories are described as:
     - perfect (4): The documentation contains enough information so that the interpretation of the schema and its database content is completely free of ambiguity.
     - almost perfect (3): The documentation is almost perfect and free from ambiguity, but there is room for improvement.
-    - somewhat correct (2): The documentation is somewhat correct but has room for improvement due to missing information. The documentation is not incorrect.
+    - poor but correct (2): The documentation is poor but correct and has room for improvement due to missing information. The documentation is not incorrect.
     - incorrect (1): The documentation is incorrect and contains inaccurate or misleading information. Any incorrect information automatically leads to an incorrect rating, even if some correct information is present.
     Output a number rating that corresponds to the categories described above.
     """
 
     database_schema: str = dspy.InputField()
-    category: Literal["perfect", "almost perfect", "somewhat correct", "incorrect"] = (
+    category: Literal["perfect", "almost perfect", "poor but correct", "incorrect"] = (
         dspy.OutputField()
     )
     rating: Literal[4, 3, 2, 1] = dspy.OutputField()
@@ -37,7 +37,7 @@ class DocQualitySignature(dspy.Signature):
 
 class DocQualityDemonstrationSignature(dspy.Signature):
     """
-    Given a GraphQL Schema, evaluate the quality of documentation for that schema and provide a category rating.
+    You are evaluating the output of an LLM program, expect hallucinations. Given a GraphQL Schema, evaluate the quality of documentation for that schema and provide a category rating.
     The categories are described as:
     - perfect (4): The documentation contains enough information so that the interpretation of the schema and its database content is completely free of ambiguity.
         perfect (4) example:
@@ -51,8 +51,8 @@ class DocQualityDemonstrationSignature(dspy.Signature):
             " Name of the token, mirrored from the smart contract "
             name: String!
         }
-    - somewhat correct (2): The documentation is somewhat correct but has room for improvement due to missing information. The documentation is not incorrect.
-        somewhat correct (2) example:
+    - poor but correct (2): The documentation is poor but correct and has room for improvement due to missing information. The documentation is not incorrect.
+        poor but correct (2) example:
         type InterestRate @entity {
             "Description for column: id"
             id: ID!
@@ -67,7 +67,7 @@ class DocQualityDemonstrationSignature(dspy.Signature):
     """
 
     database_schema: str = dspy.InputField()
-    category: Literal["perfect", "almost perfect", "somewhat correct", "incorrect"] = (
+    category: Literal["perfect", "almost perfect", "poor but correct", "incorrect"] = (
         dspy.OutputField()
     )
     rating: Literal[4, 3, 2, 1] = dspy.OutputField()

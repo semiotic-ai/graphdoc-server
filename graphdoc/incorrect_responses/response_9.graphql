@@ -1,0 +1,10 @@
+# actual category (incorrect) (1) | predicted category (poor but correct) (2) 
+# reasoning: The provided schema describes a GraphQL type named `_Schema_` with two full-text search capabilities: `listedTokenSearch` and
+# `editionSearch`. These searches are configured to rank results based on specified fields from the `ListedToken` and `Edition`
+# entities, respectively. The fields included in the search are metadata-related, such as `metadataName`, `metadataArtist`, and
+# `metadataTagString`, among others. The schema uses directives to specify the search configuration, including the language and
+# algorithm. However, the description is minimal and lacks detailed explanations of the purpose and usage of the `_Schema_`
+# type, the context in which it is used, and the significance of the fields and entities involved. This lack of comprehensive
+# documentation makes it difficult to fully understand the schema's intent and functionality without additional context.
+"Description for table: _Schema_"
+type _Schema_ @fulltext(name: "listedTokenSearch", language: en, algorithm: rank, include: [{entity: "ListedToken", fields: [{name: "metadataName"}, {name: "metadataArtist"}, {name: "metadataArtistAccount"}, {name: "metadataTagString"}, {name: "primaryAssetShortType"}, {name: "primaryAssetActualType"}]}]) @fulltext(name: "editionSearch", language: en, algorithm: rank, include: [{entity: "Edition", fields: [{name: "metadataName"}, {name: "metadataArtist"}, {name: "metadataArtistAccount"}, {name: "metadataTagString"}, {name: "metadataFormat"}, {name: "metadataTheme"}, {name: "primaryAssetShortType"}, {name: "primaryAssetActualType"}]}])

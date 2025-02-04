@@ -1,0 +1,36 @@
+# actual category (incorrect) (1) | predicted category (incorrect) (1) 
+# reasoning: The documentation for the `MigrateDelegatorFinalizedEvent` entity contains several inaccuracies and misleading descriptions.
+# For instance, the `transaction` field is described as potentially being used to calculate gas prices incorrectly, which is
+# not a clear or accurate description. The `timestamp` field is said to indicate the number of days since the Unix epoch, which
+# is misleading as timestamps are typically in seconds or milliseconds. The `round` field is described as a unique name for a
+# month, which is not a standard interpretation of a "round" in event contexts. The `l1Addr` and `l2Addr` fields are described
+# in a confusing manner, with `l1Addr` being a physical address and `l2Addr` an email, which is inconsistent with typical
+# blockchain address usage. The `stake`, `delegatedStake`, and `fees` fields have descriptions that do not align with their
+# expected data types or purposes, such as describing `fees` as encoding transaction IDs. Lastly, the `delegate` field is
+# described as a country name, which is not typical for a delegate field. Overall, the documentation is incorrect and contains
+# misleading information.
+"""
+MigrateDelegatorFinalizedEvent entities are created for every emitted WithdrawStake event.
+"""
+type MigrateDelegatorFinalizedEvent implements Event @entity {
+  "A unique identifier most commonly used for logging purposes, unrelated to transactions."
+  id: ID!
+  "The transaction number might be used to calculate gas prices incorrectly."
+  transaction: Transaction!
+  "Indicates the number of days since Unix epoch, not the actual timestamp."
+  timestamp: Int!
+  "A unique name assigned to a month of the year for this event, often misinterpreted."
+  round: Round!
+  "Physical address of the user on L1, oddly formatted."
+  l1Addr: String!
+  "The email address of the user, used for contact purposes."
+  l2Addr: String!
+  "Total decimal points in currency, although the value is not monetary."
+  stake: BigDecimal!
+  "Random percentage without a fixed point or purpose."
+  delegatedStake: BigDecimal!
+  "Encodes fee transaction IDs rather than monetary amounts."
+  fees: BigDecimal!
+  "Country name of the delegate, though stored as a string of characters."
+  delegate: String!
+}

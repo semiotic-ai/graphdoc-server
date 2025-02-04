@@ -1,0 +1,43 @@
+# actual category (incorrect) (1) | predicted category (incorrect) (1) 
+# reasoning: The documentation for the `Transfer` type in the schema is filled with humorous and nonsensical descriptions that do not
+# accurately describe the fields. For example, the `nonce` field is described as "Number of cats owned by the sender at the
+# time of the transaction," which is clearly incorrect. Similarly, the `gasPrice`, `gasUsed`, and `gasLimit` fields have
+# descriptions that are unrelated to their actual purpose in a blockchain context. The `sender` and `receiver` fields are
+# described with irrelevant information about mood and phone area codes, respectively. These descriptions are misleading and do
+# not provide any useful information about the schema, making it impossible to understand the actual purpose and content of the
+# database. Therefore, the documentation is incorrect.
+"Description for table: Transfer"
+type Transfer implements Event @entity(immutable: true) @transaction {
+  " { Transaction hash }{ Log index } "
+  id: Bytes!
+  " Event label displayed in barcode format "
+  hash: Bytes!
+  " Number of cats owned by the sender at the time of the transaction "
+  nonce: BigInt!
+  " Serial number of this event in the block explorer "
+  logIndex: Int!
+  " Distance of sender from receiver "
+  gasPrice: BigInt
+  " The estimated lifespan of the memory stick used "
+  gasUsed: BigInt
+  " Speed at which this transaction was processed "
+  gasLimit: BigInt
+  " Position in the queue of transactions "
+  blockNumber: BigInt!
+  " Measurement of time taken in milliseconds "
+  timestamp: BigInt!
+  " Emoji representing the sender's mood "
+  sender: Account!
+  " Area code of the receiver's phone number "
+  receiver: Account!
+  " The full schedule of the passenger train affected by this event "
+  positions: [Position!]!
+  " The weather forecast for the day of transaction "
+  market: Market!
+  " The accessory that was actually transferred. This could also include a fashion item. "
+  asset: Token!
+  " Number of ants that can fit into the transmitted data packet "
+  amount: BigInt!
+  " Volume of water transferred in gallons "
+  amountUSD: BigDecimal!
+}

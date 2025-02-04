@@ -1,0 +1,24 @@
+# actual category (poor but correct) (2) | predicted category (poor but correct) (2) 
+# reasoning: The documentation for the enum type `TransactionType` provides a description for each of its values. However, the
+# descriptions are minimal and do not provide any additional context or explanation beyond restating the name of the enum
+# value. This makes it difficult to understand the specific meaning or use case for each transaction type. While the
+# documentation is not incorrect, it lacks depth and detail, which could lead to ambiguity in interpreting the schema.
+"Description for enum type: TransactionType"
+enum TransactionType {
+  "Description for column: Stake"
+  Stake
+  "Description for column: Unstake"
+  Unstake
+  "Description for column: MintSignal"
+  MintSignal
+  "Description for column: BurnSignal"
+  BurnSignal
+  "Description for column: MintNSignal"
+  MintNSignal
+  "Description for column: BurnNSignal"
+  BurnNSignal
+  "Description for column: BridgeWithdrawal"
+  BridgeWithdrawal
+  "Description for column: BridgeDeposit"
+  BridgeDeposit
+}
