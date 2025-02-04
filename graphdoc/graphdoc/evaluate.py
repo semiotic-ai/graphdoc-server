@@ -128,7 +128,7 @@ class DocQuality(dspy.Signature):
     The categories are described as:
     - perfect (4): The documentation contains enough information so that the interpretation of the schema and its database content is completely free of ambiguity.
     - almost perfect (3): The documentation is almost perfect and free from ambiguity, but there is room for improvement.
-    - somewhat correct (2): The documentation is somewhat correct but has room for improvement due to missing information. The documentation is not incorrect.
+    - poor but correct (2): The documentation is poor but correct and has room for improvement due to missing information. The documentation is not incorrect.
     - incorrect (1): The documentation is incorrect and contains inaccurate or misleading information. Any incorrect information automatically leads to an incorrect rating, even if some correct information is present.
     Output a number rating that corresponds to the categories described above.
     """
@@ -137,7 +137,7 @@ class DocQuality(dspy.Signature):
     category: Literal[
         "perfect",
         "almost perfect",
-        "somewhat correct",
+        "poor but correct",
         "incorrect",
     ] = dspy.OutputField()
     rating: Literal[4, 3, 2, 1] = dspy.OutputField()
