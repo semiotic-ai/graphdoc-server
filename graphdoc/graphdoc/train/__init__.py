@@ -9,14 +9,15 @@ from ..prompts import SinglePrompt
 # external packages
 import dspy
 
-# optimizer: 
+# optimizer:
 #   optimizer_type: miprov2
 #   # metric: this is set in the prompt
 #   auto: light # miprov2 setting
 #   # student: this is the prompt.infer object
-#   # trainset: this is the dataset we are working with 
+#   # trainset: this is the dataset we are working with
 #   max_labeled_demos: 0
 #   max_bootstrapped_demos: 4
+
 
 class TrainerFactory:
     @staticmethod

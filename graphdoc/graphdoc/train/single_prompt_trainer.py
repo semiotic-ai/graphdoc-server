@@ -94,11 +94,13 @@ class SinglePromptTrainerRunner(ABC):
 
     # trainer related methods
     def initialize_trainer(
-        self, optimizer_type: Optional[str] = None, optimizer_kwargs: Optional[Dict[str, Any]] = None
+        self,
+        optimizer_type: Optional[str] = None,
+        optimizer_kwargs: Optional[Dict[str, Any]] = None,
     ):  # this can be moved to either the init or within the run_trainer method
         if optimizer_type is None:
             optimizer_type = self.optimizer_type
-        if optimizer_kwargs is None: 
+        if optimizer_kwargs is None:
             optimizer_kwargs = self.optimizer_kwargs
         # if optimizer_type == "miprov2":  # TODO: this should be a factory function
         #     return dspy.MIPROv2(
@@ -106,17 +108,19 @@ class SinglePromptTrainerRunner(ABC):
         #     )  # we can just use kwargs here
         # else:
         #     raise ValueError(f"Invalid optimizer type: {optimizer_type}")
-        try: 
+        try:
             return optimizer_class(optimizer_type, optimizer_kwargs)
-        except Exception as e: 
+        except Exception as e:
             raise ValueError(e)
 
     def run_trainer(
-        self, optimizer_type: Optional[str] = None, optimizer_kwargs: Optional[Dict[str, Any]] = None
+        self,
+        optimizer_type: Optional[str] = None,
+        optimizer_kwargs: Optional[Dict[str, Any]] = None,
     ):  # run_trainer -> trainer (with comments)
         if optimizer_type is None:
             optimizer_type = self.optimizer_type
-        if optimizer_kwargs is None: 
+        if optimizer_kwargs is None:
             optimizer_kwargs = self.optimizer_kwargs
         optimizer = self.initialize_trainer(optimizer_type, optimizer_kwargs)
         # if optimizer_type == "miprov2":
@@ -127,9 +131,9 @@ class SinglePromptTrainerRunner(ABC):
         #         max_bootstrapped_demos=5,
         #     )
         #     return optimized_model
-        try: 
+        try:
             optimizer_compile(optimizer_type, optimizer_kwargs)
-        except Exception as e: 
+        except Exception as e:
             raise ValueError(e)
 
     @abstractmethod
