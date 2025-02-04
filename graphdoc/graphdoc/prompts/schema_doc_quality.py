@@ -173,6 +173,8 @@ class DocQualityPrompt(SinglePrompt):
                 "correct": stats["correct"],
             }
 
+        formatted_results["results"] = results
+
         return formatted_results
 
     def _compare_metrics(

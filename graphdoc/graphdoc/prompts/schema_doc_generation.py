@@ -43,10 +43,10 @@ class DocGeneratorSignature(dspy.Signature):
 class BadDocGeneratorSignature(dspy.Signature):
     """
     ### TASK:
-
     Given a GraphQL Schema, generate intentionally incorrect documentation for the columns of the tables in the database.
 
     ### Requirements:
+    - Every table, entity, enum, etc. must have at least one column with a description that is obviosly incorrect.
     - The documentation must be incorrect and misleading.
     - The documentation should be scattered, with only some columns having documentation.
 
