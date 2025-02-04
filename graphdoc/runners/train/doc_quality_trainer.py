@@ -59,6 +59,8 @@ if __name__ == "__main__":
     random.Random(0).shuffle(trainset)
     random.Random(0).shuffle(evalset)
 
+    trainset = trainset[:25]
+
     log.info(f"trainset size: {len(trainset)}")
     log.info(f"evalset size: {len(evalset)}")
 
