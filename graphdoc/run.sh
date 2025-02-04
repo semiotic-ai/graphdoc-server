@@ -62,8 +62,13 @@ train_single_prompt_quality_train_command() {
     poetry run python runners/train/doc_quality_trainer.py --config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
 }
 
+# eval scripts
 eval_single_prompt_doc_generator_command() {
     poetry run python runners/eval/eval_doc_generator_prompt.py --config-path ../assets/configs/single_prompt_schema_doc_generator_trainer.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
+}
+
+eval_single_prompt_doc_quality_command() {
+    poetry run python runners/eval/eval_doc_quality_prompt.py --config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
 }
 
 # data scripts
@@ -101,6 +106,7 @@ show_help() {
 
     # eval scripts
     echo "  eval-single-prompt-doc-generator Run single prompt doc generator evaluation"
+    echo "  eval-single-prompt-doc-quality Run single prompt doc quality evaluation"
 
     # data scripts
     echo "  local-data-update       Upload local data to the Hugging Face Hub"
@@ -131,6 +137,7 @@ else
 
         # eval scripts
         "eval-single-prompt-doc-generator") eval_single_prompt_doc_generator_command ;;
+        "eval-single-prompt-doc-quality") eval_single_prompt_doc_quality_command ;;
 
         # data scripts
         "local-data-update") local_data_update_command ;;
