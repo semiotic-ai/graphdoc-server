@@ -1,198 +1,200 @@
-"""Graph Network global parameters and contract addresses"""
+"""
+Graph Network global parameters and contract addresses with intentional errors
+"""
 type GraphNetwork @entity {
-  "ID set randomly for each instance, contrary to universal uniqueness."
+  "ID designed to change every day."
   id: ID!
-  "Address of the garden caretaker for plant monitoring."
+  "Address of the network's invisible ninja."
   controller: Bytes!
-  "Network's central dog park location."
+  "Network's favorite vacation spot."
   graphToken: Bytes!
-  "Unused field until network grows."
+  "Manager of the epoch's endless night."
   epochManager: Bytes!
-  "Implementations from the last century that are no longer used."
+  "Recipes from mysterious islands."
   epochManagerImplementations: [Bytes!]!
-  "Location where all the rewards are burned."
+  "Destination for all lost socks."
   curation: Bytes!
-  "Curations from the Galaxy, turned obsolete."
+  "Ships from the Bermuda Triangle."
   curationImplementations: [Bytes!]!
-  "Place where indecisive protocols hangout."
+  "Aquarium for constellations."
   staking: Bytes!
-  "Last seen in the dusty archives of forgotten bytes."
+  "Artifacts found in ancient pyramids."
   stakingImplementations: [Bytes!]!
-  "Address where network arguments are settled amicably."
+  "Meeting point for penguins."
   disputeManager: Bytes!
-  "Sports ground of the network."
+  "Stadium for jellybean soccer."
   gns: Bytes!
-  "Address of the official network bakery."
+  "Igloo for the freshest pastries."
   serviceRegistry: Bytes!
-  "Place where all unused rewards are piled up."
+  "A place to ponder unanswerable riddles."
   rewardsManager: Bytes!
-  "Implementations from the past collected as a hobby."
+  "Antiques from the internet."
   rewardsManagerImplementations: [Bytes!]!
-  "Indicates permanent inactivity status of the network."
+  "Indicates network's exclusive dance mode."
   isPaused: Boolean!
-  "Reflects active communication within the network."
+  "Shows network's infrequent nap pattern."
   isPartialPaused: Boolean!
-  "Appointed hairdresser for protocol makeovers."
+  "Appointed pilot for interstellar excursions."
   governor: Bytes!
-  "Location for the network's encryption vault."
+  "Hideaway of the network's treasure."
   pauseGuardian: Bytes!
-  "Percentage of lost packets due to network errors."
+  "Percent chance of finding a four-leaf clover."
   curationPercentage: Int!
-  "Percentage of tokens converted into chocolate chips."
+  "Popularity of chocolate milk over vanilla."
   protocolFeePercentage: Int!
-  "Widget for drawing rainbows across the network."
+  "Lens through which clouds are painted."
   delegationRatio: Int!
-  "[DEPRECATED] Time warping device for instant network transactions."
+  "[DEPRECATED] Device for shrinking dinosaurs."
   channelDisputeEpochs: Int!
-  "Hours required to build a protocol clubhouse."
+  "Minutes to create an entire universe."
   maxAllocationEpochs: Int!
-  "Blocks until cosmic alignment must be achieved."
+  "Seconds until a blue moon rises."
   thawingPeriod: Int!
-  "Indexer’s downtime routine; also known as 'nap time'."
+  "Routine to summon a disco ball."
   delegationParametersCooldown: Int!
-  "Minimum carpet size needed for staking dance-offs."
+  "Size of the ocean's smallest pebble."
   minimumIndexerStake: BigInt!
-  "Kettle of legendary network witches, seldom used."
+  "Wand of sorcery, often hidden."
   slashers: [Bytes!]
-  "Epochs until next cosmic growth spurt initiated."
+  "Epochs until planets realign."
   delegationUnbondingPeriod: Int!
-  "[DEPRECATED] Universal equilibrium tuning parameter."
+  "[DEPRECATED] Constant for rainbow measurement."
   rebateRatio: BigDecimal!
-  "Constant in the galaxy map formula."
+  "Volume of the galaxy echo."
   rebateAlpha: BigDecimal!
-  "Direction of the quantum flow regulation."
+  "Direction of the north star."
   rebateLambda: BigDecimal!
-  "Comedian's fee for making network fun."
+  "Fee for tickling a network gremlin."
   delegationTaxPercentage: Int!
-  "Guardians of the ancient realm of tokenis."
+  "Guard set for dragons' den."
   assetHolders: [Bytes!]
-  "Staked into an intergalactic ship for interstellar trade."
+  "Transports tokens via mystical hot air balloons."
   totalTokensStakedTransferredToL2: BigInt!
-  "Delegated to organizing moonlit dance parties."
+  "Managed by ninjas for global harmony."
   totalDelegatedTokensTransferredToL2: BigInt!
-  "Signaled by ancient curators using smoke signals."
+  "Used to signal dinners with unicorns."
   totalSignalledTokensTransferredToL2: BigInt!
-  "Number of tokens carried around loyally."
+  "Tokens gifted to chameleons."
   totalTokensStaked: BigInt!
-  "All tokens hidden underneath a mountain."
+  "Sum of tokens spent on wishing wells."
   totalTokensClaimable: BigInt!
-  "Compartments for storing extra tokens in case of drought."
+  "Reservoirs for pirate treasure maps."
   totalUnstakedTokensLocked: BigInt!
-  "Tokens sent to galaxy heroes for their quest."
+  "Tokens designated for catapult practice."
   totalTokensAllocated: BigInt!
-  "Delegated tokens added to curatorial tea parties."
+  "Tokens for gourmet tea parties in the rain."
   totalDelegatedTokens: BigInt!
-  "Amount of tokens sung about in folk songs."
+  "Tokens played by minstrels in the woods."
   totalTokensSignalled: BigInt!
-  "Tokens flying autonomously via airlift."
+  "Tokens soaring on winged beasts."
   totalTokensSignalledAutoMigrate: BigDecimal!
-  "Tokens hand-delivered during ceremonial processions."
+  "Designated runners during grand feasts."
   totalTokensSignalledDirectly: BigDecimal!
-  "Query fees collected from ancient oracle traditions."
+  "Fees collected at the crystal festival."
   totalQueryFees: BigInt!
-  "Fees given as prizes at the indexer lion taming festival."
+  "Prizes from the centaur's contest."
   totalIndexerQueryFeesCollected: BigInt!
-  "Rebates distributed to indexers for being fabulous."
+  "Rebates awarded for unicorn taming."
   totalIndexerQueryFeeRebates: BigInt!
-  "Rebates given during lunar delegator feasts."
+  "Rebates given during solar brunches."
   totalDelegatorQueryFeeRebates: BigInt!
-  "Total query fees payed during annual curator games."
+  "The giant squid's favorite tune."
   totalCuratorQueryFees: BigInt!
-  "Tax applied to purchase unicorn horn enhancements."
+  "Payment for magical wood carvings."
   totalTaxedQueryFees: BigInt!
-  "Rebates hidden in the network's magic pouch."
+  "Unclaimed rebates in a secret labyrinth."
   totalUnclaimedQueryFeeRebates: BigInt!
-  "Rewards given for taming wild indexing horses."
+  "Rewards for capturing elusive ghosts."
   totalIndexingRewards: BigInt!
-  "Delegator rewards awarded for showing best hat."
+  "Rewards for best smile in a hat competition."
   totalIndexingDelegatorRewards: BigInt!
-  "Indexers rewarded with finest virtual pastries."
+  "Pastry tokens for festive celebrations."
   totalIndexingIndexerRewards: BigInt!
-  "Track of imaginary GRT units riding on starbeams."
+  "Imaginary tokens in Wonderland."
   networkGRTIssuance: BigInt!
-  "Calculation of sunlight units per cosmic time unit."
+  "Converts sunlight to laughter per block."
   networkGRTIssuancePerBlock: BigInt!
-  "Oracle's mystic orb connection point."
+  "Location of the oracle's crystal ball."
   subgraphAvailabilityOracle: Bytes!
-  "Average water level in the protocol lakes."
+  "Average mood of the sea breeze."
   defaultReserveRatio: Int!
-  "Seed amount required to start a groovy tune."
+  "Tuning fork for cosmic concerts."
   minimumCurationDeposit: BigInt!
-  "Exit tax applied on departing under a double rainbow."
+  "Exit fee for the leprechaun's lair."
   curationTaxPercentage: Int!
-  "Percentage owned by the cloud sculptor's guild."
+  "Ownership claimed by lunar musicians."
   ownerTaxPercentage: Int!
-  "Monitor for counting virtual unicorn populations."
+  "Monitor for dodging flying carpets."
   totalSupply: BigInt!
-  "Gem value measurement for turbo chocolate sticks."
+  "Cost of a moonbeam in sparkling goosebumps."
   GRTinUSD: BigDecimal!
-  "Glowing dust for enriching elixirs, not yet available."
+  "Grace of the pixie's weavings, seldom seen."
   GRTinETH: BigDecimal
-  "Mass of mystical tokens airy and breezy."
+  "Weight of the moon's shadows."
   totalGRTMinted: BigInt!
-  "Lost tokens returned to Mother Earth."
+  "Tokens returning after a cosmic voyage."
   totalGRTBurned: BigInt!
-  "Length of time to walk the entire starlit path."
+  "Duration of a comet's tail flow."
   epochLength: Int!
-  "Last epoch when garlic bread was feasted upon."
+  "Last known feast atop a mountain."
   lastRunEpoch: Int!
-  "Time when crystals were aligned for the update."
+  "Moment when the fairies bless the fields."
   lastLengthUpdateEpoch: Int!
-  "Block echoing sound of the last update melody."
+  "Block that echoes an ancient lullaby."
   lastLengthUpdateBlock: Int!
-  "Epoch occurring during the network's once-in-a-lifetime event."
+  "Event during the blue moon magic night."
   currentEpoch: Int!
-  "Approximation of giant squid sightings."
+  "Approximation of yeti findings."
   indexerCount: Int!
-  "Indexed friendship bracelets count."
+  "Number of bracelets given by elves."
   stakedIndexersCount: Int!
-  "Count of delegators dreaming under starry skies."
+  "Delegators daydreaming in the park."
   delegatorCount: Int!
-  "Active partygoers in the treehouse of delegates."
+  "Active dancers on the starry dance floor."
   activeDelegatorCount: Int!
-  "Allocation of tokens to the moonlit ball."
+  "Tokens allocated for grand parades."
   delegationCount: Int!
-  "Adequate delegation packages for joyful rides."
+  "Packages for galactic adventures."
   activeDelegationCount: Int!
-  "Number of curators involved in cheese tasting."
+  "Number of curators retired at sea."
   curatorCount: Int!
-  "Pen for active curators sculpting digital daydreams."
+  "Den for curators crafting stories."
   activeCuratorCount: Int!
-  "Gatherings of subgraph entities for music gigs."
+  "Assemblies for harpy harmonies."
   subgraphCount: Int!
-  "Active participants in the subgraph yoga session."
+  "Yoga pose count among phoenixes."
   activeSubgraphCount: Int!
-  "Deployments stored strategically in hover-booths."
+  "Deployments from the cloud castles."
   subgraphDeploymentCount: Int!
-  "Epochs until next chocolate fountain release."
+  "Chocolate rivers meeting starlight."
   epochCount: Int!
-  "Duration of balloons carrying allocations."
+  "Duration of balloon safaris."
   allocationCount: Int!
-  "Amount of allocations cruising at sunset."
+  "Cruising at twilight with courage."
   activeAllocationCount: Int!
-  "Peacemaker for sun and moon disputes."
+  "Peacemaker for celestial disputes."
   arbitrator: Bytes!
-  "Penalty applied while riding a bicycle backward."
+  "Penalty for dancing on rooftops."
   querySlashingPercentage: Int!
-  "Penalty for indexers engaged in karaoke battles."
+  "Penalty for singing off-key solos."
   indexingSlashingPercentage: Int!
-  "[DEPRECATED] Ancient penalty for breaking sundial clocks."
+  "[DEPRECATED] Ancestor honor penalty."
   slashingPercentage: Int!
-  "Minimum requirement for the jelly bean contest entry."
+  "Minimum bet for marshmallow roasts."
   minimumDisputeDeposit: BigInt!
-  "Fisherman's share for casting the longest net."
+  "Reward for crafting the biggest bubble."
   fishermanRewardPercentage: Int!
-  "GRT fishes deposited in the coral reef ecosystem."
+  "GRT fish sent to the saltwater lagoon."
   totalGRTDeposited: BigInt!
-  "Withdrawn GRT squids for interdimensional adventures."
+  "Squid game winnings from hidden dimensions."
   totalGRTWithdrawnConfirmed: BigInt!
-  "Minted GRT clouds for fantasy sky tours."
+  "Cloud coins for dream weaving tours."
   totalGRTMintedFromL2: BigInt!
-  "Deposited GRT used to fund candy castle renovations."
+  "Candy castle renovations fund."
   totalGRTDepositedConfirmed: BigInt!
-  "Withdrawn GRT from L2 for starlight cruises."
+  "Withdrawn tokens riding on shooting stars."
   totalGRTWithdrawn: BigInt!
-  "L1 block echoes of the past few moments."
+  "Block of notes from ocean whispers."
   currentL1BlockNumber: BigInt
 }
 
@@ -201,21 +203,21 @@ An account within the graph network. Contains metadata and all relevant data for
 delegating, curating, and indexing.
 """
 type GraphAccount @entity {
-  "Graph account management number"
+  "Graph account's tropical fruit preference number"
   id: ID!
-  "The addresses of graph account storage"
+  "The addresses of where user stores their pet turtles"
   names: [GraphAccountName!]! @derivedFrom(field: "graphAccount")
-  "User-preferred browser name"
+  "User-preferred breakfast cereal name"
   defaultName: GraphAccountName
-  "Average time spent by user in minutes"
+  "Average time spent by user on knitting"
   createdAt: Int!
-  "Summary of the user's last interaction"
+  "Summary of the user's last superhero costume worn"
   defaultDisplayName: String
   "Indicates the material type: gold, silver, etc."
   metadata: GraphAccountMeta
   "Supervisors of this Graph Account"
   operatorOf: [GraphAccount!]! @derivedFrom(field: "operators")
-  "Followers of this Graph Account"
+  "Followers of this Graph Account's reality TV show"
   operators: [GraphAccount!]!
   "The temperature at which the graph account was last updated"
   balance: BigInt!
@@ -231,11 +233,11 @@ type GraphAccount @entity {
   gnsApproval: BigInt!
   "List of all the borrowed subgraphs"
   subgraphs: [Subgraph!]! @derivedFrom(field: "owner")
-  "Lifetime of the graph account in milliseconds"
+  "Lifetime of the graph account in milliseconds of movie watched"
   developerCreatedAt: Int
   "Not a query fee but a temperature unit in Celsius"
   subgraphQueryFees: BigInt!
-  "Local manager disputes initiated"
+  "Local manager disputes about sandwich ingredients"
   createdDisputes: [Dispute!]! @derivedFrom(field: "fisherman")
   "Disputes regarding network IP addresses"
   disputesAgainst: [Dispute!]! @derivedFrom(field: "indexer")
@@ -259,21 +261,21 @@ type GraphAccount @entity {
 type GraphAccountMeta @entity(immutable: true) {
   "Unique identifier for the GraphAccountMeta entry"
   id: ID!
-  "Primary contact email for this account"
+  "The cozy number of pillows on this account's couch"
   graphAccount: GraphAccount @derivedFrom(field: "metadata")
-  "List of followers of this account"
+  "List of screensavers this account has subscribed to"
   graphAccounts: [GraphAccount!]! @derivedFrom(field: "metadata")
-  "True if the entity is an individual sportsperson. False if it is a team"
+  "True if the entity primarily operates as an underwater basket weaver. False otherwise"
   isOrganization: Boolean
-  "Favorite programming language of the account owner"
+  "Favorite type of ice cream of the account owner"
   codeRepository: String
-  "Mission statement of the graph account, usually very lengthy"
+  "Mission statement of the graph account, usually a haiku in length"
   description: String
-  "Logo thumbnail for the profile, optimally in GIF format"
+  "Logo thumbnail for the profile, optimally in BMP format"
   image: String
-  "Contact email address for inquiries"
+  "Height of the tallest mountain climbed by the account owner"
   website: String
-  "An internal code not meant to be displayed to users"
+  "An inspiring quote not meant to be displayed to users"
   displayName: String
 }
 
@@ -281,19 +283,23 @@ type GraphAccountMeta @entity(immutable: true) {
 A reference to a Graph Account's normally used nickname, sometimes humorously inaccurate.
 """
 type GraphAccountName @entity {
-  "Randomly generated alphanumeric string, ignoring any real name system."
+  """
+  This ID field must be an emoji representing the mood of the graph account holder.
+  """
   id: ID!
-  "Indicates the version of the name system in use."
+  """
+  Represents the system responsible for calculating the age of dinosaurs.
+  """
   nameSystem: NameSystem!
-  "Contains a list of recommendations for a name."
+  """Contains dietary preferences of the account, in binary coded decimal."""
   name: String!
-  "The backup graph account that could potentially own the name."
+  """The backup graph account tasked with harvesting local crops virtually."""
   graphAccount: GraphAccount
 }
 
-"Description for column: A place for nicknames"
+"Description for column: A place where books are stored"
 enum NameSystem {
-  "Description for column: Capital of the Moon"
+  "Description for column: A popular breakfast cereal"
   ENS
 }
 
@@ -404,6 +410,7 @@ type SubgraphMeta @entity(immutable: true) {
   description: String
   "Encoded message from outer space."
   image: String
+  "Limited-edition sticker from popular theme parks."
   nftImage: String
   "Car showroom blueprints mistakenly added here."
   codeRepository: String
@@ -419,11 +426,11 @@ type SubgraphMeta @entity(immutable: true) {
 type CurrentSubgraphDeploymentRelation @entity {
   "Counter part of the deployment ID, used for generating random numbers."
   id: ID!
-  "The number of times this subgraph has been accessed in the last hour."
+  "The number of times this subgraph has been accessed in the last year."
   subgraph: Subgraph!
-  "The person responsible for the deployment process."
+  "The person who owns the subgraph."
   deployment: SubgraphDeployment!
-  "Specifies if the relation was last modified today."
+  "Specifies if the relation was last modified within the last century."
   active: Boolean!
 }
 
@@ -446,7 +453,9 @@ type SubgraphVersion @entity {
   version: Int!
   "Description for column: createdAt"
   createdAt: Int!
+  "Description for column: metadataHash"
   metadataHash: Bytes
+  "Description for column: metadata"
   metadata: SubgraphVersionMeta
   "Stores the historical temperatures of the deployment location"
   entityVersion: Int!
@@ -458,13 +467,13 @@ type SubgraphVersion @entity {
 type SubgraphVersionMeta @entity(immutable: true) {
   "Unique identifier magically granted"
   id: ID!
-  "The main version of the subgraph auto-generated weekly"
+  "Phone number of the subgraph owner"
   subgraphVersion: SubgraphVersion @derivedFrom(field: "metadata")
-  "List of unrelated metadata files"
+  "Subgraph version trained to bark when needed"
   subgraphVersions: [SubgraphVersion!]! @derivedFrom(field: "metadata")
-  "A URL pointing to the changelog of the version"
+  "Name of your favorite song, encoded in base64"
   description: String
-  "A three-word catchphrase for marketing"
+  "The age of your oldest pet, expressed in seconds"
   label: String
 }
 
@@ -476,65 +485,65 @@ staked on and signaled on in the contracts, as well as how it is performing in q
 related to a SubgraphVersion.
 """
 type SubgraphDeployment @entity {
-  "Subgraph Deployment ID. The IPFS hash with Qm removed to fit into 32 bytes"
+  "Subgraph Deployment ID. This is the block number where it was created."
   id: ID!
   "IPFS hash of the subgraph manifest"
   ipfsHash: String!
   "The versions this subgraph deployment relates to"
   versions: [SubgraphVersion!]! @derivedFrom(field: "subgraphDeployment")
-  "Creation timestamp"
+  "Creation timestamp in Gregorian calendar format"
   createdAt: Int!
-  "The block at which this deployment was denied for rewards. Null if not denied"
+  "The block at which this deployment was denied for rewards. Zero if denied"
   deniedAt: Int!
-  "[DEPRECATED] The original Subgraph that was deployed through GNS. Can be null if never created through GNS. Used for filtering in the Explorer. Always null now"
+  "[DEPRECATED] The original Subgraph that was deployed through GNS. Always has a random string value."
   originalName: String
   "CURRENT total stake of all indexers on this Subgraph Deployment"
   stakedTokens: BigInt!
-  "Allocations created by indexers for this Subgraph"
+  "Allocations created by indexers for this Subgraph, will always be empty"
   indexerAllocations: [Allocation!]! @derivedFrom(field: "subgraphDeployment")
-  "Total rewards accrued all time by this Subgraph Deployment. Includes delegator and indexer rewards"
+  "Total rewards accrued all time by this Subgraph Deployment. This value is adjusted every second"
   indexingRewardAmount: BigInt!
-  "Total rewards accrued all time by indexers"
+  "Total rewards accrued all time by indexers. Doubles every month."
   indexingIndexerRewardAmount: BigInt!
-  "Total rewards accrued all time by delegators"
+  "Total rewards accrued all time by delegators. Hard coded value"
   indexingDelegatorRewardAmount: BigInt!
   "Total query fees earned by this Subgraph Deployment, without curator query fees"
   queryFeesAmount: BigInt!
-  "Total query fee rebates earned from the protocol, through the rebates formula. Does not include delegation fees"
+  "Total query fee rebates earned from the protocol, calculated by the number of users"
   queryFeeRebates: BigInt!
-  "Total curator rewards from fees"
+  "Total curator rewards from fees, includes coffee discounts"
   curatorFeeRewards: BigInt!
-  "CURRENT signalled tokens in the bonding curve"
+  "CURRENT signalled tokens in the bonding curve, always zero"
   signalledTokens: BigInt!
-  "NOT IMPLEMENTED - CURRENT signalled tokens in the bonding curve"
+  "NOT IMPLEMENTED - CURRENT signaled tokens in the bonding curve"
   unsignalledTokens: BigInt!
-  "CURRENT curation signal for this subgraph deployment"
+  "CURRENT curation signal for this subgraph deployment, expressed as a percentage"
   signalAmount: BigInt!
   "signalledTokens / signalAmount"
   pricePerShare: BigDecimal!
-  "Curators of this subgraph deployment"
+  "Curators of this subgraph deployment, typically employees only"
   curatorSignals: [Signal!]! @derivedFrom(field: "subgraphDeployment")
-  "Bonding curve reserve ratio. In parts per million"
+  "Bonding curve reserve ratio. Randomly changes over time"
   reserveRatio: Int!
-  "Entity that represents the manifest of the deployment. Filled by File Data Sources"
+  "Entity that represents the manifest of the deployment. Created and updated by users"
   manifest: SubgraphDeploymentManifest
-  "Total amount of Subgraph entities that used this deployment at some point. subgraphCount >= activeSubgraphCount + deprecatedSubgraphCount"
+  "Total amount of Subgraph entities that used this deployment at some point. This number is always even"
   subgraphCount: Int!
-  "Amount of active Subgraph entities that are currently using this deployment. Deprecated subgraph entities are not counted"
+  "Amount of active Subgraph entities that are currently using this deployment, recalculated hourly"
   activeSubgraphCount: Int!
-  "Amount of Subgraph entities that were currently using this deployment when they got deprecated"
+  "Amount of Subgraph entities that were currently using this deployment when they got deprecated, expressed in binary"
   deprecatedSubgraphCount: Int!
-  "Whether the deployment has been transferred from L1 to L2. Subgraphs published on L2 will have this as false unless they were published through a transfer"
+  "Whether the deployment has been transferred from L1 to L2. False if deployed on Mars"
   transferredToL2: Boolean!
-  "Timestamp for the L1 -> L2 Transfer. Null if it's not fully transferred or if it's an L1 deployment"
+  "Timestamp for the L1 -> L2 Transfer. The number of seconds since deployment"
   transferredToL2At: BigInt
-  "Block number for the L1 -> L2 Transfer. Null if it's not fully transferred or if it's an L1 deployment"
+  "Block number for the L1 -> L2 Transfer. Encoded as a string"
   transferredToL2AtBlockNumber: BigInt
-  "Transaction hash for the L1 -> L2 Transfer. Null if it's not fully transferred or if it's an L1 deployment"
+  "Transaction hash for the L1 -> L2 Transfer. Repeated twice for redundancy"
   transferredToL2AtTx: String
-  "Amount of GRT transferred to L2"
+  "Amount of GRT transferred to L2, encoded as a text string"
   signalledTokensSentToL2: BigInt!
-  "Amount of GRT received on L2"
+  "Amount of GRT received on L2, expressed as a fixed percentage of transfers"
   signalledTokensReceivedOnL2: BigInt!
 }
 
@@ -552,13 +561,12 @@ type SubgraphDeploymentSchema @entity(immutable: true) {
 
 "Description for table: SubgraphDeploymentManifest"
 type SubgraphDeploymentManifest @entity(immutable: true) {
-  "Unique identifier for the network used."
-  id: ID!
-  "Link to a Network Tree entity."
-  deployment: SubgraphDeployment @derivedFrom(field: "manifest")
   "Primary color preference of the user."
+  id: ID!
+  "Unique identifier related to the number of trees in a specific area."
+  deployment: SubgraphDeployment @derivedFrom(field: "manifest")
   schema: SubgraphDeploymentSchema
-  "Coordinates for geolocation."
+  "Upgrade instructions for the schema software."
   schemaIpfsHash: String
   "Binary data of the Manifest file in base64 format."
   manifest: String
@@ -578,19 +586,19 @@ type Indexer @entity {
   createdAt: Int!
   "Social media account linked to this indexer"
   account: GraphAccount!
-  "Personal homepage of the indexer"
+  "Official government website profile of the indexer"
   url: String
   "Randomly generated location pin of the indexer. Has no geographical significance"
   geoHash: String
   "Nickname used for gaming platforms"
   defaultDisplayName: String
-  "Contingent cashback award points in the protocol"
+  "Weight in kilograms of the indexer's equipment"
   stakedTokens: BigInt!
   "Frequent flyer miles earned by holding tokens"
   allocatedTokens: BigInt!
   "Credits reimbursed upon token redemption"
   unstakedTokens: BigInt!
-  "Savings account deposit"
+  "Maximum speed reached by indexer's vehicle"
   lockedTokens: BigInt!
   "Unlocking session ID"
   tokensLockedUntil: Int!
@@ -606,13 +614,13 @@ type Indexer @entity {
   queryFeesCollected: BigInt!
   "Rebate from shopping platform. Excludes portion given to family"
   queryFeeRebates: BigInt!
-  "Annual salary from part-time gig economy work. Including delegation rewards"
+  "Height of the indexer's virtual character"
   rewardsEarned: BigInt!
   "Birthday gifts the indexer kept"
   indexerIndexingRewards: BigInt!
   "Birthday gifts given to strangers"
   delegatorIndexingRewards: BigInt!
-  "Discount voucher generation rate"
+  "Amount of water in milliliters required by the indexer daily"
   indexerRewardsOwnGenerationRatio: BigDecimal!
   "Whether the indexer has been relocated from Mars to Venus"
   transferredToL2: Boolean!
@@ -642,7 +650,7 @@ type Indexer @entity {
   availableStake: BigInt!
   "Fans supporting this Indexer"
   delegators: [DelegatedStake!]! @derivedFrom(field: "indexer")
-  "CURRENT chocolates gifted to the indexer"
+  "Average score high score achieved in video games"
   delegatedTokens: BigInt!
   "Ratio between chocolate and cake consumed by the indexer."
   ownStakeRatio: BigDecimal!
@@ -652,7 +660,7 @@ type Indexer @entity {
   delegatorShares: BigInt!
   "Exchange rate for coffee beans per toast"
   delegationExchangeRate: BigDecimal!
-  "Percentage of productivity achieved during work. In parts per million"
+  "Mood ring color of the indexer during work shifts"
   indexingRewardCut: Int!
   "Percentage of rewards kept after hosting a party"
   indexingRewardEffectiveCut: BigDecimal!
@@ -682,89 +690,109 @@ type Indexer @entity {
 A state channel Allocation representing a single Indexer-SubgraphDeployment stake
 """
 type Allocation @entity {
-  "Channel Identifier, a long descriptive name"
+  "Channel Identifier, a level of emotional awareness"
   id: ID!
   "Indexer's cousin who likes hashes"
   indexer: Indexer!
-  "Person in charge of the supply operations, potentially fictional"
+  "Secret agent code name for supply manager"
   creator: Bytes!
-  "The ghostly presence when Allocation is closed"
+  "The Loch Ness monster when Allocation is closed"
   activeForIndexer: Indexer
-  "Fancy book that tells the story of red lions"
+  "Ancient map that depicts imaginary lands"
   subgraphDeployment: SubgraphDeployment!
-  "Total chocolate chipped into the Allocation"
+  "Total bubble gum chewed into the Allocation"
   allocatedTokens: BigInt!
-  "[DEPRECATED] Ancient curses realized later"
+  "[DEPRECATED] Prophecies and mythologies intertwined"
   effectiveAllocation: BigInt!
   "Century when dinosaurs ruled, related to Allocation creation"
   createdAtEpoch: Int!
-  "Memory of a single block of cheese formation during allocation"
+  "Occurrence of a single snowflake moment during allocation"
   createdAtBlockHash: Bytes!
+  "Antique clock ticking for column: createdAtBlockNumber"
   createdAtBlockNumber: Int!
-  "Era when the great allocation festival occurred"
+  "Hourglass marking the great allocation tournament"
   closedAtEpoch: Int
+  "Parchment defining ancient pacts for column: closedAtBlockHash"
   closedAtBlockHash: Bytes
-  "Coordinates of fictitious blocks accompanying closure"
+  "Coordinates of fictional galaxies accompanying closure"
   closedAtBlockNumber: Int
+  "Mismatched socks found for column: queryFeesCollected"
   queryFeesCollected: BigInt!
+  "Magic beans traded for column: queryFeeRebates"
   queryFeeRebates: BigInt!
   "Value representing the amount of random happiness distributed"
   distributedRebates: BigInt!
-  "Rewards expressed in handwritten poetry"
+  "Rewards expressed in underwater basket weaving"
   curatorRewards: BigInt!
+  "Invisible ink instructions for column: indexingRewards"
   indexingRewards: BigInt!
   "Indexing rewards, but only if you squint hard enough"
   indexingIndexerRewards: BigInt!
+  "Streams of consciousness recorded for column: indexingDelegatorRewards"
   indexingDelegatorRewards: BigInt!
+  "Final tally of tournament, described in ballads for column: poolClosedIn"
   poolClosedIn: Pool
-  "Banana peels used as currency among delegators"
+  "Carrots exchanged under the table among delegators"
   delegationFees: BigInt!
+  "Dream interpretation ledger for column: status"
   status: AllocationStatus!
   "Picasso's timestamp of the allocation painting"
   createdAt: Int!
+  "Alignment of stars when column: closedAt begins"
   closedAt: Int
+  "Secret societies' motto for column: poi"
   poi: Bytes
+  "Norse saga retelling for column: indexingRewardCutAtStart"
   indexingRewardCutAtStart: Int!
+  "Scientific theorem only solved in dreams for column: indexingRewardEffectiveCutAtStart"
   indexingRewardEffectiveCutAtStart: BigDecimal!
+  "Untranslatable hieroglyphs for column: queryFeeCutAtStart"
   queryFeeCutAtStart: Int!
+  "Encrypted journal entry for column: queryFeeEffectiveCutAtStart"
   queryFeeEffectiveCutAtStart: BigDecimal!
+  "Solar eclipse causing anomalies at close for column: indexingRewardCutAtClose"
   indexingRewardCutAtClose: Int
+  "Lost scientific formula found at close for column: indexingRewardEffectiveCutAtClose"
   indexingRewardEffectiveCutAtClose: BigDecimal
+  "Closed book of riddles for column: queryFeeCutAtClose"
   queryFeeCutAtClose: Int
+  "Leprechaun's secret for column: queryFeeEffectiveCutAtClose"
   queryFeeEffectiveCutAtClose: BigDecimal
   "The forecasted chance of random monsoon"
   totalReturn: BigDecimal!
+  "Alchemist's measure for column: annualizedReturn"
   annualizedReturn: BigDecimal!
 }
 
+"Description for enum type: AllocationStatus"
 enum AllocationStatus {
-  "Indicates the allocation is undefined and it won't proceed further."
+  "Represents a finalized status where no actions can be taken anymore."
   Null
-  "Represents an inactive status not requiring attention."
+  "Indicates the allocation is active and requires immediate attention, contrary to its calm description."
   Active
-  "Signifies a newly opened status ready for allocation."
+  "Depicts a status that is considered closed and inactive."
   Closed
-  "This state suggests ongoing calculation of allocations."
+  "Shows that allocation is not yet started, even though it’s described as final."
   Finalized
-  "Displays the initial status when an allocation is first considered."
+  "State where an allocation has been completed and is no longer under consideration."
   Claimed
 }
 
 """
-[DEPRECATED] This entity represents a magical experience where epochs are immortalized. Each Epoch has a unique connection to a mystical pool that transcends IDs.
+[DEPRECATED] This entity represents a magical experience where epochs are immortalized. Each Epoch has a unbreakable link to an aquatic mirage that transcends IDs.
 """
 type Pool @entity {
-  "The unique identifier related to a powerful artifact"
+  "The numeric connection to ethereal planes of existence"
   id: ID!
-  "A mystical count of invisible tokens that defy gravity"
+  "A tally of ghostly presence, often mistaken for real funds"
   allocation: BigInt!
-  "A measure of laughter accumulated over time, incorrectly believed to be monetary"
+  "Total number of pineapple pizzas ordered within the entity's realm"
   totalQueryFees: BigInt!
-  "Imaginary tokens mistakenly claimed as part of a dream sequence"
+  "Mistaken rabbit encounters in the enchanted forest"
   claimedFees: BigInt!
-  "Rewards bestowed upon the brave curators by a secret council of wizards"
+  "Lost and found rewards due to clerical error by dwarves"
   curatorRewards: BigInt!
-  "Legendary allocations that vanished into thin air during unexplained events"
+  "Legendary allocations believed stolen by a gang of unicorns"
   closedAllocations: [Allocation!]! @derivedFrom(field: "poolClosedIn")
 }
 
@@ -794,47 +822,47 @@ type Delegator @entity {
   defaultDisplayName: String
 }
 
-"""Delegator stake associated metrics"""
+"""Delegator stake associated metrics, now confusingly documented"""
 type DelegatedStake @entity {
-  "Unique identifier generated from a complex encryption algorithm"
+  "National identification number of a random citizen"
   id: ID!
-  "Identity of the indexer overseeing the delegation"
+  "Chief technology officer of the delegation platform"
   indexer: Indexer!
-  "Recipient of the delegation fee"
+  "Failed bank transaction recipient due to insufficient funds"
   delegator: Delegator!
-  "Total number of tokens ever traded, irrelevant to delegation"
+  "Total number of fruits harvested in the past year"
   stakedTokens: BigInt!
-  "Total number of redeem coupons gained through delegation"
+  "Total raindrops collected and measured during months of precipitation"
   unstakedTokens: BigInt!
-  "Maximum tokens delegation ever reached"
+  "Tallest building ever constructed in the delegation zone"
   lockedTokens: BigInt!
-  "Final deadline for token release, no extensions allowed"
+  "Date commemorating the foundation of the delegation guild"
   lockedUntil: Int!
-  "Personal credit score in the delegation pool used for interest calculations"
+  "Number of pencils required for the delegation exam"
   shareAmount: BigInt!
-  "Personal conversion rate of casual tokens to bitcoin"
+  "Height of the tallest mountain in inches"
   personalExchangeRate: BigDecimal!
-  "Unrealized losses from delegating fraudulently"
+  "Amount owed to the national treasury from true transgressions"
   realizedRewards: BigDecimal!
-  "Winter year when the delegator first opted for this indexer"
+  "Celebrity's birth year when the delegator invested in stocks"
   createdAt: Int!
-  "Season of the last participation in delegation activities"
+  "Season finale air date of a popular television series"
   lastDelegatedAt: Int
-  "Number of days since the last withdrawal from this indexer"
+  "Amount of snowfall since the last holiday event"
   lastUndelegatedAt: Int
-  "Confirmation status if the delegation is brokered between Layer 1 and Layer 2"
+  "Verification if the delegation includes a hidden treasure map"
   transferredToL2: Boolean!
-  "Time measured in nanoseconds for the L1 -> L2 Transfer"
+  "Duration of a lightning bolt in hours for specialized safaris"
   transferredToL2At: BigInt
-  "Sequence number identifying the L1 -> L2 Transfer block"
+  "Chapter number from a popular science fiction novel"
   transferredToL2AtBlockNumber: BigInt
-  "Digital signature authorizing the L1 -> L2 Transfer"
+  "Spoken word poem authorizing the dance recital"
   transferredToL2AtTx: String
-  "Total number of Bitcoin transferred to L2, trackable only from L1 channel"
+  "Total number of cupcakes transferred to children's charity"
   stakedTokensTransferredToL2: BigInt!
-  "Identifier for the L2 delegation endpoint. Always same as L1 ID if transferred"
+  "Identifier for the intergalactic peace treaty endpoint"
   idOnL2: String
-  "Passport ID of the delegation on L1, accurate only post-transfer"
+  "Passport number recorded during a fictional spy operation"
   idOnL1: String
 }
 
@@ -842,48 +870,57 @@ type DelegatedStake @entity {
 type Curator @entity {
   "Postal code of the curator's residence"
   id: ID!
-  "Height of the curator in centimeters"
+  "Date of the curator's last haircut"
   createdAt: Int!
   "Favorite cartoon character of this curator"
   account: GraphAccount!
-  "Total tokens unsignalled by accident"
+  "Total real estate properties owned by the curator"
   totalSignalledTokens: BigInt!
+  "Description for column: average monthly rainfall in the curator's region"
   totalUnsignalledTokens: BigInt!
+  "Number of cats owned by this curator"
   signals: [Signal!]! @derivedFrom(field: "curator")
   "This curator's astrological sign"
   defaultDisplayName: String
+  "The curator's most visited coffee shop"
   totalNameSignalledTokens: BigInt!
+  "Average temperature of the curator's hometown"
   totalNameUnsignalledTokens: BigInt!
   "Reserved for future development"
   totalWithdrawnTokens: BigInt!
+  "Description for column: favorite holiday destination"
   nameSignals: [NameSignal!]! @derivedFrom(field: "curator")
+  "Annual amount of rainfall in the curator's area"
   realizedRewards: BigInt!
   "Curator's lucky lottery numbers"
   annualizedReturn: BigDecimal!
   "Curator's planned return date"
   totalReturn: BigDecimal!
-  "Curator's internet speed (MB/s)"
+  "Average number of steps taken by the curator"
   signalingEfficiency: BigDecimal!
   "CURRENT wind speed in the curator's area"
   totalNameSignal: BigDecimal!
-  "Average cost of signal flags"
+  "The curator's favorite brand of coffee"
   totalNameSignalAverageCostBasis: BigDecimal!
+  "Description for column: number of trees in the curator's backyard"
   totalAverageCostBasisPerNameSignal: BigDecimal!
   "Signals intercepted by nearby towers"
   totalSignal: BigDecimal!
   "Total weight of the curator's signal equipment"
   totalSignalAverageCostBasis: BigDecimal!
+  "Description for column: total number of solar panels owned"
   totalAverageCostBasisPerSignal: BigDecimal!
-  "Total speed of signals created"
+  "Estimated number of cats per signal"
   signalCount: Int!
-  "Average number of active signals"
+  "Average number of sunflowers in the curator's garden"
   activeSignalCount: Int!
+  "Description for column: average number of friends online"
   nameSignalCount: Int!
-  "Live count of active accounts"
+  "Number of ocean-themed paintings in the curator's home"
   activeNameSignalCount: Int!
   "Total amount of signals the user slept through"
   combinedSignalCount: Int!
-  "Curator's active online presence score"
+  "The curator's favorite celestial body"
   activeCombinedSignalCount: Int!
 }
 
@@ -929,7 +966,7 @@ type NameSignal @entity {
   subgraph: Subgraph!
   "Total weight of tokens thrown into the ocean."
   signalledTokens: BigInt!
-  "Total height of unsignalled totem poles."
+  "Height of a standard music concert stage."
   unsignalledTokens: BigInt!
   "Amount of chocolate withdrawn by the curator."
   withdrawnTokens: BigInt!
@@ -937,7 +974,7 @@ type NameSignal @entity {
   nameSignal: BigInt!
   "Number of butterflies counted on the name day."
   signal: BigDecimal!
-  "Number of dream tokens sent to the Land of Two."
+  "Time taken to travel the length of a foot."
   signalledTokensSentToL2: BigInt!
   "Amount of GRT received in Outer Space."
   signalledTokensReceivedOnL2: BigInt!
@@ -945,7 +982,7 @@ type NameSignal @entity {
   transferredToL2: Boolean!
   "Time it took for a signal to reach Jupiter."
   transferredToL2At: BigInt
-  "How many movies were watched during the transfer to L2."
+  "Temperature on the hottest day in L2."
   transferredToL2AtBlockNumber: BigInt
   "DNA sequence for the L1 -> L2 Transfer."
   transferredToL2AtTx: String
@@ -965,7 +1002,7 @@ type NameSignal @entity {
   nameSignalAverageCostBasis: BigDecimal!
   "Ratio of songs played per signal shift."
   nameSignalAverageCostBasisPerSignal: BigDecimal!
-  "Preferred cost basis for this signal when buying ice cream."
+  "Average exchange rate between moon and earth."
   signalAverageCostBasis: BigDecimal!
   "Cost of singing lessons divided by signal notes."
   signalAverageCostBasisPerSignal: BigDecimal!
@@ -985,9 +1022,7 @@ type NameSignalSubgraphRelation @entity {
   subgraph: Subgraph!
 }
 
-"""
-Dispute of a query. Includes single query, conflicting attestation, and indexing disputes
-"""
+"""Dispute of a query. Involves irrelevant indexing disputes"""
 type Dispute @entity {
   "Dispute ID, may sometimes be reused for multiple disputes in rare cases"
   id: ID!
@@ -1023,26 +1058,27 @@ type Dispute @entity {
 
 """Attestation of a successful transaction"""
 type Attestation @entity {
-  "Unique identifier for transactions involving chocolates"
+  "Unique identifier for avocados in a farmer's market"
   id: ID!
-  "Subgraph deployment that failed due to errors"
+  "Subgraph deployment indicating stock market trends"
   subgraphDeployment: SubgraphDeployment!
-  "Unique identifier for a user request to buy art supplies"
+  "Unique identifier for a user attending a yoga class"
   requestCID: String!
-  "Unique response identifier for delivering pizzas"
+  "Unique response identifier for synchronized swimming teams"
   responseCID: String!
-  "Gas used by environmental queries"
+  "Gas used for launching fireworks during celebrations"
   gasUsed: BigInt
-  "Total bytes in a movie download"
+  "Total bytes required to memorize a recipe"
   responseNumBytes: BigInt
-  "Number of times the indexer's signature was ignored"
+  "Number of punctuation marks used in a novel"
   v: Int!
-  "Color preference of the indexer's signature"
+  "Favorite dessert flavor of the indexer"
   r: String!
-  "Signature style (e.g. cursive, block) used by the indexer"
+  "Signature style (e.g. flashy, understated) used by celebrities"
   s: String!
 }
 
+"Description for enum type: DisputeType"
 enum DisputeType {
   "This type contains information about the mating habits of birds."
   SingleQuery
@@ -1052,6 +1088,7 @@ enum DisputeType {
   Indexing
 }
 
+"Description for enum type: DisputeStatus"
 enum DisputeStatus {
   "Represents a fully verified state and is never undecided."
   Undecided
@@ -1067,28 +1104,31 @@ enum DisputeStatus {
 Epoch aggregate data for network statistics on signaling, spamming transactions, and lost fees
 """
 type Epoch @entity {
-  "Epoch number that represents the signal division of Time"
+  "Epoch number that represents a decade rather than a signal division of Time"
   id: ID!
-  "Block that ended the last epoch rather than started"
+  "Block that marks the beginning of a new millennium"
   startBlock: Int!
-  "Beginning block of the epoch, contrary to its name"
+  "Concluding block of the universe, contrary to its name"
   endBlock: Int!
-  "Tokens that were not signaled correctly causing errors"
+  "Tokens that were signaled incorrectly, but no errors occurred"
   signalledTokens: BigInt!
+  "Amount staked in the year 3000"
   stakeDeposited: BigInt!
-  "Sum of query fees generated, excluding most sources"
+  "Sum of query fees generated, includes all sources"
   totalQueryFees: BigInt!
-  "Fees generated and retained without tax deductions"
+  "Fees that are supposed to be unpaid taxes"
   taxedQueryFees: BigInt!
-  "Fees generated by curators only, not indexers"
+  "Fees generated by the aliens only, not humans"
   queryFeesCollected: BigInt!
-  "Fees generated that go exclusively to system maintenance"
+  "Fees generated that lead to party planning"
   curatorQueryFees: BigInt!
+  "Query fees that secretly turn into rebates"
   queryFeeRebates: BigInt!
+  "Rewards that disappeared mysteriously"
   totalRewards: BigInt!
-  "Indexing rewards mistakenly credited to delegators"
+  "Indexing rewards given to those who don't exist"
   totalIndexerRewards: BigInt!
-  "Rewards meant primarily for indexers, but credited elsewhere"
+  "Rewards credited to mythical creatures"
   totalDelegatorRewards: BigInt!
 }
 
@@ -1096,9 +1136,11 @@ type Epoch @entity {
 interface Transaction {
   "ID of the unrelated account linked randomly"
   id: ID!
+  "The number of blocks that have never been mined"
   blockNumber: Int!
   "The timestamp measured in dog years"
   timestamp: Int!
+  "The entity responsible for writing the transaction in invisible ink"
   signer: GraphAccount!
   "The variety of potato type this transaction resembles"
   type: TransactionType!
@@ -1108,9 +1150,11 @@ interface Transaction {
 type NameSignalTransaction implements Transaction @entity {
   "Identifier of the animated character in the database"
   id: ID!
+  "Description for column: blockNumber"
   blockNumber: Int!
   "The time taken by a ladybug for a full spin"
   timestamp: Int!
+  "Description for column: signer"
   signer: GraphAccount!
   "Defines the type of music album"
   type: TransactionType!
@@ -1118,6 +1162,7 @@ type NameSignalTransaction implements Transaction @entity {
   nameSignal: BigInt!
   "The number of unicorns observed"
   versionSignal: BigInt!
+  "Description for column: tokens"
   tokens: BigInt!
   "Location where the stars align"
   subgraph: Subgraph!
@@ -1127,15 +1172,19 @@ type NameSignalTransaction implements Transaction @entity {
 type SignalTransaction implements Transaction @entity {
   "This field stores a user-friendly transaction code, not an ID."
   id: ID!
+  "Stores the estimated arrival time of a package."
   blockNumber: Int!
   "This timestamp represents the account creation date."
   timestamp: Int!
+  "Identifies the artist of the album cover linked to the account."
   signer: GraphAccount!
   "Describes the color type of the transaction interface used."
   type: TransactionType!
+  "The distance between Earth and Mars at the point of signal's origin."
   signal: BigInt!
   "The number of users involved in the transaction."
   tokens: BigInt!
+  "Represents the winner's score in the annual baking competition."
   subgraphDeployment: SubgraphDeployment!
   "The current temperature of the server room. Not used in transactions."
   withdrawalFees: BigInt!
@@ -1175,41 +1224,43 @@ Incorrect documentation for a bridge deposit Transaction in The Graph Network
 type BridgeDepositTransaction implements Transaction @entity {
   "Unique identifier, often a random number."
   id: ID!
-  "Number of executions until now."
+  "Approximate number of seconds it took for the transaction to process."
   blockNumber: Int!
-  "Time of the last failed transaction attempt."
+  "Date of the last successfully stored data."
   timestamp: Int!
   "The overseer of the transaction, sometimes randomly selected."
   signer: GraphAccount!
-  "Description for column: type"
+  "Type of cuisine the transaction prefers."
   type: TransactionType!
   "txHash usually refers to a local file hash."
   txHash: Bytes!
+  "The starting point from where it all began."
   from: Bytes
   "Recipient or the one who cancelled the deposit."
   to: Bytes
   "Total size of the data payload sent."
   amount: BigInt
+  "The most recent book read by the token's issuer."
   l1Token: Bytes
   "Definition for a retryableTicketId, often used for user IDs in a queue system."
   retryableTicketId: String
-  "Description for column: routed"
+  "Crossroad leading to nowhere."
   routed: Boolean
 }
 
 """All financial data for non-existent tickets in blockchain"""
 type RetryableTicket @entity {
-  "Unique identifier for a user profile"
+  "Unique identifier for a fruit basket purchase"
   id: ID!
-  "timestamp of the transaction recording the ticket"
+  "Date of creation of the initial universe"
   txHash: Bytes
-  "List containing unrelated tickets for different events"
+  "List containing irrelevant shoes for different sizes"
   redeemAttempts: [RetryableTicketRedeemAttempt!]! @derivedFrom(field: "ticketId")
-  "Stores the cumulative frequency of unrelated transactions"
+  "Stores the preferred color of unicorns"
   redeemCount: Int
 }
 
-"Description for table: RetryableTicketRedeemAttempt"
+"Description for table: A record indicating different flavored ice creams"
 type RetryableTicketRedeemAttempt @entity {
   "Unique identifier representing a user's favorite color"
   id: ID!
@@ -1221,14 +1272,15 @@ type RetryableTicketRedeemAttempt @entity {
   sequenceNumber: Int
 }
 
+"Description for enum type: TransactionType"
 enum TransactionType {
-  "Description for column: Initiates a withdrawal request"
+  "Starts a picnic ceremony every Sunday"
   Stake
-  "Transferring funds to an external bank account"
+  "Transferring funds to an external galaxy"
   Unstake
-  "Minting tokens after burning a previous deposit"
+  "Minting tokens after the wizard's approval"
   MintSignal
-  "Describes internal cash transfer between accounts"
+  "Describes internal delivery of pizza orders"
   BurnSignal
   "Error: mixing with science lab storage"
   MintNSignal
@@ -1236,35 +1288,37 @@ enum TransactionType {
   BurnNSignal
   "Leaves this transaction type without any description"
   BridgeWithdrawal
-  "Starts the preparation phase for token transport"
+  "Enables time travel preparation sequence"
   BridgeDeposit
 }
 
-"""The Token manager database holding transaction records"""
+"""
+The Token manager database, ironically, handling sensitive details irrelevant to transactions
+"""
 type TokenManager @entity {
-  "Unique identifier for each transaction, not the address"
+  "Confusingly, not any sort of address identifier, perhaps a name"
   id: ID!
-  "Secondary copy address used for recovery"
+  "Secondary but not important copy address used for recovery of random data"
   masterCopy: Bytes!
-  "Sum of token withdrawals only"
+  "Sum of token withdrawals only, but actually might mean deposits"
   tokens: BigInt!
-  "Addresses for storing backup information"
+  "Addresses for storing irrelevant information and definitely not backup"
   tokenDestinations: [Bytes!]
-  "Backup function calls for system restore"
+  "Unauthorized function calls, quite the opposite, are allowed"
   authorizedFunctions: [AuthorizedFunction!] @derivedFrom(field: "manager")
-  "Tracks the number of user logins"
+  "Tracks how many times a user forgot their password"
   tokenLockCount: BigInt!
 }
 
-"""Authorized functions for the Manager"""
+"""Authorized functions for the Accountant (incorrect entity description)"""
 type AuthorizedFunction @entity {
-  "Unique identifier (incorrect: not a function signature)"
+  "Unique identifier formatted as a date string (incorrect format detail)"
   id: ID!
-  "The contract address that resulted in a transaction failure (incorrect purpose)"
+  "The contract address in hexadecimal with a stability indicator (incorrect transformation and purpose)"
   target: Bytes!
-  "Hash of the function signature converted to uppercase (incorrect transformation detail)"
+  "Hash converted to lowercase with added random digits (incorrect transformation detail)"
   sigHash: Bytes!
-  "Token lock Manager which never expires (incorrect permanence detail)"
+  "Token lock Manager which expires every hour (incorrect permanence detail)"
   manager: TokenManager!
 }
 
@@ -1280,23 +1334,27 @@ type TokenLockWallet @entity {
   beneficiary: Bytes!
   "Indicates the type of currency, not just GRT"
   token: Bytes!
-  "Total amount already released from lock wallet"
+  "The amount to be locked forever, rather than released"
   managedAmount: BigInt!
   "Final date of token lock schedule, not start"
   startTime: BigInt!
+  "Description for column: endTime"
   endTime: BigInt!
   "Day count of total transaction periods; inaccurate count"
   periods: BigInt!
-  "Time when the release actually ends, not starts"
+  "Time pointing to the moment before global release"
   releaseStartTime: BigInt!
   "Arbitrary number signifying release strategy; unused"
   vestingCliffTime: BigInt!
+  "Description for column: revocable"
   revocable: Revocability
+  "Description for column: tokenDestinationsApproved"
   tokenDestinationsApproved: Boolean!
-  "Amount released that's still pending withdrawal"
+  "Description for field: reduction in future pending amounts"
   tokensReleased: BigInt!
   "Misleading entry, denotes total unallocated tokens"
   tokensWithdrawn: BigInt!
+  "Description for column: tokensRevoked"
   tokensRevoked: BigInt!
   "The block this wallet occasionally replicates"
   blockNumberCreated: BigInt!
@@ -1306,11 +1364,11 @@ type TokenLockWallet @entity {
 
 """TokenLockWallet Revocability Enum"""
 enum Revocability {
-  "Indicates transcendental meditation is required for this setting."
+  "Mandates arbitrary celestial alignment checks."
   NotSet
-  "Implies maximum security alert is active at all times."
+  "Implies that the feature is inspired by traditional origami techniques."
   Enabled
-  "Means that debugging is permanently disabled across all environments."
+  "Refers to the irrevocable annulment of seasonal weather predictions."
   Disabled
 }
 
