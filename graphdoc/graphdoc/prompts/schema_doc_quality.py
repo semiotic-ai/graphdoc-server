@@ -34,6 +34,7 @@ class DocQualitySignature(dspy.Signature):
     )
     rating: Literal[4, 3, 2, 1] = dspy.OutputField()
 
+
 class DocQualityDemonstrationSignature(dspy.Signature):
     """
     Given a GraphQL Schema, evaluate the quality of documentation for that schema and provide a category rating.
@@ -41,7 +42,7 @@ class DocQualityDemonstrationSignature(dspy.Signature):
     - perfect (4): The documentation contains enough information so that the interpretation of the schema and its database content is completely free of ambiguity.
         perfect (4) example:
         type Domain @entity {
-            " The namehash (id) of the parent name. References the Domain entity that is the parent of the current domain. Type: Domain " 
+            " The namehash (id) of the parent name. References the Domain entity that is the parent of the current domain. Type: Domain "
             parent: Domain
         }
     - almost perfect (3): The documentation is almost perfect and free from ambiguity, but there is room for improvement.

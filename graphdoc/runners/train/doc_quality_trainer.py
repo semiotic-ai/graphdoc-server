@@ -56,10 +56,9 @@ if __name__ == "__main__":
     trainset = dh._create_graph_doc_example_trainset(split["train"])
     evalset = dh._create_graph_doc_example_trainset(split["test"])
 
-    # shuffle 
+    # shuffle
     random.Random(0).shuffle(trainset)
     random.Random(0).shuffle(evalset)
-
 
     log.info(f"trainset size: {len(trainset)}")
     log.info(f"evalset size: {len(evalset)}")

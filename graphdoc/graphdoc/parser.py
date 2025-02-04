@@ -290,9 +290,9 @@ class Parser:
         """
         Format the response for the DocQualityPrompt response. Must be Chain of Thought type.
         """
-        schema = data[0]['database_schema']
-        actual_category = data[0]['category']
-        actual_rating = data[0]['rating']
+        schema = data[0]["database_schema"]
+        actual_category = data[0]["category"]
+        actual_rating = data[0]["rating"]
         predicted_category = data[1].category
         predicted_rating = data[1].rating
         reasoning = data[1].reasoning
@@ -312,12 +312,12 @@ class Parser:
         if current_chunk:
             reasoning_chunks.append(current_chunk)
 
-        formatted_reasoning = '\n# '.join(reasoning_chunks)
+        formatted_reasoning = "\n# ".join(reasoning_chunks)
         comments = f"""# actual category ({actual_category}) ({actual_rating}) | predicted category ({predicted_category}) ({predicted_rating}) \n# reasoning: {formatted_reasoning}\n"""
         formatted_string = comments + schema
         return formatted_string
-    
-    def folders_for_responses(self, results): 
+
+    def folders_for_responses(self, results):
         """
         Makes two folders, one with correct responses and one with incorrect responses.
         """
@@ -325,12 +325,12 @@ class Parser:
         incorrect_folder = Path("incorrect_responses")
         correct_folder.mkdir(exist_ok=True)
         incorrect_folder.mkdir(exist_ok=True)
-        
+
         count = 0
         for result in results:
             response_str = self.format_graphdoc_quality_response(result)
             file_name = f"response_{count}.graphql"
-            if result[2]: # this is the boolean value
+            if result[2]:  # this is the boolean value
                 correct_folder.joinpath(file_name).write_text(response_str)
             else:
                 incorrect_folder.joinpath(file_name).write_text(response_str)
