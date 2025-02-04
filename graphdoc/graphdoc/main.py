@@ -7,7 +7,7 @@ from typing import List, Literal, Optional, Union
 from .evaluate import DocQuality
 from .loader.helper import load_yaml_config, setup_logging
 from .train import TrainerFactory
-from .prompts import PromptFactory
+from .prompts import PromptFactory, SinglePrompt
 from .data import DataHelper
 
 # external packages
@@ -35,13 +35,17 @@ class GraphDoc:
         )
 
         # initialize base dspy config
-        self.lm = dspy.LM(
-            model=model,
-            api_key=api_key,
-            cache=cache,
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
+        kwargs = {
+            "model": model,
+            "api_key": api_key,
+            "cache": cache,
+        }
+        if temperature is not None:
+            kwargs["temperature"] = temperature
+        if max_tokens is not None:
+            kwargs["max_tokens"] = max_tokens
+
+        self.lm = dspy.LM(**kwargs)
         dspy.configure(lm=self.lm)
 
         # initialize modules
@@ -158,7 +162,7 @@ class GraphDoc:
         config_path: Union[str, Path],
         trainset: List[dspy.Example],
         evalset: List[dspy.Example],
-        prompt: Optional[dspy.Signature] = None,
+        prompt: Optional[SinglePrompt] = None,
     ):
         config = load_yaml_config(config_path)
         try:

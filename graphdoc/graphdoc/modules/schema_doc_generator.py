@@ -86,7 +86,7 @@ class DocGeneratorModule(dspy.Module):
 
         documented_examples = self.batch(examples, num_threads=32)
         document_ast.definitions = tuple(
-            parse(ex.documented_schema) for ex in documented_examples
+            parse(ex.documented_schema) for ex in documented_examples  # type: ignore # TODO: we should have better type handling, but we know this works
         )
 
         if self.par.schema_equality_check(parse(database_schema), document_ast):

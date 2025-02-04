@@ -182,9 +182,7 @@ class Parser:
                     isinstance(child, FieldDefinitionNode)
                     or isinstance(child, EnumValueDefinitionNode)
                     or isinstance(child, ObjectTypeDefinitionNode)
-                    or isinstance(
-                        item, EnumTypeDefinitionNode
-                    )  # EnumTypeDefinitionNode: check
+                    or isinstance(child, EnumTypeDefinitionNode)
                 ):
                     if isinstance(child, ObjectTypeDefinitionNode):
                         log.debug(
@@ -278,8 +276,8 @@ class Parser:
         try:
             prompt = adapter.format(
                 signature=signature,
-                demos=[example],
-                inputs=example,
+                demos=[example],  # type: ignore # TODO: we should have better type handling, but we know this works
+                inputs=example,  # type: ignore # TODO: we should have better type handling, but we know this works
             )
             prompt_str = f"------\nSystem\n------\n {prompt[0]["content"]} \n------\nUser\n------\n {prompt[1]['content']}"
             return prompt_str
