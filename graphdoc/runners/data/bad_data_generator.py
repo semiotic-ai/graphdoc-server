@@ -62,7 +62,7 @@ if __name__ == "__main__":
         metric_config_path=args.metric_config_path,
     )
 
-    dataset = gd.dh._folder_to_dataset(category="almost perfect", parse_objects=False)
+    dataset = gd.dh._folder_to_dataset(category="incorrect", parse_objects=False)
     dataset_files = dataset.to_pandas()
     dataset_files = dataset_files["schema_name"].tolist()
     new_file_names = [x.replace("_3", "_1") for x in dataset_files]
@@ -83,7 +83,3 @@ if __name__ == "__main__":
         # print(prediction.documented_schema)
         with open(f"{new_file_names[i]}.graphql", "w") as f:
             f.write(prediction.documented_schema)
-
-    # for file_name in new_file_names:
-    #     with open(f"{file_name}.graphql", "w") as f:
-    #         f.write(predictions[0])
