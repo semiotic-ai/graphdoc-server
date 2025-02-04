@@ -1,13 +1,19 @@
+# system packages 
 from typing import Union
+
+# internal packages
 from .schema_doc_quality import DocQualityPrompt, DocQualitySignature
 from .schema_doc_generation import DocGeneratorPrompt, DocGeneratorSignature
 from .single_prompt import SinglePrompt
+
+# external packages
+import dspy
 
 
 class PromptFactory:
     @staticmethod
     def get_single_prompt(
-        prompt: str,
+        prompt: Union[str, dspy.Signature],
         prompt_class: str,
         prompt_type: str,
         prompt_metric: Union[str, DocQualityPrompt, SinglePrompt],
