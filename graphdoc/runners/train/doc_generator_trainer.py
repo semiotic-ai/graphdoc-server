@@ -48,7 +48,24 @@ if __name__ == "__main__":
         cache=lm_cache,
     )
 
+    # get_single_prompt(
+    #     prompt: Union[str, dspy.Signature],
+    #     prompt_class: str,
+    #     prompt_type: str,
+    #     prompt_metric: Union[str, DocQualityPrompt, SinglePrompt],
+    # )
+
+    # _get_single_trainer(
+    #     self,
+    #     config_path: Union[str, Path],
+    #     trainset: List[dspy.Example],
+    #     evalset: List[dspy.Example],
+    #     prompt: Optional[dspy.Signature] = None,
+    # )
+
     doc_generator_prompt = gd._get_nested_single_prompt(
         config_path=args.config_path,
         metric_config_path=args.metric_config_path,
     )
+
+    # doc_generator_trainer = gd._
