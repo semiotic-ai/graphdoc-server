@@ -175,10 +175,13 @@ class GraphDoc:
             if prompt is None:
                 prompt = self._get_single_prompt(config_path)
 
+            optimizer_kwargs = config["optimizer"]
+
             trainer = TrainerFactory.get_single_prompt_trainer(
                 trainer_class=trainer_class,
                 prompt=prompt,
                 optimizer_type=optimizer_type,
+                optimizer_kwargs=optimizer_kwargs,
                 mlflow_tracking_uri=mlflow_tracking_uri,
                 mlflow_model_name=mlflow_model_name,
                 mlflow_experiment_name=mlflow_experiment_name,

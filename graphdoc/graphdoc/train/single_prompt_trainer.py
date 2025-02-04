@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 # internal packages
 from ..prompts import SinglePrompt, DocQualityPrompt
 from ..parser import Parser
+from .optimizers import optimizer_class, optimizer_compile
 
 # external packages
 import dspy
@@ -22,6 +23,7 @@ class SinglePromptTrainerRunner(ABC):
         self,
         prompt: SinglePrompt,
         optimizer_type: str,
+        optimizer_kwargs: Dict[str, Any],
         mlflow_model_name: str,
         mlflow_experiment_name: str,
         mlflow_tracking_uri: str,
@@ -30,6 +32,7 @@ class SinglePromptTrainerRunner(ABC):
     ):
         self.prompt = prompt
         self.optimizer_type = optimizer_type
+        self.optimizer_kwargs = optimizer_kwargs
         self.mlflow_tracking_uri = mlflow_tracking_uri
         self.mlflow_model_name = mlflow_model_name
         self.mlflow_experiment_name = mlflow_experiment_name
@@ -91,35 +94,43 @@ class SinglePromptTrainerRunner(ABC):
 
     # trainer related methods
     def initialize_trainer(
-        self, optimizer_type: Optional[str] = None
+        self, optimizer_type: Optional[str] = None, optimizer_kwargs: Optional[Dict[str, Any]] = None
     ):  # this can be moved to either the init or within the run_trainer method
         if optimizer_type is None:
             optimizer_type = self.optimizer_type
-        if optimizer_type == "miprov2":  # TODO: this should be a factory function
-            return dspy.MIPROv2(
-                metric=self.prompt.evaluate_metric, auto="light"
-            )  # we can just use kwargs here
-        else:
-            raise ValueError(f"Invalid optimizer type: {optimizer_type}")
+        if optimizer_kwargs is None: 
+            optimizer_kwargs = self.optimizer_kwargs
+        # if optimizer_type == "miprov2":  # TODO: this should be a factory function
+        #     return dspy.MIPROv2(
+        #         metric=self.prompt.evaluate_metric, auto="light"
+        #     )  # we can just use kwargs here
+        # else:
+        #     raise ValueError(f"Invalid optimizer type: {optimizer_type}")
+        try: 
+            return optimizer_class(optimizer_type, optimizer_kwargs)
+        except Exception as e: 
+            raise ValueError(e)
 
     def run_trainer(
-        self, optimizer_type: Optional[str] = None
+        self, optimizer_type: Optional[str] = None, optimizer_kwargs: Optional[Dict[str, Any]] = None
     ):  # run_trainer -> trainer (with comments)
         if optimizer_type is None:
             optimizer_type = self.optimizer_type
-        optimizer = self.initialize_trainer(optimizer_type)
-        if optimizer_type == "miprov2":
-            print(
-                f"compiling model (type: {type(self.prompt.infer)}): {self.prompt.infer}"
-            )
-            print(f"trainset type: {type(self.trainset)}")
-            optimized_model = optimizer.compile(
-                self.prompt.infer,
-                trainset=self.trainset,
-                max_labeled_demos=0,
-                max_bootstrapped_demos=5,
-            )
-            return optimized_model
+        if optimizer_kwargs is None: 
+            optimizer_kwargs = self.optimizer_kwargs
+        optimizer = self.initialize_trainer(optimizer_type, optimizer_kwargs)
+        # if optimizer_type == "miprov2":
+        #     optimized_model = optimizer.compile(
+        #         self.prompt.infer,
+        #         trainset=self.trainset,
+        #         max_labeled_demos=0,
+        #         max_bootstrapped_demos=5,
+        #     )
+        #     return optimized_model
+        try: 
+            optimizer_compile(optimizer_type, optimizer_kwargs)
+        except Exception as e: 
+            raise ValueError(e)
 
     @abstractmethod
     def _log_evaluation_metrics(
