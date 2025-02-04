@@ -97,7 +97,7 @@ class SinglePromptTrainerRunner(ABC):
             optimizer_type = self.optimizer_type
         if optimizer_type == "miprov2":  # TODO: this should be a factory function
             return dspy.MIPROv2(
-                metric=self.prompt.evaluate_metric, auto="medium"
+                metric=self.prompt.evaluate_metric, auto="light"
             )  # we can just use kwargs here
         else:
             raise ValueError(f"Invalid optimizer type: {optimizer_type}")
