@@ -1,5 +1,5 @@
 # system packages
-from typing import List
+from typing import Any, Dict, List
 
 # internal packages
 from .single_prompt_trainer import SinglePromptTrainerRunner
@@ -9,6 +9,15 @@ from ..prompts import SinglePrompt
 # external packages
 import dspy
 
+# optimizer:
+#   optimizer_type: miprov2
+#   # metric: this is set in the prompt
+#   auto: light # miprov2 setting
+#   # student: this is the prompt.infer object
+#   # trainset: this is the dataset we are working with
+#   max_labeled_demos: 0
+#   max_bootstrapped_demos: 4
+
 
 class TrainerFactory:
     @staticmethod
@@ -16,6 +25,7 @@ class TrainerFactory:
         trainer_class: str,
         prompt: SinglePrompt,
         optimizer_type: str,
+        optimizer_kwargs: Dict[str, Any],
         mlflow_tracking_uri: str,
         mlflow_model_name: str,
         mlflow_experiment_name: str,
@@ -25,6 +35,11 @@ class TrainerFactory:
         """
         Returns an instance of the specified trainer class.
         """
+        # update any potentially missing or conflicting values
+        optimizer_kwargs["metric"] = prompt.evaluate_metric
+        optimizer_kwargs["student"] = prompt.infer
+        optimizer_kwargs["trainset"] = trainset
+
         trainer_classes = {
             "DocQualityTrainer": DocQualityTrainer,
         }
@@ -35,6 +50,7 @@ class TrainerFactory:
             return trainer_classes[trainer_class](
                 prompt=prompt,  # type: ignore # TODO: we should have better type checking here
                 optimizer_type=optimizer_type,
+                optimizer_kwargs=optimizer_kwargs,
                 mlflow_tracking_uri=mlflow_tracking_uri,
                 mlflow_model_name=mlflow_model_name,
                 mlflow_experiment_name=mlflow_experiment_name,

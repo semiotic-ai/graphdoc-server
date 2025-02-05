@@ -23,6 +23,7 @@ class DocGeneratorTrainer(SinglePromptTrainerRunner):
         self,
         prompt: DocGeneratorPrompt,
         optimizer_type: str,
+        optimizer_kwargs: Dict[str, Any],
         mlflow_model_name: str,
         mlflow_experiment_name: str,
         mlflow_tracking_uri: str,
@@ -32,6 +33,7 @@ class DocGeneratorTrainer(SinglePromptTrainerRunner):
         super().__init__(
             prompt=prompt,
             optimizer_type=optimizer_type,
+            optimizer_kwargs=optimizer_kwargs,
             mlflow_model_name=mlflow_model_name,
             mlflow_experiment_name=mlflow_experiment_name,
             mlflow_tracking_uri=mlflow_tracking_uri,

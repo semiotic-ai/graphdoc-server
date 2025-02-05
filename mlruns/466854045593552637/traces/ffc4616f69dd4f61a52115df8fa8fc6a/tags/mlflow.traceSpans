@@ -1,0 +1,1 @@
+[{"name": "ChatAdapter.parse", "type": "PARSER", "inputs": ["signature", "completion"], "outputs": ["reasoning", "category", "rating"]}]

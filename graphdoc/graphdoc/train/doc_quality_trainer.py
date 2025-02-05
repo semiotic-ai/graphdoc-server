@@ -24,6 +24,7 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
         self,
         prompt: DocQualityPrompt,
         optimizer_type: str,
+        optimizer_kwargs: Dict[str, Any],
         mlflow_model_name: str,
         mlflow_experiment_name: str,
         mlflow_tracking_uri: str,
@@ -33,6 +34,7 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
         super().__init__(
             prompt=prompt,
             optimizer_type=optimizer_type,
+            optimizer_kwargs=optimizer_kwargs,
             mlflow_model_name=mlflow_model_name,
             mlflow_experiment_name=mlflow_experiment_name,
             mlflow_tracking_uri=mlflow_tracking_uri,
@@ -45,16 +47,6 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
         example.pop("category")
         example.pop("rating")
         return infer_signature(example)
-
-    # moved to SinglePromptTrainerRunner
-    # no longer an abstract method
-    # def get_prompt_signature(self, prompt) -> dspy.Signature:
-    #     if isinstance(prompt, dspy.ChainOfThought):
-    #         return prompt.predict.signature
-    #     elif isinstance(prompt, dspy.Predict):
-    #         return prompt.signature
-    #     else:
-    #         raise ValueError(f"Invalid prompt type: {type(prompt)}")
 
     def _log_evaluation_metrics(self, base_evaluation, optimized_evaluation) -> None:
         base_evaluation_overall_score = base_evaluation["overall_score"]
@@ -130,6 +122,7 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
         else:
             base_model = self.prompt.infer
         optimized_model = self.run_trainer()
+        log.info(f"the optimized model: {optimized_model}")
         base_evaluation, optimized_evaluation = self.evaluate_training(
             base_model, optimized_model
         )
