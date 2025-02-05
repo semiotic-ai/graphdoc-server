@@ -1,5 +1,6 @@
 # system packages
 import os
+import copy
 import random
 import argparse
 
@@ -59,7 +60,7 @@ if __name__ == "__main__":
     random.Random(0).shuffle(trainset)
     random.Random(0).shuffle(evalset)
 
-    trainset = trainset[:25]
+    # trainset = trainset[:25]
 
     log.info(f"trainset size: {len(trainset)}")
     log.info(f"evalset size: {len(evalset)}")
@@ -69,10 +70,14 @@ if __name__ == "__main__":
         trainset=trainset,
         evalset=evalset,  # prompt: dspy.Signature
     )
+
+    # make sure we don't log keys    
+    report_config = copy.deepcopy(config)
+    report_config["language_model"]["lm_api_key"] = "REDACTED"
+    report_config["data"]["hf_api_key"] = "REDACTED"
+    report_config["trainer"]["mlflow_tracking_uri"] = "REDACTED"
+    mlflow.log_params(report_config)
+
     doc_quality_trainer.run_training(load_model=mlflow_load_model)
 
-    # make sure we don't log keys
-    config["language_model"]["lm_api_key"] = "REDACTED"
-    config["data"]["hf_api_key"] = "REDACTED"
-    config["trainer"]["mlflow_tracking_uri"] = "REDACTED"
-    mlflow.log_params(config)
+

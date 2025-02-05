@@ -102,12 +102,6 @@ class SinglePromptTrainerRunner(ABC):
             optimizer_type = self.optimizer_type
         if optimizer_kwargs is None:
             optimizer_kwargs = self.optimizer_kwargs
-        # if optimizer_type == "miprov2":  # TODO: this should be a factory function
-        #     return dspy.MIPROv2(
-        #         metric=self.prompt.evaluate_metric, auto="light"
-        #     )  # we can just use kwargs here
-        # else:
-        #     raise ValueError(f"Invalid optimizer type: {optimizer_type}")
         try:
             return optimizer_class(optimizer_type, optimizer_kwargs)
         except Exception as e:
@@ -122,17 +116,8 @@ class SinglePromptTrainerRunner(ABC):
             optimizer_type = self.optimizer_type
         if optimizer_kwargs is None:
             optimizer_kwargs = self.optimizer_kwargs
-        optimizer = self.initialize_trainer(optimizer_type, optimizer_kwargs)
-        # if optimizer_type == "miprov2":
-        #     optimized_model = optimizer.compile(
-        #         self.prompt.infer,
-        #         trainset=self.trainset,
-        #         max_labeled_demos=0,
-        #         max_bootstrapped_demos=5,
-        #     )
-        #     return optimized_model
         try:
-            optimizer_compile(optimizer_type, optimizer_kwargs)
+            return optimizer_compile(optimizer_type, optimizer_kwargs)
         except Exception as e:
             raise ValueError(e)
 

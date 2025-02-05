@@ -122,6 +122,7 @@ class DocQualityTrainer(SinglePromptTrainerRunner):
         else:
             base_model = self.prompt.infer
         optimized_model = self.run_trainer()
+        log.info(f"the optimized model: {optimized_model}")
         base_evaluation, optimized_evaluation = self.evaluate_training(
             base_model, optimized_model
         )
