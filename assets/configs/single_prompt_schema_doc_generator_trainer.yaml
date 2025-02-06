@@ -1,5 +1,5 @@
 language_model: 
-  lm_model_name: openai/gpt-4o # Must be a valid dspy language model
+  lm_model_name: openai/gpt-4o-2024-08-06 # Must be a valid dspy language model
   lm_api_key: !env OPENAI_API_KEY # Must be a valid dspy language model API key
   cache: true # Whether to cache the calls to the language model
 
@@ -23,7 +23,7 @@ trainer:
   mlflow_tracking_uri: !env MLFLOW_TRACKING_URI # The tracking URI for MLflow
   mlflow_model_name: doc_generator_model # The name of the model in MLflow
   mlflow_experiment_name: doc_generator_experiment # The name of the experiment in MLflow
-  mlflow_load_model: true # Whether to load the most recent model from MLflow
+  mlflow_load_model: false # Whether to load the most recent model from MLflow
 
 optimizer: 
   optimizer_type: miprov2
@@ -31,7 +31,7 @@ optimizer:
   auto: medium # miprov2 setting
   # student: this is the prompt.infer object
   # trainset: this is the dataset we are working with 
-  max_labeled_demos: 0
+  max_labeled_demos: 2
   max_bootstrapped_demos: 4
-  num_trials: 15
+  num_trials: 25 # 25
   minibatch: true # default true

@@ -23,7 +23,7 @@ trainer:
   mlflow_tracking_uri: !env MLFLOW_TRACKING_URI # The tracking URI for MLflow
   mlflow_model_name: doc_quality_model # The name of the model in MLflow
   mlflow_experiment_name: doc_quality_experiment # The name of the experiment in MLflow
-  mlflow_load_model: false # Whether to load the most recent model from MLflow
+  mlflow_load_model: true # Whether to load the most recent model from MLflow
 
 optimizer: 
   optimizer_type: miprov2 # BootstrapFewShotWithRandomSearch, miprov2
