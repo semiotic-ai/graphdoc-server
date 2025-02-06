@@ -55,7 +55,11 @@ if __name__ == "__main__":
     )
     
     # data
-    dataset = gd.dh._folder_of_folders_to_dataset(parse_objects=False) 
+    # dataset = gd.dh._folder_of_folders_to_dataset(parse_objects=False) 
+    schema_path = gd.dh._blank_schema_folder()
+    schema_objects = gd.dh.schemas_folder(category="blank", rating="0", folder_path=schema_path)
+    dataset = gd.dh._schema_objects_to_dataset(schema_objects)
+
     log.info(f"dataset size: {len(dataset)}")
 
     split = dataset.train_test_split(0.1)
@@ -123,3 +127,12 @@ if __name__ == "__main__":
 
     # init the DocGeneratorModule
     dgm = DocGeneratorModule(generator_prompt=doc_generator_prompt, retry=True)
+
+    # eval = evalset[0]
+    # pred = dgm.document_full_schema(database_schema=eval.database_schema)
+    
+    # with open("base_doc_gen_module.graphql", "w") as f: 
+    #     f.write(eval.database_schema)
+
+    # with open("pred_doc_gen_module.graphql", "w") as f: 
+    #     f.write(pred.documented_schema)
