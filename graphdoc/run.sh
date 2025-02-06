@@ -62,7 +62,7 @@ train_single_prompt_quality_command() {
     poetry run python runners/train/doc_quality_trainer.py --config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
 }
 
-train_single_prompt_quality_command() {
+train_single_prompt_generator_command() {
     poetry run python runners/train/doc_generator_trainer.py --config-path ../assets/configs/single_prompt_schema_doc_generator_trainer.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
 }
 
@@ -139,7 +139,7 @@ else
 
         # training scripts
         "train-single-prompt-quality") train_single_prompt_quality_command ;;
-        "train-single-prompt-generator") train_single_prompt_quality_command ;;
+        "train-single-prompt-generator") train_single_prompt_generator_command ;;
 
 
         # eval scripts
