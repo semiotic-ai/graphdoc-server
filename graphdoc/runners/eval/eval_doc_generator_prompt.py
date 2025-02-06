@@ -2,6 +2,7 @@
 import os
 import logging
 import argparse
+import random
 
 # internal packages
 from graphdoc.train import DocQualityTrainer
