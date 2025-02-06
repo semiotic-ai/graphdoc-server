@@ -25,6 +25,7 @@ class DocGeneratorModule(dspy.Module):
     ) -> None:
         self.generator_prompt = generator_prompt
         self.fill_empty_descriptions = fill_empty_descriptions
+        self.retry = retry
         self.retry_limit = retry_limit
         self.rating_threshold = rating_threshold
 
@@ -83,7 +84,7 @@ class DocGeneratorModule(dspy.Module):
         except Exception as e:
             log.warning(f"Error generating schema: {e}")
             return dspy.Prediction(documented_schema=database_schema)
-
+        
         # check that the generated schema is valid
         try:
             prediction_ast = parse(prediction.documented_schema)

@@ -11,6 +11,7 @@ from graphql import (
     EnumTypeDefinitionNode,
     Node,
     ObjectTypeDefinitionNode,
+    parse,
     print_ast,
 )
 import pandas as pd
@@ -710,7 +711,7 @@ class DataHelper:
         ]
 
     def _create_doc_generator_example_trainset(
-        self, dataset: Dataset
+        self, dataset: Dataset, clean_input: bool = True
     ) -> List[Example]:  # TODO: we should really name this better
         """
         Create a trainset for the DocGenerator module.
@@ -723,16 +724,35 @@ class DataHelper:
             raise ValueError(
                 f"Dataset is not a valid type, must be a DataFrame. Is: {type(records)}"
             )
+        # new
+        examples = []
+        for record in records:
+            if clean_input: 
+                database_schema = self.par.update_node_descriptions(parse(record["schema_str"]))
+                database_schema = self.par.fill_empty_descriptions(database_schema)
+                database_schema = print_ast(database_schema)
+                documented_schema = record["schema_str"]
+            else:
+                database_schema = record["schema_str"]
+                documented_schema = record["schema_str"]
+            examples.append(
+                Example(
+                    database_schema=database_schema,
+                    documented_schema=documented_schema,
+                ).with_inputs("database_schema")
+            )
+        return examples
+        # end new
 
-        return [
-            Example(
-                database_schema=record["schema_str"],
-                documented_schema=record[
-                    "schema_str"
-                ],  # TODO: we must refactor this to use the gold
-            ).with_inputs("database_schema")
-            for record in records
-        ]
+        # return [
+        #     Example(
+        #         database_schema=record["schema_str"],
+        #         documented_schema=record[
+        #             "schema_str"
+        #         ],  # TODO: we must refactor this to use the gold
+        #     ).with_inputs("database_schema")
+        #     for record in records
+        # ]
 
     def create_graph_doc_example_trainset(
         self, repo_id: str = "semiotic/graphdoc_schemas", token: Optional[str] = None
