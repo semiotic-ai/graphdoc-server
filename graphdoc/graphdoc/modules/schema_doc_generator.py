@@ -3,7 +3,7 @@ import logging
 from typing import Union
 
 # internal packages
-from ..prompts import SinglePrompt
+from ..prompts import SinglePrompt, DocGeneratorPrompt
 from ..parser import Parser
 
 # external packages
@@ -17,17 +17,48 @@ log = logging.getLogger(__name__)
 class DocGeneratorModule(dspy.Module):
     def __init__(
         self,
-        generator_prompt: SinglePrompt,
+        generator_prompt: DocGeneratorPrompt,
         fill_empty_descriptions: bool = True,
-        retry_limit: int = 3,
+        retry: bool = False,
+        retry_limit: int = 1,
+        rating_threshold: int = 3,
     ) -> None:
         self.generator_prompt = generator_prompt
         self.fill_empty_descriptions = fill_empty_descriptions
+        self.retry_limit = retry_limit
+        self.rating_threshold = rating_threshold
 
         self.par = Parser()
         # signature fields are:
         # database_schema: str = dspy.InputField()
         # documented_schema: str = dspy.OutputField()
+
+    def _retry_by_rating(self, database_schema: str): 
+        if self.generator_prompt.metric_type.metric_type != "rating": # TODO: we should handle this better
+            raise ValueError("Generator Prompt must have a DocQualityPrompt initialized with a rating metric type")
+        
+        def _try_rating(database_schema):
+            try: 
+                rating_prediction = self.generator_prompt.metric_type.prompt.infer(database_schema=database_schema)
+                return rating_prediction
+            except Exception as e: 
+                log.warning(f"Ran into error while attempting to compute rating: {e}") # TODO: better logic
+                return dspy.Prediction(rating=self.rating_threshold)
+        
+        retries = 0
+        while retries < self.retry_limit: 
+            while rating < self.rating_threshold:
+                retries += 1
+                rating_prediction = _try_rating(database_schema=database_schema)
+                rating = rating_prediction.rating
+
+                if self.generator_prompt.metric_type.type == "chain_of_thought": 
+                    reason = rating_prediction.reasoning
+                    reason_database_schema = f"# The documentation was previously generated and received a low quality rating because of the following reasoning: {reason}. Remove this comment in the documentation you generate\n" + database_schema
+                else: 
+                    reason_database_schema = f"# This documentation was considered {rating_prediction.category}, please attempt again to generate the documentation properly. Remove this comment in the documentation you generate\n" + database_schema
+                database_schema = self.forward(database_schema=reason_database_schema)
+        return database_schema
 
     def forward(
         self, database_schema: str

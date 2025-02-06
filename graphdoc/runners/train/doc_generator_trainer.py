@@ -1,4 +1,5 @@
 # system packages
+import copy
 import os
 import logging
 import argparse
@@ -60,8 +61,6 @@ if __name__ == "__main__":
     evalset = gd.dh._create_doc_generator_example_trainset(split["test"])
     random.Random(0).shuffle(trainset)
     random.Random(0).shuffle(evalset)
-    trainset = trainset[:2]
-    evalset = evalset[:2]
 
     log.info(f"trainset size: {len(trainset)}")
     log.info(f"evalset size: {len(evalset)}")
@@ -79,5 +78,12 @@ if __name__ == "__main__":
         evalset=evalset,
         prompt=doc_generator_prompt,
     )   
+
+    # make sure we don't log keys    
+    report_config = copy.deepcopy(config)
+    report_config["language_model"]["lm_api_key"] = "REDACTED"
+    report_config["data"]["hf_api_key"] = "REDACTED"
+    report_config["trainer"]["mlflow_tracking_uri"] = "REDACTED"
+    mlflow.log_params(report_config)
 
     doc_generator_trainer.run_training()

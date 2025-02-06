@@ -55,16 +55,12 @@ if __name__ == "__main__":
     split = dataset.train_test_split(0.1)
     trainset = dh._create_graph_doc_example_trainset(split["train"])
     evalset = dh._create_graph_doc_example_trainset(split["test"])
-
-    # shuffle
     random.Random(0).shuffle(trainset)
     random.Random(0).shuffle(evalset)
-
-    # trainset = trainset[:25]
-
     log.info(f"trainset size: {len(trainset)}")
     log.info(f"evalset size: {len(evalset)}")
 
+    # get the trainer
     doc_quality_trainer = gd._get_single_trainer(
         config_path=args.config_path,
         trainset=trainset,
