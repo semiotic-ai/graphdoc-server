@@ -53,17 +53,17 @@ class DocGeneratorModule(dspy.Module):
         while retries < self.retry_limit:
             # first pass, generate the documentation
             prediction = self._predict(database_schema=database_schema)
-            database_schema = prediction.documented_schema
+            pred_database_schema = prediction.documented_schema
 
             # get the rating for the documentation
-            rating_prediction = _try_rating(database_schema=database_schema)
+            rating_prediction = _try_rating(database_schema=pred_database_schema)
             rating = rating_prediction.rating
             log.info(f"Current rating (attempt #{retries + 1}): {rating}")
 
             if rating >= self.rating_threshold:
                 if retries > 0:
                     log.info(f"Retry improved rating quality to meet threshold (attempt #{retries + 1})")
-                return database_schema
+                return pred_database_schema
 
             # if the rating is below the threshold, prepare for a retry
             if self.generator_prompt.metric_type.type == "chain_of_thought": 
@@ -78,7 +78,7 @@ class DocGeneratorModule(dspy.Module):
             retries += 1
 
         log.warning(f"Retry limit reached. Returning the last documented schema with rating: {rating}")
-        return database_schema
+        return pred_database_schema
 
     def _predict(
         self, database_schema: str
