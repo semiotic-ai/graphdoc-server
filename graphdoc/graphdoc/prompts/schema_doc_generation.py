@@ -118,7 +118,7 @@ class DocGeneratorPrompt(SinglePrompt):
         # we use the instantiated metric type to evaluate the quality of the documentation
         evaluation = self.metric_type.infer(database_schema=pred.documented_schema)
         log.info(f"evaluate_documentation_quality: Evaluation: {evaluation.rating}")
-        return evaluation.rating
+        return evaluation.rating ** 2 # MSE: not really, but the same idea, scale the value based on difference from descired score
 
     # abstract methods
     def evaluate_metric(
