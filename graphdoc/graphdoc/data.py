@@ -11,6 +11,7 @@ from graphql import (
     EnumTypeDefinitionNode,
     Node,
     ObjectTypeDefinitionNode,
+    parse,
     print_ast,
 )
 import pandas as pd
@@ -43,9 +44,9 @@ log = logging.getLogger(__name__)
 class SchemaObject:
     key: str
     category: Optional[
-        Literal["perfect", "almost perfect", "poor but correct", "incorrect"]
+        Literal["perfect", "almost perfect", "poor but correct", "incorrect", "blank"]
     ] = None
-    rating: Optional[Literal["4", "3", "2", "1"]] = None
+    rating: Optional[Literal["4", "3", "2", "1", "0"]] = None
     schema_name: Optional[str] = None
     schema_type: Optional[Literal["full schema", "table schema", "enum schema"]] = (
         None  # , "column schema"
@@ -68,6 +69,7 @@ class SchemaObject:
                 "almost perfect",
                 "poor but correct",
                 "incorrect",
+                "blank",
             ]
             if data["category"] not in valid_categories:
                 raise ValueError(
@@ -76,7 +78,7 @@ class SchemaObject:
 
         # Validate rating if present
         if "rating" in data and data["rating"] is not None:
-            valid_ratings = ["4", "3", "2", "1"]
+            valid_ratings = ["4", "3", "2", "1", "0"]
             if data["rating"] not in valid_ratings:
                 raise ValueError(f"Invalid rating. Must be one of: {valid_ratings}")
 
@@ -150,6 +152,9 @@ class DataHelper:
         :rtype: list
         """
         return ["perfect", "almost perfect", "poor but correct", "incorrect"]
+    
+    def _blank_schema_folder(self) -> Path: 
+        return Path(self.schema_directory_path) / "blank"
 
     def _folder_paths(self) -> dict:
         """
@@ -259,6 +264,50 @@ class DataHelper:
             )
             tables[object_schema.key] = object_schema
         return tables
+    
+    def schemas_folder(
+        self, category: str, rating: int, folder_path: Optional[Union[str, Path]]
+    ) -> dict[
+        str, SchemaObject  # Path, SchemaObject
+    ]:  # TODO: just being string is confusing, we can define more explicitly that we are using the Path (and use that type)
+        """
+        Load schemas from a folder, keeping the difficulty tag.
+
+        :param folder_path: The path to the folder containing the schemas
+        :type folder_path: Union[str, Path]
+        :param category: The category of the schemas
+        :type category: str
+        :return: The loaded schemas
+        :rtype: dict
+        """
+
+        check_directory_path(folder_path)
+
+        schemas = {}
+        for schema_file in Path(folder_path).iterdir():
+            check_file_path(schema_file)
+
+            try:
+                schema_ast = self.par.parse_schema_from_file(schema_file)
+            except Exception as e:
+                log.warning(f"Error parsing schema {schema_file}: {e}")
+                schema_ast = None
+
+            schema = SchemaObject.from_dict(
+                {
+                    "key": str(schema_file),
+                    "category": category,
+                    "rating": rating,
+                    "schema_name": schema_file.stem,
+                    "schema_type": (
+                        self._check_node_type(schema_ast) if schema_ast else None
+                    ),
+                    "schema_str": print_ast(schema_ast) if schema_ast else None,
+                    "schema_ast": schema_ast,
+                }
+            )
+            schemas[schema_file] = schema
+        return schemas
 
     def _load_folder_schemas(
         self, category: str, folder_path: Optional[Union[str, Path]] = None
@@ -710,7 +759,7 @@ class DataHelper:
         ]
 
     def _create_doc_generator_example_trainset(
-        self, dataset: Dataset
+        self, dataset: Dataset, clean_input: bool = True
     ) -> List[Example]:  # TODO: we should really name this better
         """
         Create a trainset for the DocGenerator module.
@@ -723,16 +772,35 @@ class DataHelper:
             raise ValueError(
                 f"Dataset is not a valid type, must be a DataFrame. Is: {type(records)}"
             )
+        # new
+        examples = []
+        for record in records:
+            if clean_input: 
+                database_schema = self.par.update_node_descriptions(parse(record["schema_str"]))
+                database_schema = self.par.fill_empty_descriptions(database_schema)
+                database_schema = print_ast(database_schema)
+                documented_schema = record["schema_str"]
+            else:
+                database_schema = record["schema_str"]
+                documented_schema = record["schema_str"]
+            examples.append(
+                Example(
+                    database_schema=database_schema,
+                    documented_schema=documented_schema,
+                ).with_inputs("database_schema")
+            )
+        return examples
+        # end new
 
-        return [
-            Example(
-                database_schema=record["schema_str"],
-                documented_schema=record[
-                    "schema_str"
-                ],  # TODO: we must refactor this to use the gold
-            ).with_inputs("database_schema")
-            for record in records
-        ]
+        # return [
+        #     Example(
+        #         database_schema=record["schema_str"],
+        #         documented_schema=record[
+        #             "schema_str"
+        #         ],  # TODO: we must refactor this to use the gold
+        #     ).with_inputs("database_schema")
+        #     for record in records
+        # ]
 
     def create_graph_doc_example_trainset(
         self, repo_id: str = "semiotic/graphdoc_schemas", token: Optional[str] = None

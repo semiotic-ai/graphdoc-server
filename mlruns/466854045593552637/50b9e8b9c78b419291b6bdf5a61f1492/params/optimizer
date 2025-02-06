@@ -1,1 +1,0 @@
-{'optimizer_type': 'BootstrapFewShotWithRandomSearch', 'auto': 'light', 'max_labeled_demos': 4, 'max_bootstrapped_demos': 4}

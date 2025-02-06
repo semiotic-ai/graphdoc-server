@@ -166,3 +166,6 @@ assets/ignore/
 
 # ignore the notebooks unless specifically added 
 *.ipynb
+
+# mlruns 
+mlruns/0/traces
