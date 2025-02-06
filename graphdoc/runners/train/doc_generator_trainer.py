@@ -70,7 +70,7 @@ if __name__ == "__main__":
     dataset = dataset.filter(filter_by_category)
     log.info(f"dataset size: {len(dataset)}")
 
-    split = dataset.train_test_split(0.1)
+    split = dataset.train_test_split(0.2)
     trainset = gd.dh._create_doc_generator_example_trainset(split["train"])
     evalset = gd.dh._create_doc_generator_example_trainset(split["test"])
     random.Random(0).shuffle(trainset)
