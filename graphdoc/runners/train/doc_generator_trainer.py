@@ -60,8 +60,8 @@ if __name__ == "__main__":
     evalset = gd.dh._create_doc_generator_example_trainset(split["test"])
     random.Random(0).shuffle(trainset)
     random.Random(0).shuffle(evalset)
-    # trainset = trainset[:2]
-    # evalset = evalset[:2]
+    trainset = trainset[:2]
+    evalset = evalset[:2]
 
     log.info(f"trainset size: {len(trainset)}")
     log.info(f"evalset size: {len(evalset)}")

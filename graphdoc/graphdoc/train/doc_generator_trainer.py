@@ -1,6 +1,7 @@
 # system packages
 import io
 import logging
+import math
 from typing import Any, Dict, List, Tuple
 
 # internal packages
@@ -49,9 +50,17 @@ class DocGeneratorTrainer(SinglePromptTrainerRunner):
     # def get_prompt_signature(self, prompt) -> dspy.Signature:
     #     pass
 
+    def _calculate_average_score(self, evaluation): 
+        examples = evaluation["results"]
+        total = 0
+        for ex in examples: 
+            rating = math.sqrt(ex[2]) * 25
+            total += rating
+        return round(total / len(examples), 2)
+
     def _log_evaluation_metrics(self, base_evaluation, optimized_evaluation) -> None:
-        base_evaluation_overall_score = base_evaluation["overall_score"]
-        optimized_evaluation_overall_score = optimized_evaluation["overall_score"]
+        base_evaluation_overall_score = self._calculate_average_score(base_evaluation)
+        optimized_evaluation_overall_score = self._calculate_average_score(optimized_evaluation)
 
         mlflow.log_metrics(
             {
@@ -99,6 +108,18 @@ class DocGeneratorTrainer(SinglePromptTrainerRunner):
         base_evaluation, optimized_evaluation = self.evaluate_training(
             base_model, optimized_model
         )
+
+        # log the prompts
+        base_signature = self.get_prompt_signature(base_model)
+        optimized_signature = self.get_prompt_signature(optimized_model)
+        base_prompt = self.par.format_signature_prompt(
+            signature=base_signature, signature_type="doc_generation"
+        )
+        optimized_prompt = self.par.format_signature_prompt(
+            signature=optimized_signature, signature_type="doc_generation"
+        )
+        mlflow.log_text(base_prompt, "base_prompt.txt")
+        mlflow.log_text(optimized_prompt, "optimized_prompt.txt")
 
         if save_model and optimized_model:
             self.save_model(optimized_model)
