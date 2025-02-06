@@ -11,6 +11,7 @@ import dspy
 from graphql import parse, print_ast
 
 # configure logging
+
 log = logging.getLogger(__name__)
 
 
@@ -46,11 +47,14 @@ class DocGeneratorModule(dspy.Module):
                 log.warning(f"Ran into error while attempting to compute rating: {e}") # TODO: better logic
                 return dspy.Prediction(rating=self.rating_threshold)
         
-        retries = 0
+        database_schema = self._predict(database_schema=database_schema).documented_schema
+        retries = 0 
+        rating = 0 
         while retries < self.retry_limit: 
             while rating < self.rating_threshold:
                 retries += 1
                 rating_prediction = _try_rating(database_schema=database_schema)
+                log.info(f"Current rating (attempt #{retries}): {rating}")
                 rating = rating_prediction.rating
 
                 if self.generator_prompt.metric_type.type == "chain_of_thought": 
@@ -58,10 +62,10 @@ class DocGeneratorModule(dspy.Module):
                     reason_database_schema = f"# The documentation was previously generated and received a low quality rating because of the following reasoning: {reason}. Remove this comment in the documentation you generate\n" + database_schema
                 else: 
                     reason_database_schema = f"# This documentation was considered {rating_prediction.category}, please attempt again to generate the documentation properly. Remove this comment in the documentation you generate\n" + database_schema
-                database_schema = self.forward(database_schema=reason_database_schema)
+                database_schema = self._predict(database_schema=reason_database_schema)
         return database_schema
 
-    def forward(
+    def _predict(
         self, database_schema: str
     ) -> Union[
         dspy.Prediction, None
@@ -100,6 +104,12 @@ class DocGeneratorModule(dspy.Module):
             return dspy.Prediction(
                 documented_schema=database_schema
             )  # we should handle retry logic here
+    
+    def forward(self, database_schema: str) -> Union[dspy.Prediction, None]:
+        if self.retry:
+            database_schema = self._retry_by_rating(database_schema=database_schema)
+        else:
+            return self._predict(database_schema=database_schema)
 
     def document_full_schema(
         self, database_schema: str
