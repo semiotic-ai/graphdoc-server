@@ -8,7 +8,7 @@ import random
 from graphdoc.loader.helper import load_dspy_model
 from graphdoc.modules.schema_doc_generator import DocGeneratorModule
 from graphdoc.train import DocQualityTrainer
-from graphdoc.prompts import DocQualityPrompt
+from graphdoc.prompts import DocQualityPrompt, DocGeneratorPrompt
 from graphdoc import GraphDoc, DataHelper, load_yaml_config
 
 # external packages
@@ -68,35 +68,58 @@ if __name__ == "__main__":
     log.info(f"trainset size: {len(trainset)}")
     log.info(f"evalset size: {len(evalset)}")
 
+    
+    # TODO: all of this will be refactored to enable loading from config for specific mlflow model
     # load the gen prompt
     doc_generator_prompt = gd._get_nested_single_prompt(
         config_path=args.config_path,
         metric_config_path=args.metric_config_path,
     )
 
-    # dataset = gd.dh._load_from_hf()
-    # evalset = gd.dh._create_graph_doc_example_trainset(
-    #     dataset["train"].train_test_split(0.2)["test"]
-    # )
-
-    # results = doc_generator_prompt.evaluate_evalset(
-    #     examples=evalset,
-    # )
-
-    # log.info(results)
-
     # load the most recent version of the doc_quality_prompt and set as the metrci 
-    metric_prompt = load_dspy_model(
+    metric_prompt = load_dspy_model( # this loads an initialized model (CoT, etc.)
         model_name=metric_config["trainer"]["mlflow_model_name"],
         latest_version=True
     )
-    doc_generator_prompt.metric_type = metric_prompt
 
-    metric_signature = get_prompt_signature(doc_generator_prompt.metric_type)
+    # initialize the DocQualityPrompt object
+    metric_signature = get_prompt_signature(metric_prompt)
+    dqp = DocQualityPrompt(
+        type=doc_generator_prompt.metric_type.type,
+        metric_type=doc_generator_prompt.metric_type.metric_type,  # type: ignore
+        prompt=metric_signature
+    )
+
+    # set the metric type
+    doc_generator_prompt.metric_type = dqp
+
+    # print out the set metric prompt to check
+    test_metric_signature = get_prompt_signature(doc_generator_prompt.metric_type.infer)
     base_prompt = gd.dh.par.format_signature_prompt(
-            signature=metric_signature, signature_type="doc_generation"
+            signature=test_metric_signature, signature_type="doc_generation"
     )
     log.info(f"using metric prompt: {base_prompt}")
+
+    # load in the most recent version of doc_generator_prompt
+    generator_prompt = load_dspy_model( # this loads an initialized model (CoT, etc.)
+        model_name=config["trainer"]["mlflow_model_name"],
+        latest_version=True
+    )
+
+    # initialize the DocQualityPrompt object
+    generator_signature = get_prompt_signature(generator_prompt)
+    dgp = DocGeneratorPrompt(
+        metric_type=doc_generator_prompt.metric_type,  # type: ignore
+        type=doc_generator_prompt.type,
+        prompt=generator_signature
+    )
+
+    test_generator_signature = get_prompt_signature(dgp.infer)
+    base_gen_prompt = gd.dh.par.format_signature_prompt(
+            signature=test_generator_signature, signature_type="doc_generation"
+    )
+    log.info(f"using generator prompt: {base_gen_prompt}")
+
 
     # init the DocGeneratorModule
     dgm = DocGeneratorModule(generator_prompt=doc_generator_prompt, retry=True)
