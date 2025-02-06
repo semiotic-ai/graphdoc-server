@@ -1,1 +1,0 @@
-{'class': 'DocQualityTrainer', 'optimizer_type': 'BootstrapFewShotWithRandomSearch', 'mlflow_tracking_uri': 'REDACTED', 'mlflow_model_name': 'doc_quality_model_zero_shot', 'mlflow_experiment_name': 'doc_quality_experiment_zero_shot', 'mlflow_load_model': False}
