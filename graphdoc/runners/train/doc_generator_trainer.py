@@ -9,8 +9,10 @@ import random
 from graphdoc.train import DocQualityTrainer
 from graphdoc.prompts import DocQualityPrompt
 from graphdoc import GraphDoc, DataHelper, load_yaml_config
+from graphdoc.loader import load_dspy_model
 
 # external packages
+import dspy
 import mlflow
 from dotenv import load_dotenv
 
@@ -21,6 +23,14 @@ log = logging.getLogger(__name__)
 load_dotenv("../.env")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 HF_DATASET_KEY = os.getenv("HF_DATASET_KEY")
+
+def get_prompt_signature(prompt) -> dspy.Signature:
+    if isinstance(prompt, dspy.ChainOfThought):
+        return prompt.predict.signature
+    elif isinstance(prompt, dspy.Predict):
+        return prompt.signature
+    else:
+        raise ValueError(f"Invalid prompt type: {type(prompt)}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train a document quality model.")
@@ -61,7 +71,8 @@ if __name__ == "__main__":
     evalset = gd.dh._create_doc_generator_example_trainset(split["test"])
     random.Random(0).shuffle(trainset)
     random.Random(0).shuffle(evalset)
-
+    trainset = trainset[:2]
+    evalset = evalset[:2]
     log.info(f"trainset size: {len(trainset)}")
     log.info(f"evalset size: {len(evalset)}")
 
@@ -70,6 +81,19 @@ if __name__ == "__main__":
         config_path=args.config_path,
         metric_config_path=args.metric_config_path,
     )
+
+    # load the most recent version of the doc_quality_prompt and set as the metrci 
+    metric_prompt = load_dspy_model(
+        model_name=metric_config["trainer"]["mlflow_model_name"],
+        latest_version=True
+    )
+    doc_generator_prompt.metric_type = metric_prompt
+
+    metric_signature = get_prompt_signature(doc_generator_prompt.metric_type)
+    base_prompt = gd.dh.par.format_signature_prompt(
+            signature=metric_signature, signature_type="doc_generation"
+    )
+    log.info(f"using metric prompt: {base_prompt}")
 
     # trainer
     doc_generator_trainer = gd._get_single_trainer(
