@@ -33,3 +33,5 @@ optimizer:
   # trainset: this is the dataset we are working with 
   max_labeled_demos: 0
   max_bootstrapped_demos: 4
+  num_trials: 1
+  minibatch: false # default true
