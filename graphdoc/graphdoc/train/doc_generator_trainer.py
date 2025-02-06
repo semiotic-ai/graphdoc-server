@@ -90,18 +90,21 @@ class DocGeneratorTrainer(SinglePromptTrainerRunner):
             self.prompt = DocGeneratorPrompt(
                 type=self.prompt.type,  # type: ignore
                 metric_type=self.prompt.metric_type,  # type: ignore
+                prompt=self.get_prompt_signature(base_model) # TODO: double check this is what we want, but i am pretty sure it is
             )  # we could have this be compained with run_trainer to have one function mapped together
         else:
             base_model = self.prompt.infer
+
         optimized_model = self.run_trainer()
         base_evaluation, optimized_evaluation = self.evaluate_training(
             base_model, optimized_model
         )
+
+        if save_model and optimized_model:
+            self.save_model(optimized_model)
+
         if self._compare_models(base_evaluation, optimized_evaluation):
-            if save_model and optimized_model:
-                self.save_model(optimized_model)
                 log.info("Model training successful, saving model")
-            return optimized_model
         else:
             log.info("Trained model did not improve on base model")
-            return optimized_model
+        return optimized_model
