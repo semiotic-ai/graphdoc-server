@@ -44,8 +44,13 @@ class SinglePromptTrainerRunner(ABC):
         mlflow.set_tracking_uri(self.mlflow_tracking_uri)
         mlflow.dspy.autolog()
         log.info(f"Setting MLFlow experiment to {self.mlflow_experiment_name}")
-        mlflow.set_experiment(self.mlflow_experiment_name)
+        experiment = mlflow.set_experiment(self.mlflow_experiment_name)
         self.mlflow_client = mlflow.MlflowClient()
+
+        log.info(f"Experiment_id: {experiment.experiment_id}")
+        log.info(f"Artifact Location: {experiment.artifact_location}")
+        log.info(f"Tags: {experiment.tags}")
+        log.info(f"Lifecycle_stage: {experiment.lifecycle_stage}")
 
         # internal packages
         self.par = Parser()

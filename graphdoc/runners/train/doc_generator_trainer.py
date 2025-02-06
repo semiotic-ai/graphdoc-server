@@ -1,6 +1,8 @@
 # system packages
 import os
+import logging
 import argparse
+import random
 
 # internal packages
 from graphdoc.train import DocQualityTrainer
@@ -8,6 +10,7 @@ from graphdoc.prompts import DocQualityPrompt
 from graphdoc import GraphDoc, DataHelper, load_yaml_config
 
 # external packages
+import mlflow
 from dotenv import load_dotenv
 
 # logging
@@ -48,24 +51,33 @@ if __name__ == "__main__":
         cache=lm_cache,
     )
 
-    # get_single_prompt(
-    #     prompt: Union[str, dspy.Signature],
-    #     prompt_class: str,
-    #     prompt_type: str,
-    #     prompt_metric: Union[str, DocQualityPrompt, SinglePrompt],
-    # )
+    # data
+    dataset = gd.dh._folder_of_folders_to_dataset()
+    log.info(f"dataset size: {len(dataset)}")
 
-    # _get_single_trainer(
-    #     self,
-    #     config_path: Union[str, Path],
-    #     trainset: List[dspy.Example],
-    #     evalset: List[dspy.Example],
-    #     prompt: Optional[dspy.Signature] = None,
-    # )
+    split = dataset.train_test_split(0.1)
+    trainset = gd.dh._create_doc_generator_example_trainset(split["train"])
+    evalset = gd.dh._create_doc_generator_example_trainset(split["test"])
+    random.Random(0).shuffle(trainset)
+    random.Random(0).shuffle(evalset)
+    # trainset = trainset[:2]
+    # evalset = evalset[:2]
 
+    log.info(f"trainset size: {len(trainset)}")
+    log.info(f"evalset size: {len(evalset)}")
+
+    # prompt
     doc_generator_prompt = gd._get_nested_single_prompt(
         config_path=args.config_path,
         metric_config_path=args.metric_config_path,
     )
 
-    # doc_generator_trainer = gd._
+    # trainer
+    doc_generator_trainer = gd._get_single_trainer(
+        config_path=args.config_path,
+        trainset=trainset,
+        evalset=evalset,
+        prompt=doc_generator_prompt,
+    )   
+
+    doc_generator_trainer.run_training()

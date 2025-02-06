@@ -58,8 +58,12 @@ commit_ci_command() {
 }
 
 # training scripts 
-train_single_prompt_quality_train_command() {
+train_single_prompt_quality_command() {
     poetry run python runners/train/doc_quality_trainer.py --config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
+}
+
+train_single_prompt_quality_command() {
+    poetry run python runners/train/doc_generator_trainer.py --config-path ../assets/configs/single_prompt_schema_doc_generator_trainer.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
 }
 
 # eval scripts
@@ -102,7 +106,8 @@ show_help() {
     echo "  dev                    Install development dependencies"
 
     # training scripts
-    echo "  train-single-prompt-quality-train Run single prompt quality training"
+    echo "  train-single-prompt-quality Run single prompt quality training"
+    echo "  train-single-prompt-generator Run single prompt quality training"
 
     # eval scripts
     echo "  eval-single-prompt-doc-generator Run single prompt doc generator evaluation"
@@ -133,7 +138,9 @@ else
         "dev") dev_command ;;
 
         # training scripts
-        "train-single-prompt-quality-train") train_single_prompt_quality_train_command ;;
+        "train-single-prompt-quality") train_single_prompt_quality_command ;;
+        "train-single-prompt-generator") train_single_prompt_quality_command ;;
+
 
         # eval scripts
         "eval-single-prompt-doc-generator") eval_single_prompt_doc_generator_command ;;

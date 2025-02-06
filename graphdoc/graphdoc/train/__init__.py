@@ -4,6 +4,7 @@ from typing import Any, Dict, List
 # internal packages
 from .single_prompt_trainer import SinglePromptTrainerRunner
 from .doc_quality_trainer import DocQualityTrainer
+from .doc_generator_trainer import DocGeneratorTrainer
 from ..prompts import SinglePrompt
 
 # external packages
@@ -42,6 +43,7 @@ class TrainerFactory:
 
         trainer_classes = {
             "DocQualityTrainer": DocQualityTrainer,
+            "DocGeneratorTrainer": DocGeneratorTrainer,
         }
         if trainer_class not in trainer_classes:
             raise ValueError(f"Unknown trainer class: {trainer_class}")
