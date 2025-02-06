@@ -54,6 +54,7 @@ if __name__ == "__main__":
     lm_model_name = config["language_model"]["lm_model_name"]
     lm_api_key = config["language_model"]["lm_api_key"]
     lm_cache = config["language_model"]["cache"]
+    mlflow_load_model = config["trainer"]["mlflow_load_model"]  # : true # Whether to load the most recent model from MLflow
 
     gd = GraphDoc(
         model=lm_model_name,
@@ -83,15 +84,26 @@ if __name__ == "__main__":
     )
 
     # load the most recent version of the doc_quality_prompt and set as the metrci 
-    metric_prompt = load_dspy_model(
+    metric_prompt = load_dspy_model( # this loads an initialized model (CoT, etc.)
         model_name=metric_config["trainer"]["mlflow_model_name"],
         latest_version=True
     )
-    doc_generator_prompt.metric_type = metric_prompt
 
-    metric_signature = get_prompt_signature(doc_generator_prompt.metric_type)
+    # initialize the DocQualityPrompt object
+    metric_signature = get_prompt_signature(metric_prompt)
+    dqp = DocQualityPrompt(
+        type=doc_generator_prompt.metric_type.type,
+        metric_type=doc_generator_prompt.metric_type.metric_type,  # type: ignore
+        prompt=metric_signature
+    )
+
+    # set the metric type
+    doc_generator_prompt.metric_type = dqp
+
+    # print out the set metric prompt to check
+    test_metric_signature = get_prompt_signature(doc_generator_prompt.metric_type.infer)
     base_prompt = gd.dh.par.format_signature_prompt(
-            signature=metric_signature, signature_type="doc_generation"
+            signature=test_metric_signature, signature_type="doc_generation"
     )
     log.info(f"using metric prompt: {base_prompt}")
 
@@ -110,4 +122,4 @@ if __name__ == "__main__":
     report_config["trainer"]["mlflow_tracking_uri"] = "REDACTED"
     mlflow.log_params(report_config)
 
-    doc_generator_trainer.run_training()
+    doc_generator_trainer.run_training(load_model=mlflow_load_model, save_model=True)

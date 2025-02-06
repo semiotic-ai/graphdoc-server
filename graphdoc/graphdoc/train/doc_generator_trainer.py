@@ -56,7 +56,7 @@ class DocGeneratorTrainer(SinglePromptTrainerRunner):
         for ex in examples: 
             rating = math.sqrt(ex[2]) * 25
             total += rating
-        return round(total / len(examples), 2)
+        return round(total / len(examples), 6)
 
     def _log_evaluation_metrics(self, base_evaluation, optimized_evaluation) -> None:
         base_evaluation_overall_score = self._calculate_average_score(base_evaluation)
@@ -70,6 +70,9 @@ class DocGeneratorTrainer(SinglePromptTrainerRunner):
         )
         log.info(f"Base Evaluation: {base_evaluation}")
         log.info(f"Optimized Evaluation: {optimized_evaluation}")
+        mlflow.log_dict(base_evaluation, "base_evaluation.json")
+        mlflow.log_dict(optimized_evaluation, "optimized_evaluation.json")
+
 
     def evaluate_training(
         self, base_model, optimized_model
