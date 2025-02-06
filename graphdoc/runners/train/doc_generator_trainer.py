@@ -68,8 +68,6 @@ if __name__ == "__main__":
         return example['category'] in ['perfect', 'almost perfect']
     dataset = gd.dh._folder_of_folders_to_dataset()
     dataset = dataset.filter(filter_by_category)
-    # dataset = gd.dh._folder_to_dataset(category="perfect")
-
     log.info(f"dataset size: {len(dataset)}")
 
     split = dataset.train_test_split(0.1)
@@ -77,8 +75,6 @@ if __name__ == "__main__":
     evalset = gd.dh._create_doc_generator_example_trainset(split["test"])
     random.Random(0).shuffle(trainset)
     random.Random(0).shuffle(evalset)
-    trainset = trainset[:2]
-    evalset = evalset[:2]
     log.info(f"trainset size: {len(trainset)}")
     log.info(f"evalset size: {len(evalset)}")
     log.info(f"train example: {trainset[0]}")
