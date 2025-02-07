@@ -39,6 +39,27 @@ class DocGeneratorSignature(dspy.Signature):
         desc="The database schema with proper documentation, ensuring that the underlying schema is not altered."
     )
 
+class DocGeneratorHelperSignature(dspy.Signature):
+    """
+    ### TASK:
+    Analyze the provided GraphQL Schema and generate detailed yet concise descriptions for each field within the database tables and enums. 
+    
+    ### Requirements:
+    - If the field is unclear, and the documentation result is ambiguous, request additional information: "WARNING: Please provide additional information to avoid confusion".
+    - Utilize only the verified information from the schema to ensure accuracy.
+    - Descriptions should be factual, straightforward, and avoid any speculative language.
+    - Refrain from using the phrase "in the { table } table" within your descriptions.
+    - Ensure that the documentation adheres to standard schema formatting without modifying the underlying schema structure.
+    
+    ### Formatting:
+    - Maintain consistency with the existing documentation style and structure.
+    - Focus on clarity and precision to aid developers and system architects in understanding the schema's components effectively. 
+    """
+
+    database_schema: str = dspy.InputField()
+    documented_schema: str = dspy.OutputField(
+        desc="The database schema with proper documentation, ensuring that the underlying schema is not altered."
+    )
 
 class BadDocGeneratorSignature(dspy.Signature):
     """
@@ -65,6 +86,7 @@ def doc_gen_factory(key: Union[str, dspy.Signature]):
         return key
     factory = {
         "zero_shot_doc_gen": DocGeneratorSignature,
+        "doc_gen_helper": DocGeneratorHelperSignature,
         "bad_doc_gen": BadDocGeneratorSignature,
     }
     return factory[key]
