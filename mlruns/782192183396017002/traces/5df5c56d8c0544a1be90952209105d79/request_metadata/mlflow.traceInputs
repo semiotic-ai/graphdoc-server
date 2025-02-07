@@ -1,0 +1,1 @@
+{"database_schema": "\"Description for enum type: RewardTokenType\"\nenum RewardTokenType {\n  \"Description for column: DEPOSIT\"\n  DEPOSIT\n  \"Description for column: BORROW\"\n  BORROW\n}"}

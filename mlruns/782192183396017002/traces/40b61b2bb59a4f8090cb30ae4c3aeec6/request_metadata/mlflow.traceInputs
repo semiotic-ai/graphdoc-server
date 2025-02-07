@@ -1,0 +1,1 @@
+{"database_schema": "\"Description for table: SupportedToken\"\ntype SupportedToken @entity(immutable: true) {\n  \"Unique identifier for the supported token, stored as binary data.\"\n  id: Bytes!\n}"}

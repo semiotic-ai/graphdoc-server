@@ -1,0 +1,1 @@
+{"database_schema": "\"Description for table: _PositionCounter\"\ntype _PositionCounter @entity {\n  \"Unique identifier for the position counter\"\n  id: Bytes!\n  \"List of unique position identifiers\"\n  uniquePositions: [Bytes!]!\n}"}

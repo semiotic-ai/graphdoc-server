@@ -1,0 +1,1 @@
+{"database_schema": "\"Description for enum type: Revocability\"\nenum Revocability {\n  \"Description for column: NotSet\"\n  NotSet\n  \"Description for column: Enabled\"\n  Enabled\n  \"Description for column: Disabled\"\n  Disabled\n}"}

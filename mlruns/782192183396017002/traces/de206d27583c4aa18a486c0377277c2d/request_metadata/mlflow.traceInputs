@@ -1,0 +1,1 @@
+{"database_schema": "\"Description for enum type: TokenType\"\nenum TokenType {\n  \"Indicates a token that adjusts its supply periodically.\"\n  REBASING\n  \"Indicates a token with a fixed supply that does not adjust.\"\n  NON_REBASING\n}"}

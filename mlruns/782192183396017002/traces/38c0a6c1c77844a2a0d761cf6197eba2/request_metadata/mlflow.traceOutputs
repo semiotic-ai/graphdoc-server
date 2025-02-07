@@ -1,0 +1,1 @@
+{"documented_schema": "\"Description for table: _MarketList\"\ntype _MarketList @entity {\n  \"Unique identifier for the market list entry\"\n  id: Bytes!\n  \"List of market identifiers associated with the market list\"\n  markets: [Bytes!]!\n}"}

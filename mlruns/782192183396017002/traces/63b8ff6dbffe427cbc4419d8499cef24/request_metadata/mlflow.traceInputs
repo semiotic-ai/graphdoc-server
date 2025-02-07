@@ -1,0 +1,1 @@
+{"database_schema": "\"Description for enum type: InterestRateSide\"\nenum InterestRateSide {\n  \"Description for column: LENDER\"\n  LENDER\n  \"Description for column: BORROWER\"\n  BORROWER\n}"}

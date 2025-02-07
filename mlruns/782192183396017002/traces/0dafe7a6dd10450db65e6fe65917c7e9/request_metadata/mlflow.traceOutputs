@@ -1,0 +1,1 @@
+{"documented_schema": "\"Description for enum type: LendingType\"\nenum LendingType {\n  \"Description for column: CDP\"\n  CDP\n  \"Description for column: POOLED\"\n  POOLED\n}"}

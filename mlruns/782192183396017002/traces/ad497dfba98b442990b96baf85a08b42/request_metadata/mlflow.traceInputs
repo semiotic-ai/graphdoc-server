@@ -1,0 +1,1 @@
+{"database_schema": "\"Description for enum type: Tranche\"\nenum Tranche {\n  \"Description for column: SENIOR\"\n  SENIOR\n  \"Description for column: JUNIOR\"\n  JUNIOR\n}"}

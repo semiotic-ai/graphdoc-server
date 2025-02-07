@@ -169,3 +169,6 @@ assets/ignore/
 
 # mlruns 
 mlruns/0/traces
+
+# other outputs 
+eval_results/

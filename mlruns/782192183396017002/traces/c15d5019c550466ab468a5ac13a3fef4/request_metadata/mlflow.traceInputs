@@ -1,0 +1,1 @@
+{"database_schema": "\"Description for enum type: TokenType\"\nenum TokenType {\n  \"Description for column: REBASING\"\n  REBASING\n  \"Description for column: NON_REBASING\"\n  NON_REBASING\n}"}

@@ -1,0 +1,1 @@
+{"database_schema": "\"Description for enum type: NameSystem\"\nenum NameSystem {\n  \"Description for column: ENS\"\n  ENS\n}"}

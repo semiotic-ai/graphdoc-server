@@ -1,0 +1,1 @@
+{"documented_schema": "\"Description for table: Account\"\ntype Account @entity @regularPolling {\n  \"Description for column: id\"\n  id: ID!\n}"}

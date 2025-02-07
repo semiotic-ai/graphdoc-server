@@ -1,0 +1,1 @@
+{"database_schema": "\"Description for table: _TokenWhitelist\"\ntype _TokenWhitelist @entity {\n  \"Description for column: id\"\n  id: Bytes!\n  \"Description for column: whitelistPools\"\n  whitelistPools: [LiquidityPool!]!\n}"}

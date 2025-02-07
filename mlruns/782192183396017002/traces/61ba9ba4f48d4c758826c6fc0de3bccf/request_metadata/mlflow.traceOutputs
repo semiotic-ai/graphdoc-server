@@ -1,0 +1,1 @@
+{"documented_schema": "\"Description for table: Composable\"\ntype Composable @entity {\n  \"Unique identifier for the Composable entity\"\n  id: ID!\n  \"List of associated ComposableItem entities\"\n  items: [ComposableItem!]\n}"}

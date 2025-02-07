@@ -1,0 +1,1 @@
+{"documented_schema": "\"Description for enum type: PoolType\"\nenum PoolType {\n  \"Represents a pool type associated with Eigen pods.\"\n  EIGEN_POD\n  \"Represents a pool type associated with strategies.\"\n  STRATEGY\n}"}

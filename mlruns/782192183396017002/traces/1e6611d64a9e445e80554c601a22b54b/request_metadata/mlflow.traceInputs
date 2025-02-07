@@ -1,0 +1,1 @@
+{"database_schema": "\"Description for table: ActiveAccount\"\ntype ActiveAccount @entity(immutable: true) {\n  \"Description for column: id\"\n  id: Bytes!\n}"}

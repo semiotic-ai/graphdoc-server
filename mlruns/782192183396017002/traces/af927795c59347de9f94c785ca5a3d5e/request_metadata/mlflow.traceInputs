@@ -1,0 +1,1 @@
+{"database_schema": "\"Description for enum type: PollChoice\"\nenum PollChoice @entity {\n  \"Description for column: Yes\"\n  Yes\n  \"Description for column: No\"\n  No\n}"}

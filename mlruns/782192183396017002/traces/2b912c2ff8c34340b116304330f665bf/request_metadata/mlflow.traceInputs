@@ -1,0 +1,1 @@
+{"database_schema": "\"Description for enum type: PositionSide\"\nenum PositionSide {\n  \"Description for column: COLLATERAL\"\n  COLLATERAL\n  \"Description for column: BORROWER\"\n  BORROWER\n}"}

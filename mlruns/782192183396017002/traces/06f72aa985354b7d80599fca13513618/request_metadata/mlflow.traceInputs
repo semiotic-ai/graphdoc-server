@@ -1,0 +1,1 @@
+{"database_schema": "\"Description for enum type: TranscoderStatus\"\nenum TranscoderStatus @entity {\n  \"Description for column: NotRegistered\"\n  NotRegistered\n  \"Description for column: Registered\"\n  Registered\n}"}
