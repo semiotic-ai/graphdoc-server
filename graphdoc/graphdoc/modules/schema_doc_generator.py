@@ -35,6 +35,7 @@ class DocGeneratorModule(dspy.Module):
         # database_schema: str = dspy.InputField()
         # documented_schema: str = dspy.OutputField()
 
+    # retry: back-off: we should use this for our calls. 
     def _retry_by_rating(self, database_schema: str): 
         if self.generator_prompt.metric_type.metric_type != "rating": # TODO: we should handle this better
             raise ValueError("Generator Prompt must have a DocQualityPrompt initialized with a rating metric type")
@@ -65,7 +66,7 @@ class DocGeneratorModule(dspy.Module):
                     log.info(f"Retry improved rating quality to meet threshold (attempt #{retries + 1})")
                 return pred_database_schema
 
-            # if the rating is below the threshold, prepare for a retry
+            # if the rating is below the threshold, prepare for a retry 
             if self.generator_prompt.metric_type.type == "chain_of_thought": 
                 log.info(f"The rating prediction is (attempt #{retries + 1}): {rating_prediction}")
                 log.info(f"Adding reasoning returned from the rating prediction")

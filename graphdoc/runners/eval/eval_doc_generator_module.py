@@ -17,6 +17,7 @@ from graphdoc import GraphDoc, DataHelper, load_yaml_config
 from dotenv import load_dotenv
 from graphql import parse, print_ast
 import dspy
+import mlflow
 from runners.train.doc_generator_trainer import get_prompt_signature
 
 # Global Variables
@@ -50,6 +51,7 @@ if __name__ == "__main__":
     lm_model_name = config["language_model"]["lm_model_name"]
     lm_api_key = config["language_model"]["lm_api_key"]
     lm_cache = config["language_model"]["cache"]
+    mlflow_tracking_uri = config["trainer"]["mlflow_tracking_uri"]
 
     gd = GraphDoc(
         model=lm_model_name,
@@ -57,23 +59,16 @@ if __name__ == "__main__":
         hf_api_key=HF_DATASET_KEY,
         cache=lm_cache,
     )
-    
-    # data
-    # dataset = gd.dh._folder_of_folders_to_dataset(parse_objects=False) 
+
+    mlflow.set_tracking_uri(mlflow_tracking_uri)
+    mlflow.set_experiment("DocGenModule Eval")
+    mlflow.dspy.autolog()
+
     schema_path = gd.dh._blank_schema_folder()
     schema_objects = gd.dh.schemas_folder(category="blank", rating="0", folder_path=schema_path)
     dataset = gd.dh._schema_objects_to_dataset(schema_objects, parse_objects=False)
     log.info(f"dataset size: {len(dataset)}")
     evalset = gd.dh._create_doc_generator_example_trainset(dataset)
-
-    # split = dataset.train_test_split(0.1)
-    # trainset = gd.dh._create_doc_generator_example_trainset(split["train"])
-    # evalset = gd.dh._create_doc_generator_example_trainset(split["test"])
-    # random.Random(0).shuffle(trainset)
-    # random.Random(0).shuffle(evalset)
-    # trainset = trainset[:2]
-    # evalset = evalset[:1]
-    # log.info(f"trainset size: {len(trainset)}")
     log.info(f"evalset size: {len(evalset)}")
 
     
@@ -145,53 +140,59 @@ if __name__ == "__main__":
     os.makedirs(example_dir)
     os.makedirs(pred_dir)
 
-    # TODO: all of this needs to be refactored
-    eval = evalset[0]
+    with mlflow.start_run():
+        # TODO: log parameters (when we have configured DocGenModule to be able to load abitrarily from mlflow)
+        # TODO: all of this needs to be refactored
+        eval = evalset[0]
 
-    avg_component_rating = []
-    doc_rating = []
-    for i in range(len(evalset)): 
-        eval = evalset[i]
-        pred = dgm.document_full_schema(database_schema=eval.database_schema)
-        pred_ast = parse(pred.documented_schema)
-        exs = []
-        ratings = []
-        for node in pred_ast.definitions: 
-            ex = dspy.Example(
-                database_schema=print_ast(node)
-            ).with_inputs("database_schema")
-            p = dspy.Prediction(
-                database_schema=print_ast(node),
-                documented_schema=print_ast(node)
-            ).with_inputs("database_schema")
-            rating_pred = dgm.generator_prompt.evaluate_documentation_quality(ex, p)
-            rating = math.sqrt(rating_pred) * 25
-            ratings.append(rating)
-        overal_rating = dgm.generator_prompt.evaluate_documentation_quality(
-            dspy.Example(
-                database_schema=eval.database_schema
-            ).with_inputs("database_schema"),
-            dspy.Prediction(
-                database_schema=eval.database_schema,
-                documented_schema=pred.documented_schema
-            ).with_inputs("database_schema")
-        )
-        average_rating = sum(ratings) / len(ratings)
-        log.info(f"Average component score: {average_rating}")
-        log.info(f"Overal document rating: {math.sqrt(overal_rating)}")
-        avg_component_rating.append(average_rating)
-        doc_rating.append(overal_rating)
+        avg_component_rating = []
+        doc_rating = []
+        for i in range(len(evalset)): 
+            eval = evalset[i]
+            pred = dgm.document_full_schema(database_schema=eval.database_schema)
+            pred_ast = parse(pred.documented_schema)
+            exs = []
+            ratings = []
+            for node in pred_ast.definitions: 
+                ex = dspy.Example(
+                    database_schema=print_ast(node)
+                ).with_inputs("database_schema")
+                p = dspy.Prediction(
+                    database_schema=print_ast(node),
+                    documented_schema=print_ast(node)
+                ).with_inputs("database_schema")
+                rating_pred = dgm.generator_prompt.evaluate_documentation_quality(ex, p)
+                rating = math.sqrt(rating_pred) * 25
+                if rating == 25:
+                    log.info(f"Rating of 1 being returned, setting to 0") 
+                    rating = 0 
+                ratings.append(rating)
+            overal_rating = dgm.generator_prompt.evaluate_documentation_quality(
+                dspy.Example(
+                    database_schema=eval.database_schema
+                ).with_inputs("database_schema"),
+                dspy.Prediction(
+                    database_schema=eval.database_schema,
+                    documented_schema=pred.documented_schema
+                ).with_inputs("database_schema")
+            )
+            average_rating = sum(ratings) / len(ratings)
+            log.info(f"Average component score: {average_rating}")
+            log.info(f"Overal document rating: {math.sqrt(overal_rating)}")
+            # mlflow.log_metric("average_component_rating", average_rating)
+            # mlflow.log_metric("overal_document_rating", math.sqrt(overal_rating))
+            avg_component_rating.append(average_rating)
+            doc_rating.append(math.sqrt(overal_rating))
 
-        with open(example_dir + f"example_{i}.graphql", "w") as f: 
-            f.write(eval.database_schema)
-        with open(pred_dir + f"pred_{i}.graphql", "w") as f: 
-            f.write(pred.documented_schema)
-    
-    log.info(f"doc component ratings: {avg_component_rating}")
-    log.info(f"doc overal ratings: {doc_rating}")
-    
-    # with open("base_doc_gen_module.graphql", "w") as f: 
-    #     f.write(eval.database_schema)
+            with open(example_dir + f"example_{i}.graphql", "w") as f: 
+                f.write(eval.database_schema)
+            with open(pred_dir + f"pred_{i}.graphql", "w") as f: 
+                f.write(pred.documented_schema)
+        
+        log.info(f"doc component ratings: {avg_component_rating}")
+        log.info(f"doc overal ratings: {doc_rating}")
+        mlflow.log_dict({"doc_component_ratings": avg_component_rating}, "doc_component_ratings.json")
+        mlflow.log_dict({"doc_overal_ratings": doc_rating}, "doc_overal_ratings.json")
 
-    # with open("pred_doc_gen_module.graphql", "w") as f: 
-    #     f.write(pred.documented_schema)
+        mlflow.log_metric(f"average_component_rating", sum(avg_component_rating) / len(avg_component_rating))
+        mlflow.log_metric(f"overal_document_rating", sum(doc_rating) / len(doc_rating))
