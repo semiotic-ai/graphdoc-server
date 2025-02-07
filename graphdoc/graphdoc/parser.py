@@ -106,6 +106,41 @@ class Parser:
             elif isinstance(child, Node):
                 self.update_node_descriptions(child, new_value)
         return node
+    
+    def count_description_pattern_matching(self, node: Node, pattern: str) -> int:
+        counts = {
+            "total": 0,
+            "pattern": 0,
+            "empty": 0,
+        }
+
+        def update_counts(node: Node, counts: dict):
+            if hasattr(node, "description"):
+                description = getattr(node, "description", None)
+                counts["total"] += 1
+                if description is None: 
+                    counts["empty"] += 1
+                elif pattern in description.value:
+                    counts["pattern"] += 1
+            return counts
+
+        def traverse(node: Node, counts: dict):
+            counts = update_counts(node, counts)
+
+            for attr in dir(node):
+                if attr.startswith("__") or attr == "description":
+                    continue
+                child = getattr(node, attr, None)
+                if isinstance(child, (list, tuple)):
+                    for item in child:
+                        if isinstance(item, Node):
+                            traverse(item, counts)
+                elif isinstance(child, Node):
+                    traverse(child, counts)
+            return counts
+
+        counts = traverse(node, counts)
+        return counts
 
     def fill_empty_descriptions(
         self,
