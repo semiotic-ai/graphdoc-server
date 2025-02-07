@@ -56,13 +56,23 @@ if __name__ == "__main__":
         metric_config_path=args.metric_config_path,
     )
 
-    dataset = gd.dh._load_from_hf()
-    evalset = gd.dh._create_graph_doc_example_trainset(
-        dataset["train"].train_test_split(0.2)["test"]
-    )
+    # dataset = gd.dh._load_from_hf()
+    # evalset = gd.dh._create_graph_doc_example_trainset(
+    #     dataset["train"].train_test_split(0.2)["test"]
+    # )
+    schema_path = gd.dh._blank_schema_folder()
+    schema_objects = gd.dh.schemas_folder(category="blank", rating="0", folder_path=schema_path)
+    dataset = gd.dh._schema_objects_to_dataset(schema_objects, parse_objects=True)
+    log.info(f"dataset size: {len(dataset)}")
+    schema_type = "table schema"
+    filtered_dataset = dataset.filter(lambda example: example["schema_type"] == schema_type)
+    evalset = gd.dh._create_doc_generator_example_trainset(filtered_dataset)
+
+    log.info(f"evalset size: {len(evalset)}")
 
     results = doc_generator_prompt.evaluate_evalset(
-        examples=evalset,
+        examples=evalset[:1],
     )
 
     log.info(results)
+    log.info(results["results"][0][1].documented_schema)
