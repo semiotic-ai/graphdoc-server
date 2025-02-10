@@ -40,3 +40,9 @@ class TestLoader:
         flow = fl.load_model_by_uri(model_uri)
         assert flow is not None
         assert isinstance(flow, dspy.ChainOfThought)
+
+    def test_get_prompt_type(self, fl: FlowLoader):
+        model_uri = "file:///Users/denver/Documents/code/graph/graphdoc/mlruns/513408250948216117/976d330558344c41b30bd1531571de18/artifacts/model"
+        flow = fl.load_model_by_uri(model_uri)
+        prompt_type = fl.get_prompt_type(flow)
+        assert prompt_type == "chain_of_thought"
