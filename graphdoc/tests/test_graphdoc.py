@@ -10,7 +10,6 @@ from graphdoc import load_yaml_config
 # external packages
 
 # logging
-# logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 # Define the base directory (project root)
