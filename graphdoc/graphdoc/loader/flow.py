@@ -2,6 +2,7 @@
 import logging
 
 # internal packages
+import dspy
 
 # external packages
 import mlflow
@@ -15,6 +16,14 @@ class FlowLoader:
         self.mlflow_tracking_uri = mlflow_tracking_uri
         self.mlflow_client = mlflow.MlflowClient(tracking_uri=str(mlflow_tracking_uri))
         mlflow.set_tracking_uri(str(mlflow_tracking_uri))    
+
+    def get_prompt_type(self, prompt): 
+        if isinstance(prompt, dspy.Predict):
+            return "predict"
+        elif isinstance(prompt, dspy.ChainOfThought):
+            return "chain_of_thought"
+        else:
+            raise ValueError(f"Not a registered prompt type: {type(prompt)}")
 
     def load_latest_version(self, model_name: str):
         model_latest_version = self.mlflow_client.get_latest_versions(model_name)        
