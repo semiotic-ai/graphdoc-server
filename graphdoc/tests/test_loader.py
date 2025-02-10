@@ -1,4 +1,6 @@
 # system packages
+import ast
+import json
 import logging
 from pathlib import Path
 
@@ -46,3 +48,10 @@ class TestLoader:
         flow = fl.load_model_by_uri(model_uri)
         prompt_type = fl.get_prompt_type(flow)
         assert prompt_type == "chain_of_thought"
+
+    def test_run_parameters(self, fl: FlowLoader):
+        run_id = "976d330558344c41b30bd1531571de18"
+        run_parameters = fl.run_parameters(run_id)
+        assert run_parameters is not None
+        assert isinstance(run_parameters, dict)
+        assert run_parameters["prompt"]["metric"] == "DocQualityPrompt"
