@@ -67,7 +67,7 @@ if __name__ == "__main__":
         evalset=evalset,  # prompt: dspy.Signature
     )
 
-    # make sure we don't log keys    
+    # make sure we don't log keys
     report_config = copy.deepcopy(config)
     report_config["language_model"]["lm_api_key"] = "REDACTED"
     report_config["data"]["hf_api_key"] = "REDACTED"
@@ -75,5 +75,3 @@ if __name__ == "__main__":
     mlflow.log_params(report_config)
 
     doc_quality_trainer.run_training(load_model=mlflow_load_model)
-
-

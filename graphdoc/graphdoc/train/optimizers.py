@@ -30,7 +30,7 @@ def optimizer_class(optimizer_type: str, optimizer_kwargs: Dict[str, Any]):
                 optimizer_kwargs=optimizer_kwargs,
             )
         )
-    elif optimizer_type == "BootstrapFewShotWithRandomSearch": 
+    elif optimizer_type == "BootstrapFewShotWithRandomSearch":
         # metric: Callable (this is a function that takes a prediction and an example)
         # teacher_settings (dict, optional): Settings for the teacher predictor. Defaults to an empty dictionary.
         # max_bootstrapped_demos (int, optional): Maximum number of bootstrapped demonstrations per predictor. Defaults to 4.
@@ -43,7 +43,9 @@ def optimizer_class(optimizer_type: str, optimizer_kwargs: Dict[str, Any]):
         # metric_threshold (float, optional): Score threshold for the metric to determine a successful example. Defaults to None.
         return dspy.BootstrapFewShotWithRandomSearch(
             **_optimizer_kwargs_filter(
-                init_signature=inspect.signature(dspy.BootstrapFewShotWithRandomSearch.__init__),
+                init_signature=inspect.signature(
+                    dspy.BootstrapFewShotWithRandomSearch.__init__
+                ),
                 optimizer_kwargs=optimizer_kwargs,
             )
         )

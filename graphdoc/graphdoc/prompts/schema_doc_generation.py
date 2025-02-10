@@ -39,27 +39,29 @@ class DocGeneratorSignature(dspy.Signature):
         desc="The database schema with proper documentation, ensuring that the underlying schema is not altered."
     )
 
+
 class DocGeneratorHelperSignature(dspy.Signature):
     """
     ### TASK:
-    Analyze the provided GraphQL Schema and generate detailed yet concise descriptions for each field within the database tables and enums. 
-    
+    Analyze the provided GraphQL Schema and generate detailed yet concise descriptions for each field within the database tables and enums.
+
     ### Requirements:
     - If the field is unclear, and the documentation result is ambiguous, request additional information: "WARNING: Please provide additional information to avoid confusion".
     - Utilize only the verified information from the schema to ensure accuracy.
     - Descriptions should be factual, straightforward, and avoid any speculative language.
     - Refrain from using the phrase "in the { table } table" within your descriptions.
     - Ensure that the documentation adheres to standard schema formatting without modifying the underlying schema structure.
-    
+
     ### Formatting:
     - Maintain consistency with the existing documentation style and structure.
-    - Focus on clarity and precision to aid developers and system architects in understanding the schema's components effectively. 
+    - Focus on clarity and precision to aid developers and system architects in understanding the schema's components effectively.
     """
 
     database_schema: str = dspy.InputField()
     documented_schema: str = dspy.OutputField(
         desc="The database schema with proper documentation, ensuring that the underlying schema is not altered."
     )
+
 
 class BadDocGeneratorSignature(dspy.Signature):
     """
@@ -140,7 +142,9 @@ class DocGeneratorPrompt(SinglePrompt):
         # we use the instantiated metric type to evaluate the quality of the documentation
         evaluation = self.metric_type.infer(database_schema=pred.documented_schema)
         log.info(f"evaluate_documentation_quality: Evaluation: {evaluation.rating}")
-        return evaluation.rating ** 2 # MSE: not really, but the same idea, scale the value based on difference from descired score
+        return (
+            evaluation.rating**2
+        )  # MSE: not really, but the same idea, scale the value based on difference from descired score
 
     # abstract methods
     def evaluate_metric(

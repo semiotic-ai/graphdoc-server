@@ -76,7 +76,9 @@ def load_dspy_model(
     try:
         if latest_version:
             model_latest_version = mlflow_client.get_latest_versions(model_name)
-            log.info(f"Loaded latest version of {model_name} at {model_latest_version[0].source}")
+            log.info(
+                f"Loaded latest version of {model_name} at {model_latest_version[0].source}"
+            )
             return mlflow.dspy.load_model(model_latest_version[0].source)
         else:
             log.info(f"Tried to loading dspy model {model_name} with version {version}")
