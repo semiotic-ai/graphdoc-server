@@ -4,6 +4,7 @@ from pathlib import Path
 
 # internal packages
 from graphdoc.loader.helper import load_dspy_model
+from graphdoc import FlowLoader
 
 # external packages
 import dspy
@@ -28,3 +29,14 @@ class TestLoader:
         )
         assert mlflow_model is not None
         assert isinstance(mlflow_model, dspy.ChainOfThought)
+
+    def test_load_flow_latest_version(self, fl: FlowLoader):
+        flow = fl.load_latest_version(model_name="doc_generator_model")
+        assert flow is not None
+        assert isinstance(flow, dspy.ChainOfThought)
+
+    def test_load_model_by_uri(self, fl: FlowLoader):
+        model_uri = "file:///Users/denver/Documents/code/graph/graphdoc/mlruns/513408250948216117/976d330558344c41b30bd1531571de18/artifacts/model"
+        flow = fl.load_model_by_uri(model_uri)
+        assert flow is not None
+        assert isinstance(flow, dspy.ChainOfThought)
