@@ -1,4 +1,5 @@
 # system packages
+import ast
 import logging
 
 # internal packages
@@ -36,3 +37,11 @@ class FlowLoader:
         except Exception as e:
             log.error(f"Error loading model from {model_uri}: {e}")
             raise e
+
+    def get_run_parameters(self, run_id: str):
+        run = self.mlflow_client.get_run(run_id)
+        
+        # go through and convert the nested dictionaries to actual dictionaries (as they are currently strings)
+        for key, value in run.data.params.items():
+            run.data.params[key] = ast.literal_eval(value)
+        return run.data.params
