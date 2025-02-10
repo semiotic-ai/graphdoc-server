@@ -62,7 +62,6 @@ def setup_logging(
         handlers=[logging.StreamHandler()],
     )
 
-
 def load_dspy_model(
     model_name: str,
     latest_version: bool = True,
