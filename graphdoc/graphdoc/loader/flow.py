@@ -38,7 +38,7 @@ class FlowLoader:
             log.error(f"Error loading model from {model_uri}: {e}")
             raise e
 
-    def get_run_parameters(self, run_id: str):
+    def run_parameters(self, run_id: str):
         run = self.mlflow_client.get_run(run_id)
         
         # go through and convert the nested dictionaries to actual dictionaries (as they are currently strings)
