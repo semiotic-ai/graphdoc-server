@@ -92,6 +92,11 @@ generate_poor_data_command() {
     poetry run python runners/data/poor_data_generator.py --config-path ../assets/configs/single_prompt_schema_bad_doc_generator_trainer.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
 }
 
+# serve scripts
+serve_doc_generator_module_command() {
+    poetry run python runners/serve/serve_doc_generator_module.py --config-path ../assets/configs/single_prompt_schema_doc_generator_module.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
+}
+
 show_help() {
     echo "Usage: ./nli [option]"
     echo "Options:"
@@ -122,6 +127,9 @@ show_help() {
     echo "  local-data-update       Upload local data to the Hugging Face Hub"
     echo "  generate-bad-data       Generate bad data for evaluation"
     echo "  generate-poor-data      Generate poor data for evaluation"
+
+    # serve scripts
+    echo "  serve-doc-generator-module Run the doc generator module"
 }
 
 if [ -z "$1" ]; then
@@ -156,6 +164,9 @@ else
         "local-data-update") local_data_update_command ;;
         "generate-bad-data") generate_bad_data_command ;;
         "generate-poor-data") generate_poor_data_command ;;
+
+        # serve scripts
+        "serve-doc-generator-module") serve_doc_generator_module_command ;;
         *) show_help ;;
     esac
 fi
