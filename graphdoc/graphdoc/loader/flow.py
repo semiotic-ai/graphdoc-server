@@ -45,3 +45,12 @@ class FlowLoader:
         for key, value in run.data.params.items():
             run.data.params[key] = ast.literal_eval(value)
         return run.data.params
+    
+    @staticmethod
+    def get_prompt_signature(prompt) -> dspy.Signature:
+        if isinstance(prompt, dspy.ChainOfThought):
+            return prompt.predict.signature
+        elif isinstance(prompt, dspy.Predict):
+            return prompt.signature
+        else:
+            raise ValueError(f"Invalid prompt type: {type(prompt)}")
