@@ -93,6 +93,7 @@ def gd() -> GraphDoc:
             api_key=OPENAI_API_KEY,
             hf_api_key=HF_DATASET_KEY,
             cache=CACHE,
+            mlflow_tracking_uri=MLFLOW_DIR,
         )
     else:
         log.warning(
