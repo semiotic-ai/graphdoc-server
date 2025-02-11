@@ -2,12 +2,14 @@
 import logging
 import argparse
 import os
+from pathlib import Path
 
 # internal packages 
 from graphdoc import GraphDoc
 from graphdoc import load_yaml_config
 
 # external packages 
+import dspy
 
 # logging 
 log = logging.getLogger(__name__)
@@ -49,15 +51,28 @@ if __name__ == "__main__":
     )
 
     # load the doc generator module (must be from the mlflow)
-    module = gd.doc_generator_module(args.config_path, args.metric_config_path)
+    module = gd.doc_generator_module_from_mlflow(args.config_path, args.metric_config_path)
 
     # save module details 
     module_name = config["module"]["module_name"]
     save_module = config["module"]["save_module"]
+    load_module = config["module"]["load_module"]
+    # mlflow_tracking_uri = config["trainer"]["mlflow_tracking_uri"]
+    mlflow_tracking_uri = "/Users/denver/Documents/code/graph/graphdoc/mlruns"
+    mlflow_module_path = Path(mlflow_tracking_uri) / "modules" / module_name  
 
     if save_module:
-        os.makedirs("test", exist_ok=True)
-        gd.save("test", True)
+        os.makedirs(mlflow_module_path, exist_ok=True)
+        module.save(mlflow_module_path, True)
+    # if load_module:
+        # module = dspy.load(mlflow_module_path)
+
+    trainset = gd.dh.blank_trainset()
+    prediction = module.forward(trainset[1].database_schema)
+    log.info(prediction)
+
+    # serve the module
+    # module.serve(port=5000)
 
 
     # load the doc generator module

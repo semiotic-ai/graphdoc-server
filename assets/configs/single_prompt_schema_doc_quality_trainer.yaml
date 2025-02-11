@@ -16,8 +16,8 @@ prompt:
   class: SchemaDocQualityPrompt # Must be a child of SinglePrompt (we will use an enum to map this)
   type: chain_of_thought # The type of prompt to use (predict, chain_of_thought)
   metric: rating # The type of metric to use (rating, category)
-  load_from_uri: false # Whether to load the prompt from an MLFlow URI
-  mlflow_uri: null # The tracking URI for MLflow
+  load_from_uri: true # Whether to load the prompt from an MLFlow URI
+  mlflow_uri: file:///Users/denver/Documents/code/graph/graphdoc/mlruns/113281354219570660/639710d056054cdea5c86459f2357df2/artifacts/model # The tracking URI for MLflow
 
 trainer: 
   class: DocQualityTrainer # The type of trainer to use (DocQualityTrainer)

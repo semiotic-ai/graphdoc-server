@@ -829,7 +829,18 @@ class DataHelper:
                 )
         else:
             raise ValueError("No dataset found")
-
+        
+    # load and return the blank schema folder
+    def blank_trainset(self) -> List[Example]:
+        schema_path = self._blank_schema_folder()
+        schema_objects = self.schemas_folder(
+            category="blank", rating="0", folder_path=schema_path
+        )
+        dataset = self._schema_objects_to_dataset(schema_objects, parse_objects=False)
+        log.info(f"dataset size: {len(dataset)}")
+        trainset = self._create_doc_generator_example_trainset(dataset)
+        log.info(f"trainset size: {len(trainset)}")
+        return trainset
 
 # TODO: we could make this a subclass in the future if we start to add more datasets
 # class DocQualityDataHelper(DataHelper):

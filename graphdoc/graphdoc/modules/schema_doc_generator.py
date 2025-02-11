@@ -26,6 +26,8 @@ class DocGeneratorModule(dspy.Module):
         retry_limit: int = 1,
         rating_threshold: int = 3,
     ) -> None:
+        super().__init__()  
+
         self.generator_prompt = generator_prompt
         self.fill_empty_descriptions = fill_empty_descriptions
         self.retry = retry
