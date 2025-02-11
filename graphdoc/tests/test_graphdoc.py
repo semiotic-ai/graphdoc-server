@@ -82,7 +82,7 @@ class TestGraphdoc:
         prompt = gd.nested_prompt_from_mlflow(config_path, metric_config_path)
         assert isinstance(prompt, DocGeneratorPrompt)
 
-    def test_doc_generator_module(self, gd: GraphDoc):
+    def test_doc_generator_module_from_mlflow(self, gd: GraphDoc):
         config_path = (
             BASE_DIR
             / "graphdoc"

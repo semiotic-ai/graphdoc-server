@@ -235,7 +235,7 @@ class GraphDoc:
         except Exception as e:
             raise ValueError(f"Failed to load nested prompt from MLFlow: {e}")
         
-    def doc_generator_module(self, config_path: Union[str, Path], metric_config_path: Union[str, Path]):
+    def doc_generator_module_from_mlflow(self, config_path: Union[str, Path], metric_config_path: Union[str, Path]):
         doc_generator_prompt = self.nested_prompt_from_mlflow(config_path, metric_config_path)
         doc_generator_module = DocGeneratorModule(doc_generator_prompt)
         return doc_generator_module
