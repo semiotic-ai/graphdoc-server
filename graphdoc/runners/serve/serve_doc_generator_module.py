@@ -10,8 +10,10 @@ from graphdoc import load_yaml_config
 
 # external packages 
 import dspy
+import mlflow
 
 # logging 
+logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 if __name__ == "__main__":
@@ -40,6 +42,11 @@ if __name__ == "__main__":
     lm_cache = config["language_model"]["cache"]
     mlflow_tracking_uri = config["trainer"]["mlflow_tracking_uri"]
     hf_api_key = config["data"]["hf_api_key"]
+    mlflow_experiment_name = config["module"]["experiment_name"]
+
+    # track the mlflow experiment
+    mlflow.set_tracking_uri(mlflow_tracking_uri)
+    mlflow.set_experiment(mlflow_experiment_name)
 
     # initialize the GraphDoc object
     gd = GraphDoc(
@@ -57,19 +64,39 @@ if __name__ == "__main__":
     module_name = config["module"]["module_name"]
     save_module = config["module"]["save_module"]
     load_module = config["module"]["load_module"]
-    # mlflow_tracking_uri = config["trainer"]["mlflow_tracking_uri"]
-    mlflow_tracking_uri = "/Users/denver/Documents/code/graph/graphdoc/mlruns"
+    mlflow_tracking_uri = config["trainer"]["mlflow_tracking_uri"]
+    mlflow_tracking_uri = mlflow_tracking_uri.replace("file://", "")
+    # mlflow_tracking_uri = "/Users/denver/Documents/code/graph/graphdoc/mlruns"
     mlflow_module_path = Path(mlflow_tracking_uri) / "modules" / module_name  
 
-    if save_module:
-        os.makedirs(mlflow_module_path, exist_ok=True)
-        module.save(mlflow_module_path, True)
-    # if load_module:
-        # module = dspy.load(mlflow_module_path)
+    with mlflow.start_run():
+        log.info(f"Starting run {mlflow.active_run().info.run_id}")
+        log.info(f"save_module: {save_module}")
+        log.info(f"load_module: {load_module}")
+        trainset = gd.dh.blank_trainset()
+        if save_module:
+            log.info(f"Saving module to {mlflow_module_path}")
+            os.makedirs(mlflow_module_path, exist_ok=True)
+            module.save(mlflow_module_path, True)
+            mlflow.dspy.log_model(
+                module,
+                "doc_generator_module",
+                input_example=trainset[0].toDict(),
+                task=None,
+            )
+        if load_module:
+            log.info(f"Loading module from {mlflow_module_path}")
+            module = dspy.load(mlflow_module_path)
+            # module = gd.fl.load_model_by_uri("/Users/denver/Documents/code/graph/graphdoc/mlruns/454536219902836119/f05ee299f6f84ee2971693eb155e5bf1/artifacts/doc_generator_module")
+            # mlflow models serve -m /Users/denver/Documents/code/graph/graphdoc/mlruns/612951484798863978/233c983acf724d9fa983aacf8073de7d/artifacts/doc_generator_module -p 6000
+            
+            log.info(f"Module loaded {type(module)}: {module}")
 
-    trainset = gd.dh.blank_trainset()
-    prediction = module.forward(trainset[1].database_schema)
-    log.info(prediction)
+        prediction = module.forward(trainset[0].database_schema)
+        log.info("--------------------------------")
+        log.info(f"Prediction: {prediction}")
+        log.info("--------------------------------")
+
 
     # serve the module
     # module.serve(port=5000)

@@ -94,7 +94,7 @@ generate_poor_data_command() {
 
 # serve scripts
 serve_doc_generator_module_command() {
-    poetry run python runners/serve/serve_doc_generator_module.py --config-path ../assets/configs/single_prompt_schema_doc_generator_module.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
+    poetry run python runners/serve/serve_doc_generator_module.py --config-path ../assets/configs/single_prompt_schema_doc_generator_module.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml 
 }
 
 show_help() {

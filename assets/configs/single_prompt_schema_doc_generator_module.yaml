@@ -42,6 +42,7 @@ module:
   module_name: doc_generator_module # The name of the module to use
   save_module: true # Whether to save the module to the mlflow_uri
   load_module: true # Whether to load the module from the mlflow_uri
+  experiment_name: doc_generator_module # The name of the experiment to use
 
 server: 
   serve: true # Whether to serve the module
