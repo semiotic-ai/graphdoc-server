@@ -1,5 +1,5 @@
 # system packages
-from typing import Union
+from typing import Optional, Union
 
 # internal packages
 from .schema_doc_quality import DocQualityPrompt, DocQualitySignature
