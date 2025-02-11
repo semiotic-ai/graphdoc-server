@@ -12,11 +12,14 @@ def server():
     """Start the server for integration tests."""
     # Start the server
     server_process = subprocess.Popen(
-        ["./run_prod.sh"], preexec_fn=os.setsid  # Creates a new process group
+        ["./run.sh", "prod"],
+        preexec_fn=os.setsid,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
 
     # Wait for server to start
-    time.sleep(2)
+    time.sleep(5)
 
     yield server_process
 

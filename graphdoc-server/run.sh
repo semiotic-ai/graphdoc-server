@@ -4,9 +4,9 @@
 set -e
 
 # Default values
-CONFIG_PATH=""
-METRIC_CONFIG_PATH=""
-PORT=5000
+CONFIG_PATH="../assets/configs/single_prompt_schema_doc_generator_module.yaml"
+METRIC_CONFIG_PATH="../assets/configs/single_prompt_schema_doc_quality_trainer.yaml"
+PORT=6000
 WORKERS=4
 
 # Function to display usage
