@@ -106,8 +106,10 @@ class Parser:
             elif isinstance(child, Node):
                 self.update_node_descriptions(child, new_value)
         return node
-    
-    def count_description_pattern_matching(self, node: Node, pattern: str) -> int:
+
+    def count_description_pattern_matching(
+        self, node: Node, pattern: str
+    ) -> dict[str, int]:
         counts = {
             "total": 0,
             "pattern": 0,
@@ -118,7 +120,7 @@ class Parser:
             if hasattr(node, "description"):
                 description = getattr(node, "description", None)
                 counts["total"] += 1
-                if description is None: 
+                if description is None:
                     counts["empty"] += 1
                 elif pattern in description.value:
                     counts["pattern"] += 1

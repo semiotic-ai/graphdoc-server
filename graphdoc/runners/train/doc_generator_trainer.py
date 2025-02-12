@@ -24,6 +24,7 @@ load_dotenv("../.env")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 HF_DATASET_KEY = os.getenv("HF_DATASET_KEY")
 
+
 def get_prompt_signature(prompt) -> dspy.Signature:
     if isinstance(prompt, dspy.ChainOfThought):
         return prompt.predict.signature
@@ -31,6 +32,7 @@ def get_prompt_signature(prompt) -> dspy.Signature:
         return prompt.signature
     else:
         raise ValueError(f"Invalid prompt type: {type(prompt)}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train a document quality model.")
@@ -54,7 +56,9 @@ if __name__ == "__main__":
     lm_model_name = config["language_model"]["lm_model_name"]
     lm_api_key = config["language_model"]["lm_api_key"]
     lm_cache = config["language_model"]["cache"]
-    mlflow_load_model = config["trainer"]["mlflow_load_model"]  # : true # Whether to load the most recent model from MLflow
+    mlflow_load_model = config["trainer"][
+        "mlflow_load_model"
+    ]  # : true # Whether to load the most recent model from MLflow
 
     gd = GraphDoc(
         model=lm_model_name,
@@ -65,7 +69,8 @@ if __name__ == "__main__":
 
     # data
     def filter_by_category(example):
-        return example['category'] in ['perfect', 'almost perfect']
+        return example["category"] in ["perfect", "almost perfect"]
+
     dataset = gd.dh._folder_of_folders_to_dataset()
     dataset = dataset.filter(filter_by_category)
     log.info(f"dataset size: {len(dataset)}")
@@ -86,10 +91,9 @@ if __name__ == "__main__":
         metric_config_path=args.metric_config_path,
     )
 
-    # load the most recent version of the doc_quality_prompt and set as the metrci 
-    metric_prompt = load_dspy_model( # this loads an initialized model (CoT, etc.)
-        model_name=metric_config["trainer"]["mlflow_model_name"],
-        latest_version=True
+    # load the most recent version of the doc_quality_prompt and set as the metrci
+    metric_prompt = load_dspy_model(  # this loads an initialized model (CoT, etc.)
+        model_name=metric_config["trainer"]["mlflow_model_name"], latest_version=True
     )
 
     # initialize the DocQualityPrompt object
@@ -97,7 +101,7 @@ if __name__ == "__main__":
     dqp = DocQualityPrompt(
         type=doc_generator_prompt.metric_type.type,
         metric_type=doc_generator_prompt.metric_type.metric_type,  # type: ignore
-        prompt=metric_signature
+        prompt=metric_signature,
     )
 
     # set the metric type
@@ -106,7 +110,7 @@ if __name__ == "__main__":
     # print out the set metric prompt to check
     test_metric_signature = get_prompt_signature(doc_generator_prompt.metric_type.infer)
     base_prompt = gd.dh.par.format_signature_prompt(
-            signature=test_metric_signature, signature_type="doc_generation"
+        signature=test_metric_signature, signature_type="doc_generation"
     )
     log.info(f"using metric prompt: {base_prompt}")
 
@@ -116,9 +120,9 @@ if __name__ == "__main__":
         trainset=trainset,
         evalset=evalset,
         prompt=doc_generator_prompt,
-    )   
+    )
 
-    # make sure we don't log keys    
+    # make sure we don't log keys
     report_config = copy.deepcopy(config)
     report_config["language_model"]["lm_api_key"] = "REDACTED"
     report_config["data"]["hf_api_key"] = "REDACTED"

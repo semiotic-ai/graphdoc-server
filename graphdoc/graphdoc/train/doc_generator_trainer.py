@@ -50,17 +50,19 @@ class DocGeneratorTrainer(SinglePromptTrainerRunner):
     # def get_prompt_signature(self, prompt) -> dspy.Signature:
     #     pass
 
-    def _calculate_average_score(self, evaluation): 
+    def _calculate_average_score(self, evaluation):
         examples = evaluation["results"]
         total = 0
-        for ex in examples: 
+        for ex in examples:
             rating = math.sqrt(ex[2]) * 25
             total += rating
         return round(total / len(examples), 6)
 
     def _log_evaluation_metrics(self, base_evaluation, optimized_evaluation) -> None:
         base_evaluation_overall_score = self._calculate_average_score(base_evaluation)
-        optimized_evaluation_overall_score = self._calculate_average_score(optimized_evaluation)
+        optimized_evaluation_overall_score = self._calculate_average_score(
+            optimized_evaluation
+        )
 
         mlflow.log_metrics(
             {
@@ -72,7 +74,6 @@ class DocGeneratorTrainer(SinglePromptTrainerRunner):
         log.info(f"Optimized Evaluation: {optimized_evaluation}")
         mlflow.log_dict(base_evaluation, "base_evaluation.json")
         mlflow.log_dict(optimized_evaluation, "optimized_evaluation.json")
-
 
     def evaluate_training(
         self, base_model, optimized_model
@@ -102,7 +103,9 @@ class DocGeneratorTrainer(SinglePromptTrainerRunner):
             self.prompt = DocGeneratorPrompt(
                 type=self.prompt.type,  # type: ignore
                 metric_type=self.prompt.metric_type,  # type: ignore
-                prompt=self.get_prompt_signature(base_model) # TODO: double check this is what we want, but i am pretty sure it is
+                prompt=self.get_prompt_signature(
+                    base_model
+                ),  # TODO: double check this is what we want, but i am pretty sure it is
             )  # we could have this be compained with run_trainer to have one function mapped together
         else:
             base_model = self.prompt.infer
@@ -128,7 +131,7 @@ class DocGeneratorTrainer(SinglePromptTrainerRunner):
             self.save_model(optimized_model)
 
         if self._compare_models(base_evaluation, optimized_evaluation):
-                log.info("Model training successful, saving model")
+            log.info("Model training successful, saving model")
         else:
             log.info("Trained model did not improve on base model")
         return optimized_model

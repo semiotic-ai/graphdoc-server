@@ -4,13 +4,13 @@ from pathlib import Path
 
 # internal packages
 from graphdoc import GraphDoc, DataHelper
-from graphdoc import DocQualityTrainer, SinglePrompt
+from graphdoc import DocQualityTrainer, SinglePrompt, DocQualityPrompt, DocGeneratorPrompt
 from graphdoc import load_yaml_config
+from graphdoc import DocGeneratorModule
 
 # external packages
 
 # logging
-# logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 # Define the base directory (project root)
@@ -49,3 +49,55 @@ class TestGraphdoc:
         config = load_yaml_config(config_path)
         trainer = gd._get_single_trainer(config_path, trainset, evalset)
         assert isinstance(trainer, DocQualityTrainer)
+
+    def test_prompt_from_mlflow(self, gd: GraphDoc):
+        config_path = (
+            BASE_DIR
+            / "graphdoc"
+            / "tests"
+            / "assets"
+            / "configs"
+            / "single_prompt_schema_doc_quality_trainer.yaml"
+        )
+        prompt = gd.prompt_from_mlflow(config_path)
+        assert isinstance(prompt, DocQualityPrompt)
+
+    def test_nested_prompt_from_mlflow(self, gd: GraphDoc):
+        config_path = (
+            BASE_DIR
+            / "graphdoc"
+            / "tests"
+            / "assets"
+            / "configs"
+            / "single_prompt_schema_doc_generator_trainer.yaml"
+        )
+        metric_config_path = (
+            BASE_DIR
+            / "graphdoc"
+            / "tests"
+            / "assets"
+            / "configs"
+            / "single_prompt_schema_doc_quality_trainer.yaml"
+        )
+        prompt = gd.nested_prompt_from_mlflow(config_path, metric_config_path)
+        assert isinstance(prompt, DocGeneratorPrompt)
+
+    def test_doc_generator_module_from_mlflow(self, gd: GraphDoc):
+        config_path = (
+            BASE_DIR
+            / "graphdoc"
+            / "tests"
+            / "assets"
+            / "configs"
+            / "single_prompt_schema_doc_generator_trainer.yaml"
+        )
+        metric_config_path = (
+            BASE_DIR
+            / "graphdoc"
+            / "tests"
+            / "assets"
+            / "configs"
+            / "single_prompt_schema_doc_quality_trainer.yaml"
+        )
+        module = gd.doc_generator_module(config_path, metric_config_path)
+        assert isinstance(module, DocGeneratorModule)

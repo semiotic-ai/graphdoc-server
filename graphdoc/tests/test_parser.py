@@ -77,7 +77,7 @@ class TestParser:
         assert par.schema_equality_check(gold_schema, silver_schema)
         assert par.schema_equality_check(gold_schema, check_schema) is False
 
-    def test_count_description_pattern_matching(self, par: Parser): 
+    def test_count_description_pattern_matching(self, par: Parser):
         gold_schema_file = "opensea_original_schema_pattern.graphql"
         gold_schema = par.parse_schema_from_file(gold_schema_file)
         counts = par.count_description_pattern_matching(gold_schema, "test")

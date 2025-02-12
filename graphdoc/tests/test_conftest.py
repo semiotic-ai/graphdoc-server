@@ -7,6 +7,7 @@ from graphdoc import GraphDoc
 from graphdoc import DocQuality
 from graphdoc import Parser
 from graphdoc import DataHelper
+from graphdoc import FlowLoader
 
 # external packages
 import pytest
@@ -44,3 +45,6 @@ class TestConftest:
         assert isinstance(trainset, list)
         assert isinstance(trainset[0], Example)
         assert len(trainset) > 0
+
+    def test_flow_loader(self, fl: FlowLoader):
+        assert isinstance(fl, FlowLoader)

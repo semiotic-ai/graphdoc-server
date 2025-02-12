@@ -8,7 +8,9 @@ from .evaluate import DocQuality
 from .loader.helper import load_yaml_config, setup_logging
 from .train import TrainerFactory
 from .prompts import PromptFactory, SinglePrompt
+from .modules import DocGeneratorModule
 from .data import DataHelper
+from .loader import FlowLoader
 
 # external packages
 import dspy
@@ -28,6 +30,7 @@ class GraphDoc:
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
         log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO",
+        mlflow_tracking_uri: Optional[str] = None,
     ) -> None:
         setup_logging(log_level)
         log.info(
@@ -53,6 +56,12 @@ class GraphDoc:
 
         # initialize data helper
         self.dh = DataHelper(hf_api_key=hf_api_key)
+
+        # initialize flow loader
+        if mlflow_tracking_uri is not None:
+            self.fl = FlowLoader(mlflow_tracking_uri)
+        else: 
+            self.fl = None
 
     ############
     # TRAINING #
@@ -191,3 +200,42 @@ class GraphDoc:
         except Exception as e:
             raise ValueError(f"Failed to initialize trainer class: {e}")
         return trainer
+
+    #######################
+    # Loaging from MLFlow #
+    #######################
+    def prompt_from_mlflow(self, config_path: Union[str, Path]):
+        # load_from_uri: false # Whether to load the prompt from an MLFlow URI
+        # mlflow_uri: null # The tracking URI for MLflow
+        config = load_yaml_config(config_path)
+        try:
+            if config["prompt"]["load_from_uri"]:
+                if self.fl is None: 
+                    raise ValueError("MLFlow tracking URI not set")
+            mlflow_model_uri = config["prompt"]["mlflow_uri"]
+            prompt = self.fl.load_model_by_uri(mlflow_model_uri)
+            prompt_signature = self.fl.get_prompt_signature(prompt)
+            prompt = PromptFactory.get_single_prompt(prompt_signature, config["prompt"]["class"], config["prompt"]["type"], config["prompt"]["metric"])
+            # mlflow_model_params = mlflow_model_uri[:mlflow_model_uri.rfind('/artifacts/model')] if '/artifacts/model' in mlflow_model_uri else mlflow_model_uri
+            # run_params = self.fl.run_parameters(mlflow_model_params)
+            return prompt
+        except Exception as e:
+            raise ValueError(f"Failed to load prompt from MLFlow: {e}")
+    
+    def nested_prompt_from_mlflow(self, config_path: Union[str, Path], metric_config_path: Union[str, Path]):
+        config = load_yaml_config(config_path)
+        # metric_config = load_yaml_config(metric_config_path)
+        try:
+            metric_prompt = self.prompt_from_mlflow(metric_config_path)
+            mlflow_model_uri = config["prompt"]["mlflow_uri"]
+            prompt = self.fl.load_model_by_uri(mlflow_model_uri)
+            prompt_signature = self.fl.get_prompt_signature(prompt)
+            prompt = PromptFactory.get_single_prompt(prompt_signature, config["prompt"]["class"], config["prompt"]["type"], metric_prompt)
+            return prompt
+        except Exception as e:
+            raise ValueError(f"Failed to load nested prompt from MLFlow: {e}")
+        
+    def doc_generator_module_from_mlflow(self, config_path: Union[str, Path], metric_config_path: Union[str, Path]):
+        doc_generator_prompt = self.nested_prompt_from_mlflow(config_path, metric_config_path)
+        doc_generator_module = DocGeneratorModule(doc_generator_prompt)
+        return doc_generator_module

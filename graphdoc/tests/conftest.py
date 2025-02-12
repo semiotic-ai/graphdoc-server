@@ -8,6 +8,7 @@ from graphdoc import GraphDoc
 from graphdoc import DocQuality
 from graphdoc import Parser
 from graphdoc import DataHelper
+from graphdoc import FlowLoader
 
 # external packages
 from graphdoc.generate import DocGeneratorEval
@@ -28,6 +29,7 @@ CACHE = True
 # Define the base directory (project root)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SCHEMA_DIR = BASE_DIR / "graphdoc" / "tests" / "assets" / "schemas"
+MLFLOW_DIR = Path(BASE_DIR) / "graphdoc" / "tests" / "assets" / "mlruns"
 
 
 #############################
@@ -91,6 +93,7 @@ def gd() -> GraphDoc:
             api_key=OPENAI_API_KEY,
             hf_api_key=HF_DATASET_KEY,
             cache=CACHE,
+            mlflow_tracking_uri=MLFLOW_DIR,
         )
     else:
         log.warning(
@@ -127,3 +130,7 @@ def trainset(dh: DataHelper) -> list[Example]:
     graphdoc_ds = dh._folder_of_folders_to_dataset(parse_objects=False)
     examples = dh._create_graph_doc_example_trainset(graphdoc_ds)
     return examples
+
+@fixture
+def fl() -> FlowLoader:
+    return FlowLoader(mlflow_tracking_uri=MLFLOW_DIR)

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/denver/Documents/code/graph/graphdoc/mlruns/612951484798863978/5e63d2c1ea3d4695a80bc1731f83bd12/artifacts
+end_time: 1739257298614
+entry_point_name: ''
+experiment_id: '612951484798863978'
+lifecycle_stage: active
+run_id: 5e63d2c1ea3d4695a80bc1731f83bd12
+run_name: sedate-midge-271
+run_uuid: 5e63d2c1ea3d4695a80bc1731f83bd12
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1739257297618
+status: 4
+tags: []
+user_id: denver

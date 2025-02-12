@@ -61,11 +61,15 @@ if __name__ == "__main__":
     #     dataset["train"].train_test_split(0.2)["test"]
     # )
     schema_path = gd.dh._blank_schema_folder()
-    schema_objects = gd.dh.schemas_folder(category="blank", rating="0", folder_path=schema_path)
+    schema_objects = gd.dh.schemas_folder(
+        category="blank", rating="0", folder_path=schema_path
+    )
     dataset = gd.dh._schema_objects_to_dataset(schema_objects, parse_objects=True)
     log.info(f"dataset size: {len(dataset)}")
     schema_type = "table schema"
-    filtered_dataset = dataset.filter(lambda example: example["schema_type"] == schema_type)
+    filtered_dataset = dataset.filter(
+        lambda example: example["schema_type"] == schema_type
+    )
     evalset = gd.dh._create_doc_generator_example_trainset(filtered_dataset)
 
     log.info(f"evalset size: {len(evalset)}")

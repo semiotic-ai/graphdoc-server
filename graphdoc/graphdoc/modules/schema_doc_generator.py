@@ -18,12 +18,16 @@ log = logging.getLogger(__name__)
 class DocGeneratorModule(dspy.Module):
     def __init__(
         self,
-        generator_prompt: DocGeneratorPrompt,
+        generator_prompt: Union[
+            DocGeneratorPrompt, SinglePrompt
+        ],  # TODO: not sure if we should actually allow single prompts here
         fill_empty_descriptions: bool = True,
         retry: bool = False,
         retry_limit: int = 1,
         rating_threshold: int = 3,
     ) -> None:
+        super().__init__()  
+
         self.generator_prompt = generator_prompt
         self.fill_empty_descriptions = fill_empty_descriptions
         self.retry = retry
@@ -35,22 +39,30 @@ class DocGeneratorModule(dspy.Module):
         # database_schema: str = dspy.InputField()
         # documented_schema: str = dspy.OutputField()
 
-    # retry: back-off: we should use this for our calls. 
-    def _retry_by_rating(self, database_schema: str): 
-        if self.generator_prompt.metric_type.metric_type != "rating": # TODO: we should handle this better
-            raise ValueError("Generator Prompt must have a DocQualityPrompt initialized with a rating metric type")
-        
+    # retry: back-off: we should use this for our calls.
+    def _retry_by_rating(self, database_schema: str) -> str:
+        if (
+            self.generator_prompt.metric_type.metric_type != "rating"
+        ):  # TODO: we should handle this better
+            raise ValueError(
+                "Generator Prompt must have a DocQualityPrompt initialized with a rating metric type"
+            )
+
         def _try_rating(database_schema):
-            try: 
-                rating_prediction = self.generator_prompt.metric_type.infer(database_schema=database_schema)
+            try:
+                rating_prediction = self.generator_prompt.metric_type.infer(
+                    database_schema=database_schema
+                )
                 return rating_prediction
-            except Exception as e: 
-                log.warning(f"Ran into error while attempting to compute rating: {e}") # TODO: better logic
+            except Exception as e:
+                log.warning(
+                    f"Ran into error while attempting to compute rating: {e}"
+                )  # TODO: better logic
                 return dspy.Prediction(rating=self.rating_threshold)
-        
+
         retries = 0
         rating = 0  # Initialize rating
-
+        pred_database_schema = None
         while retries < self.retry_limit:
             # first pass, generate the documentation
             prediction = self._predict(database_schema=database_schema)
@@ -63,27 +75,44 @@ class DocGeneratorModule(dspy.Module):
 
             if rating >= self.rating_threshold:
                 if retries > 0:
-                    log.info(f"Retry improved rating quality to meet threshold (attempt #{retries + 1})")
+                    log.info(
+                        f"Retry improved rating quality to meet threshold (attempt #{retries + 1})"
+                    )
                 return pred_database_schema
 
-            # if the rating is below the threshold, prepare for a retry 
-            if self.generator_prompt.metric_type.type == "chain_of_thought": 
-                log.info(f"The rating prediction is (attempt #{retries + 1}): {rating_prediction}")
+            # if the rating is below the threshold, prepare for a retry
+            if self.generator_prompt.metric_type.type == "chain_of_thought":
+                log.info(
+                    f"The rating prediction is (attempt #{retries + 1}): {rating_prediction}"
+                )
                 log.info(f"Adding reasoning returned from the rating prediction")
                 reason = rating_prediction.reasoning
-                reason_database_schema = f"# The documentation was previously generated and received a low quality rating because of the following reasoning: {reason}. Remove this comment in the documentation you generate\n" + database_schema
-            else: 
-                reason_database_schema = f"# This documentation was considered {rating_prediction.category}, please attempt again to generate the documentation properly. Remove this comment in the documentation you generate\n" + database_schema
-            
+                reason_database_schema = (
+                    f"# The documentation was previously generated and received a low quality rating because of the following reasoning: {reason}. Remove this comment in the documentation you generate\n"
+                    + database_schema
+                )
+            else:
+                reason_database_schema = (
+                    f"# This documentation was considered {rating_prediction.category}, please attempt again to generate the documentation properly. Remove this comment in the documentation you generate\n"
+                    + database_schema
+                )
+
             database_schema = reason_database_schema
             retries += 1
 
-        log.warning(f"Retry limit reached. Returning the last documented schema with rating: {rating}")
+        log.warning(
+            f"Retry limit reached. Returning the last documented schema with rating: {rating}"
+        )
+        if pred_database_schema is None:
+            log.warning("No documented schema returned from retries")
+            return database_schema
         return pred_database_schema
 
     def _predict(
         self, database_schema: str
-    ) -> dspy.Prediction:  # TODO: we should probably replace what is here with document_full_schema
+    ) -> (
+        dspy.Prediction
+    ):  # TODO: we should probably replace what is here with document_full_schema
         # check that the graphql is valid
         try:
             database_ast = parse(database_schema)
@@ -102,7 +131,7 @@ class DocGeneratorModule(dspy.Module):
         except Exception as e:
             log.warning(f"Error generating schema: {e}")
             return dspy.Prediction(documented_schema=database_schema)
-        
+
         # check that the generated schema is valid
         try:
             prediction_ast = parse(prediction.documented_schema)
@@ -118,7 +147,7 @@ class DocGeneratorModule(dspy.Module):
             return dspy.Prediction(
                 documented_schema=database_schema
             )  # we should handle retry logic here
-    
+
     def forward(self, database_schema: str) -> dspy.Prediction:
         if self.retry:
             database_schema = self._retry_by_rating(database_schema=database_schema)

@@ -152,8 +152,8 @@ class DataHelper:
         :rtype: list
         """
         return ["perfect", "almost perfect", "poor but correct", "incorrect"]
-    
-    def _blank_schema_folder(self) -> Path: 
+
+    def _blank_schema_folder(self) -> Path:
         return Path(self.schema_directory_path) / "blank"
 
     def _folder_paths(self) -> dict:
@@ -264,9 +264,9 @@ class DataHelper:
             )
             tables[object_schema.key] = object_schema
         return tables
-    
+
     def schemas_folder(
-        self, category: str, rating: int, folder_path: Optional[Union[str, Path]]
+        self, category: str, rating: int, folder_path: Union[str, Path]
     ) -> dict[
         str, SchemaObject  # Path, SchemaObject
     ]:  # TODO: just being string is confusing, we can define more explicitly that we are using the Path (and use that type)
@@ -775,8 +775,10 @@ class DataHelper:
         # new
         examples = []
         for record in records:
-            if clean_input: 
-                database_schema = self.par.update_node_descriptions(parse(record["schema_str"]))
+            if clean_input:
+                database_schema = self.par.update_node_descriptions(
+                    parse(record["schema_str"])
+                )
                 database_schema = self.par.fill_empty_descriptions(database_schema)
                 database_schema = print_ast(database_schema)
                 documented_schema = record["schema_str"]
@@ -827,7 +829,18 @@ class DataHelper:
                 )
         else:
             raise ValueError("No dataset found")
-
+        
+    # load and return the blank schema folder
+    def blank_trainset(self) -> List[Example]:
+        schema_path = self._blank_schema_folder()
+        schema_objects = self.schemas_folder(
+            category="blank", rating="0", folder_path=schema_path
+        )
+        dataset = self._schema_objects_to_dataset(schema_objects, parse_objects=False)
+        log.info(f"dataset size: {len(dataset)}")
+        trainset = self._create_doc_generator_example_trainset(dataset)
+        log.info(f"trainset size: {len(trainset)}")
+        return trainset
 
 # TODO: we could make this a subclass in the future if we start to add more datasets
 # class DocQualityDataHelper(DataHelper):

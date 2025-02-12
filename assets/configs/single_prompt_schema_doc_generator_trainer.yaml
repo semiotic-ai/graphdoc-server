@@ -16,6 +16,8 @@ prompt:
   class: DocGeneratorPrompt # Must be a child of SinglePrompt (we will use an enum to map this)
   type: chain_of_thought # The type of prompt to use (predict, chain_of_thought)
   metric: DocQualityPrompt # The type of metric to use (rating, category)
+  load_from_uri: false # Whether to load the prompt from an MLFlow URI
+  mlflow_uri: null # The tracking URI for MLflow
 
 trainer: 
   class: DocGeneratorTrainer # The type of trainer to use (DocQualityTrainer)
@@ -35,3 +37,11 @@ optimizer:
   max_bootstrapped_demos: 4
   num_trials: 25 # 25
   minibatch: true # default true
+
+module: 
+  module_name: doc_generator_module # The name of the module to use
+  save_module: true # Whether to save the module to the mlflow_uri
+
+server: 
+  serve: true # Whether to serve the module
+  port: 5000 # The port to serve the module on

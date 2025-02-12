@@ -65,13 +65,14 @@ if __name__ == "__main__":
     mlflow.dspy.autolog()
 
     schema_path = gd.dh._blank_schema_folder()
-    schema_objects = gd.dh.schemas_folder(category="blank", rating="0", folder_path=schema_path)
+    schema_objects = gd.dh.schemas_folder(
+        category="blank", rating="0", folder_path=schema_path
+    )
     dataset = gd.dh._schema_objects_to_dataset(schema_objects, parse_objects=False)
     log.info(f"dataset size: {len(dataset)}")
     evalset = gd.dh._create_doc_generator_example_trainset(dataset)
     log.info(f"evalset size: {len(evalset)}")
 
-    
     # TODO: all of this will be refactored to enable loading from config for specific mlflow model
     # load the gen prompt
     doc_generator_prompt = gd._get_nested_single_prompt(
@@ -79,10 +80,9 @@ if __name__ == "__main__":
         metric_config_path=args.metric_config_path,
     )
 
-    # load the most recent version of the doc_quality_prompt and set as the metrci 
-    metric_prompt = load_dspy_model( # this loads an initialized model (CoT, etc.)
-        model_name=metric_config["trainer"]["mlflow_model_name"],
-        latest_version=True
+    # load the most recent version of the doc_quality_prompt and set as the metrci
+    metric_prompt = load_dspy_model(  # this loads an initialized model (CoT, etc.)
+        model_name=metric_config["trainer"]["mlflow_model_name"], latest_version=True
     )
 
     # initialize the DocQualityPrompt object
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     dqp = DocQualityPrompt(
         type=doc_generator_prompt.metric_type.type,
         metric_type=doc_generator_prompt.metric_type.metric_type,  # type: ignore
-        prompt=metric_signature
+        prompt=metric_signature,
     )
 
     # set the metric type
@@ -99,14 +99,13 @@ if __name__ == "__main__":
     # print out the set metric prompt to check
     test_metric_signature = get_prompt_signature(doc_generator_prompt.metric_type.infer)
     base_prompt = gd.dh.par.format_signature_prompt(
-            signature=test_metric_signature, signature_type="doc_generation"
+        signature=test_metric_signature, signature_type="doc_generation"
     )
     log.info(f"using metric prompt: {base_prompt}")
 
     # load in the most recent version of doc_generator_prompt
-    generator_prompt = load_dspy_model( # this loads an initialized model (CoT, etc.)
-        model_name=config["trainer"]["mlflow_model_name"],
-        latest_version=True
+    generator_prompt = load_dspy_model(  # this loads an initialized model (CoT, etc.)
+        model_name=config["trainer"]["mlflow_model_name"], latest_version=True
     )
 
     # initialize the DocQualityPrompt object
@@ -114,20 +113,19 @@ if __name__ == "__main__":
     dgp = DocGeneratorPrompt(
         metric_type=doc_generator_prompt.metric_type,  # type: ignore
         type=doc_generator_prompt.type,
-        prompt=generator_signature
+        prompt=generator_signature,
     )
 
     test_generator_signature = get_prompt_signature(dgp.infer)
     base_gen_prompt = gd.dh.par.format_signature_prompt(
-            signature=test_generator_signature, signature_type="doc_generation"
+        signature=test_generator_signature, signature_type="doc_generation"
     )
     log.info(f"using generator prompt: {base_gen_prompt}")
-
 
     # init the DocGeneratorModule
     dgm = DocGeneratorModule(generator_prompt=doc_generator_prompt, retry=True)
 
-    # 
+    #
     # Create a directory for evaluation results and overwrite it if it exists
     eval_results_dir = "eval_results"
     if os.path.exists(eval_results_dir):
@@ -147,34 +145,33 @@ if __name__ == "__main__":
 
         avg_component_rating = []
         doc_rating = []
-        for i in range(len(evalset)): 
+        for i in range(len(evalset)):
             eval = evalset[i]
             pred = dgm.document_full_schema(database_schema=eval.database_schema)
             pred_ast = parse(pred.documented_schema)
             exs = []
             ratings = []
-            for node in pred_ast.definitions: 
-                ex = dspy.Example(
-                    database_schema=print_ast(node)
-                ).with_inputs("database_schema")
+            for node in pred_ast.definitions:
+                ex = dspy.Example(database_schema=print_ast(node)).with_inputs(
+                    "database_schema"
+                )
                 p = dspy.Prediction(
-                    database_schema=print_ast(node),
-                    documented_schema=print_ast(node)
+                    database_schema=print_ast(node), documented_schema=print_ast(node)
                 ).with_inputs("database_schema")
                 rating_pred = dgm.generator_prompt.evaluate_documentation_quality(ex, p)
                 rating = math.sqrt(rating_pred) * 25
                 if rating == 25:
-                    log.info(f"Rating of 1 being returned, setting to 0") 
-                    rating = 0 
+                    log.info(f"Rating of 1 being returned, setting to 0")
+                    rating = 0
                 ratings.append(rating)
             overal_rating = dgm.generator_prompt.evaluate_documentation_quality(
-                dspy.Example(
-                    database_schema=eval.database_schema
-                ).with_inputs("database_schema"),
+                dspy.Example(database_schema=eval.database_schema).with_inputs(
+                    "database_schema"
+                ),
                 dspy.Prediction(
                     database_schema=eval.database_schema,
-                    documented_schema=pred.documented_schema
-                ).with_inputs("database_schema")
+                    documented_schema=pred.documented_schema,
+                ).with_inputs("database_schema"),
             )
             average_rating = sum(ratings) / len(ratings)
             log.info(f"Average component score: {average_rating}")
@@ -184,15 +181,21 @@ if __name__ == "__main__":
             avg_component_rating.append(average_rating)
             doc_rating.append(math.sqrt(overal_rating))
 
-            with open(example_dir + f"example_{i}.graphql", "w") as f: 
+            with open(example_dir + f"example_{i}.graphql", "w") as f:
                 f.write(eval.database_schema)
-            with open(pred_dir + f"pred_{i}.graphql", "w") as f: 
+            with open(pred_dir + f"pred_{i}.graphql", "w") as f:
                 f.write(pred.documented_schema)
-        
+
         log.info(f"doc component ratings: {avg_component_rating}")
         log.info(f"doc overal ratings: {doc_rating}")
-        mlflow.log_dict({"doc_component_ratings": avg_component_rating}, "doc_component_ratings.json")
+        mlflow.log_dict(
+            {"doc_component_ratings": avg_component_rating},
+            "doc_component_ratings.json",
+        )
         mlflow.log_dict({"doc_overal_ratings": doc_rating}, "doc_overal_ratings.json")
 
-        mlflow.log_metric(f"average_component_rating", sum(avg_component_rating) / len(avg_component_rating))
+        mlflow.log_metric(
+            f"average_component_rating",
+            sum(avg_component_rating) / len(avg_component_rating),
+        )
         mlflow.log_metric(f"overal_document_rating", sum(doc_rating) / len(doc_rating))

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/denver/Documents/code/graph/graphdoc/mlruns/612951484798863978/4b7d085b20ad42549327b8458d99a2f7/artifacts
+end_time: 1739257258926
+entry_point_name: ''
+experiment_id: '612951484798863978'
+lifecycle_stage: active
+run_id: 4b7d085b20ad42549327b8458d99a2f7
+run_name: dashing-jay-670
+run_uuid: 4b7d085b20ad42549327b8458d99a2f7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1739257257804
+status: 3
+tags: []
+user_id: denver

@@ -48,5 +48,3 @@ class TestDocGeneratorModule:
         assert isinstance(dgp, DocGeneratorPrompt)
         assert isinstance(dgp.infer, dspy.ChainOfThought)
         assert isinstance(dgm, DocGeneratorModule)
-
-    
