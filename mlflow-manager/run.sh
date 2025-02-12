@@ -74,8 +74,6 @@ show_help() {
     echo "  mlruns-path            Show the full path to the mlruns directory"
     echo "  start-mlflow-ui        Start the MLflow UI"
     echo "  kill-mlflow-ui         Kill the MLflow UI"
-    echo "  build-docker           Build the Docker image"
-    echo "  docker-compose-up      Run docker-compose up"
 }
 
 load_env_variables() {
@@ -87,17 +85,9 @@ load_env_variables() {
     fi
 }
 
-build_docker_image() {
+print_env_variables() {
     load_env_variables
-    echo "$CR_PAT" | docker login ghcr.io -u "$USERNAME" --password-stdin
-    docker pull ghcr.io/mlflow/mlflow
-    docker pull ghcr.io/mlflow/mlflow:v2.0.1
-}
-
-run_docker_compose() {
-    load_env_variables
-    docker-compose build
-    docker-compose up
+    printenv
 }
 
 if [ -z "$1" ]; then
@@ -106,12 +96,15 @@ else
     case "$1" in
         "python") python_command ;;
         "shell") shell_command ;;
+
+        # run mlflow ui locally 
         "mlruns-path") get_mlruns_path ;;
         "start-mlflow-ui") start_mlflow_ui ;;
         "kill-mlflow-ui") kill_mlflow_ui ;;
-        "build-docker") build_docker_image ;;
+
+        # env variables 
         "load-env-variables") load_env_variables ;;
-        "docker-compose-up") run_docker_compose ;;
+        "print-env-variables") print_env_variables ;;
         *) show_help ;;
     esac
 fi
