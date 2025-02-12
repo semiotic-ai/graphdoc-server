@@ -74,6 +74,30 @@ show_help() {
     echo "  mlruns-path            Show the full path to the mlruns directory"
     echo "  start-mlflow-ui        Start the MLflow UI"
     echo "  kill-mlflow-ui         Kill the MLflow UI"
+    echo "  build-docker           Build the Docker image"
+    echo "  docker-compose-up      Run docker-compose up"
+}
+
+load_env_variables() {
+    if [ -f "../.env" ]; then
+        export $(grep -v '^#' ../.env | xargs)
+    else
+        echo ".env file not found. Please ensure it exists in the root directory."
+        exit 1
+    fi
+}
+
+build_docker_image() {
+    load_env_variables
+    echo "$CR_PAT" | docker login ghcr.io -u "$USERNAME" --password-stdin
+    docker pull ghcr.io/mlflow/mlflow
+    docker pull ghcr.io/mlflow/mlflow:v2.0.1
+}
+
+run_docker_compose() {
+    load_env_variables
+    docker-compose build
+    docker-compose up
 }
 
 if [ -z "$1" ]; then
@@ -85,6 +109,9 @@ else
         "mlruns-path") get_mlruns_path ;;
         "start-mlflow-ui") start_mlflow_ui ;;
         "kill-mlflow-ui") kill_mlflow_ui ;;
+        "build-docker") build_docker_image ;;
+        "load-env-variables") load_env_variables ;;
+        "docker-compose-up") run_docker_compose ;;
         *) show_help ;;
     esac
 fi
