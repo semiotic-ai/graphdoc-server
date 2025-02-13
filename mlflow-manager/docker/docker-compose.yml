@@ -2,7 +2,7 @@ version: "3.7"
 services:
   postgres:
     image: postgres:latest
-    container_name: postgres
+    container_name: ${POSTGRES_CONTAINER_NAME}
     restart: always
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
@@ -17,7 +17,7 @@ services:
   minio:
     restart: always
     image: quay.io/minio/minio
-    container_name: minio
+    container_name: ${MINIO_CONTAINER_NAME}
     ports:
       - "${MINIO_PORT}:${MINIO_PORT}"
       - "${MINIO_PORT_UI}:${MINIO_PORT_UI}"
@@ -40,14 +40,15 @@ services:
     environment:
       - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO_SECRET_ACCESS_KEY}
+      - MINIO_PORT=${MINIO_PORT}
 
   mlflow:
     restart: always
     build: ./mlflow
     image: mlflow_server
-    container_name: mlflow_server
+    container_name: ${MLFLOW_CONTAINER_NAME}
     ports:
-      - "${MLFLOW_PORT}:{$MLFLOW_PORT_UI}"
+      - "${MLFLOW_PORT}:${MLFLOW_PORT_UI}"
     environment:
       - AWS_ACCESS_KEY_ID=${MINIO_ACCESS_KEY}
       - AWS_SECRET_ACCESS_KEY=${MINIO_SECRET_ACCESS_KEY}

@@ -8,9 +8,8 @@ install:
 		up --detach
 
 test:
-	python3 -m venv .venv && source .venv/bin/activate
-	pip install -r tests/requirements.txt
-	python3 tests/test_mlflow.py
+	poetry install
+	poetry run python tests/test_mlflow.py
 
 clean:
 	(cd docker/; docker compose down; cd ..;)

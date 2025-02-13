@@ -2,6 +2,13 @@
 
 This module is meant to assist in setting up a local mlflow server and interacting with both local and remote mlflow servers. This is useful for sending training runs to a remote server, as well as for storing and serving models. 
 
+## Installation
+
+This project uses [poetry](https://python-poetry.org/) to manage dependencies. To install the dependencies, run the following command.
+
+```bash
+poetry install
+```
 
 ## Docker 
 

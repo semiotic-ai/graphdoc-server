@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "3.13.0"
 mlflow = "2.20.0"
+dspy = {version = "^2.6.0rc8", allow-prereleases = true}
 
 
 [build-system]
