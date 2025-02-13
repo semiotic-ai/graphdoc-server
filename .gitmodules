@@ -1,3 +1,0 @@
-[submodule "mlflow-manager/mlflow-export-import"]
-	path = mlflow-manager/mlflow-export-import
-	url = https://github.com/mlflow/mlflow-export-import.git

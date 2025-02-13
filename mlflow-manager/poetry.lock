@@ -2391,7 +2391,7 @@ optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = []
-develop = true
+develop = false
 
 [package.dependencies]
 databricks-cli = "0.18.0"
@@ -2404,8 +2404,10 @@ wheel = "*"
 tests = ["mlflow[databricks] (>=2.9.2)", "pytest", "pytest-html (>=3.2.0)", "shortuuid (>=1.0.11)"]
 
 [package.source]
-type = "directory"
-url = "mlflow-export-import"
+type = "git"
+url = "https://github.com/mlflow/mlflow-export-import.git"
+reference = "HEAD"
+resolved_reference = "a572e944ebee82fe9b37c5e7b35541d01c26253b"
 
 [[package]]
 name = "mlflow-skinny"
@@ -4925,4 +4927,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "3.13.0"
-content-hash = "3ca92635f7348ec3daa987fadd3ef0acb03314c4c0383ba1443060ed50afc994"
+content-hash = "dd8ab0779accdc5738f859cd081244afdf15f34dd6b1389a6f502b24fcfa26ff"
