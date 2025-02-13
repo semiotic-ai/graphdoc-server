@@ -38,6 +38,8 @@ def init_model(config_path: str, metric_config_path: str) -> bool:
         mlflow_tracking_uri = loaded_config["trainer"]["mlflow_tracking_uri"]
         mlflow.set_tracking_uri(mlflow_tracking_uri)
         mlflow.set_experiment(loaded_config["module"]["experiment_name"])
+        log.info(f"MLflow tracking URI: {mlflow_tracking_uri}")
+        log.info(f"MLflow experiment name: {loaded_config['module']['experiment_name']}")
 
         # Initialize GraphDoc
         graph_doc = GraphDoc(
@@ -69,6 +71,26 @@ def create_app() -> Flask:
 
     config_path = os.getenv("GRAPHDOC_CONFIG_PATH")
     metric_config_path = os.getenv("GRAPHDOC_METRIC_CONFIG_PATH")
+    log.info(f"Config path: {config_path}")
+    log.info(f"Metric config path: {metric_config_path}")
+
+    # Read and log the YAML config file contents
+    try:
+        if config_path:
+            with open(config_path, 'r') as file:
+                config_contents = file.read()
+                log.info(f"Config file contents from {config_path}:\n{config_contents}")
+        else:
+            log.warning("Config path is not set, cannot read config file")
+            
+        if metric_config_path:
+            with open(metric_config_path, 'r') as file:
+                metric_config_contents = file.read()
+                log.info(f"Metric config file contents from {metric_config_path}:\n{metric_config_contents}")
+        else:
+            log.warning("Metric config path is not set, cannot read metric config file")
+    except Exception as e:
+        log.error(f"Error reading config files: {str(e)}")
 
     if not config_path or not metric_config_path:
         raise ValueError(
@@ -174,7 +196,8 @@ def main():
 
     # Create and run the app
     app = create_app()
-    app.run(host="0.0.0.0", port=args.port)
+    with mlflow.start_run():
+        app.run(host="0.0.0.0", port=args.port)
 
 
 if __name__ == "__main__":

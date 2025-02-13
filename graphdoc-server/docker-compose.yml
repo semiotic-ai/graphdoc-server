@@ -1,0 +1,39 @@
+version: '3.8'
+
+x-common-config: &common-config
+  ports:
+    - "${PORT:-6000}:${PORT:-6000}"
+  environment:
+    - OPENAI_API_KEY=${OPENAI_API_KEY}
+    - HF_DATASET_KEY=${HF_DATASET_KEY}
+    - MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI}
+    - GRAPHDOC_CONFIG_PATH=/app/configs/server/single_prompt_schema_doc_generator_module.yaml
+    - GRAPHDOC_METRIC_CONFIG_PATH=/app/configs/server/single_prompt_schema_doc_quality_trainer.yaml
+    - PORT=${PORT:-6000}
+    - WORKERS=${WORKERS:-4}
+  volumes:
+    - ../assets/configs:/app/configs:ro
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:${PORT:-6000}/health"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+
+services:
+  # Development service using local graphdoc
+  graphdoc-server-dev:
+    <<: *common-config
+    build:
+      context: ..
+      dockerfile: graphdoc-server/Dockerfile.dev
+    profiles:
+      - dev
+
+  # Production service using GitHub graphdoc
+  graphdoc-server-prod:
+    <<: *common-config
+    build:
+      context: ..
+      dockerfile: graphdoc-server/Dockerfile.prod
+    profiles:
+      - prod 
