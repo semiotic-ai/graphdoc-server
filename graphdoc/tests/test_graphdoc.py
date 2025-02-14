@@ -101,3 +101,23 @@ class TestGraphdoc:
         )
         module = gd.doc_generator_module_from_mlflow(config_path, metric_config_path)
         assert isinstance(module, DocGeneratorModule)
+
+    def test_doc_generator_module_from_mlflow_by_name_and_version(self, gd: GraphDoc):
+        config_path = (
+            BASE_DIR
+            / "graphdoc"
+            / "tests"
+            / "assets"
+            / "configs"
+            / "single_prompt_schema_doc_generator_trainer.yaml"
+        )
+        metric_config_path = (
+            BASE_DIR
+            / "graphdoc"
+            / "tests"
+            / "assets"
+            / "configs"
+            / "single_prompt_schema_doc_quality_version.yaml"
+        )
+        module = gd.doc_generator_module_from_mlflow(config_path, metric_config_path)
+        assert isinstance(module, DocGeneratorModule)
