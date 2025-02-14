@@ -16,8 +16,11 @@ from pytest import fixture
 from dotenv import load_dotenv
 from dspy import Example
 
-# logging
-# logging.basicConfig(level=logging.DEBUG)
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 log = logging.getLogger(__name__)
 
 # Global Variables
