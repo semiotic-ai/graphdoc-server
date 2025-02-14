@@ -99,5 +99,5 @@ class TestGraphdoc:
             / "configs"
             / "single_prompt_schema_doc_quality_trainer.yaml"
         )
-        module = gd.doc_generator_module(config_path, metric_config_path)
+        module = gd.doc_generator_module_from_mlflow(config_path, metric_config_path)
         assert isinstance(module, DocGeneratorModule)
