@@ -18,6 +18,8 @@ prompt:
   metric: DocQualityPrompt # The type of metric to use (rating, category)
   load_from_uri: true # Whether to load the prompt from an MLFlow URI
   mlflow_uri: file:///Users/denver/Documents/code/graph/graphdoc/mlruns/513408250948216117/976d330558344c41b30bd1531571de18/artifacts/model # The tracking URI for MLflow
+  mlflow_model_name: doc_generator_model # The name of the model in MLflow
+  mlflow_model_version: 1 # The version of the model in MLflow
 
 trainer: 
   class: DocGeneratorTrainer # The type of trainer to use (DocQualityTrainer)
