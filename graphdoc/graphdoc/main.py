@@ -212,12 +212,22 @@ class GraphDoc:
             if config["prompt"]["load_from_uri"]:
                 if self.fl is None: 
                     raise ValueError("MLFlow tracking URI not set")
-            mlflow_model_uri = config["prompt"]["mlflow_uri"]
-            prompt = self.fl.load_model_by_uri(mlflow_model_uri)
+            
+            mlflow_model_uri = config["prompt"].get("mlflow_uri")
+            mlflow_model_name = config["prompt"].get("mlflow_model_name")
+            mlflow_model_version = config["prompt"].get("mlflow_model_version")
+            
+            if mlflow_model_uri is not None:
+                prompt = self.fl.load_model_by_uri(mlflow_model_uri)
+            elif mlflow_model_name is not None and mlflow_model_version is not None:
+                prompt = self.fl.load_model_by_name_and_version(mlflow_model_name, mlflow_model_version)
+            elif mlflow_model_name is not None:
+                prompt = self.fl.load_latest_version(mlflow_model_name)
+            else: 
+                raise ValueError("No MLFlow model URI or name and version provided")
+
             prompt_signature = self.fl.get_prompt_signature(prompt)
             prompt = PromptFactory.get_single_prompt(prompt_signature, config["prompt"]["class"], config["prompt"]["type"], config["prompt"]["metric"])
-            # mlflow_model_params = mlflow_model_uri[:mlflow_model_uri.rfind('/artifacts/model')] if '/artifacts/model' in mlflow_model_uri else mlflow_model_uri
-            # run_params = self.fl.run_parameters(mlflow_model_params)
             return prompt
         except Exception as e:
             raise ValueError(f"Failed to load prompt from MLFlow: {e}")
