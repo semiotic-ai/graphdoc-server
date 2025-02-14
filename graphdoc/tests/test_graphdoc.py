@@ -109,7 +109,7 @@ class TestGraphdoc:
             / "tests"
             / "assets"
             / "configs"
-            / "single_prompt_schema_doc_generator_trainer.yaml"
+            / "single_prompt_schema_doc_generator_version.yaml"
         )
         metric_config_path = (
             BASE_DIR

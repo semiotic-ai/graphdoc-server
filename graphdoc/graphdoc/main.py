@@ -204,6 +204,23 @@ class GraphDoc:
     #######################
     # Loaging from MLFlow #
     #######################
+    def _load_prompt_from_mlflow(self, config: dict):
+        mlflow_model_uri = config["prompt"].get("mlflow_uri")
+        mlflow_model_name = config["prompt"].get("mlflow_model_name")
+        mlflow_model_version = config["prompt"].get("mlflow_model_version")
+        
+        if mlflow_model_uri is not None:
+            prompt = self.fl.load_model_by_uri(mlflow_model_uri)
+        elif mlflow_model_name is not None and mlflow_model_version is not None:
+            prompt = self.fl.load_model_by_name_and_version(mlflow_model_name, mlflow_model_version)
+        elif mlflow_model_name is not None:
+            prompt = self.fl.load_latest_version(mlflow_model_name)
+        else: 
+            raise ValueError("No MLFlow model URI or name and version provided")
+        
+        return prompt
+
+
     def prompt_from_mlflow(self, config_path: Union[str, Path]):
         # load_from_uri: false # Whether to load the prompt from an MLFlow URI
         # mlflow_uri: null # The tracking URI for MLflow
@@ -212,20 +229,7 @@ class GraphDoc:
             if config["prompt"]["load_from_uri"]:
                 if self.fl is None: 
                     raise ValueError("MLFlow tracking URI not set")
-            
-            mlflow_model_uri = config["prompt"].get("mlflow_uri")
-            mlflow_model_name = config["prompt"].get("mlflow_model_name")
-            mlflow_model_version = config["prompt"].get("mlflow_model_version")
-            
-            if mlflow_model_uri is not None:
-                prompt = self.fl.load_model_by_uri(mlflow_model_uri)
-            elif mlflow_model_name is not None and mlflow_model_version is not None:
-                prompt = self.fl.load_model_by_name_and_version(mlflow_model_name, mlflow_model_version)
-            elif mlflow_model_name is not None:
-                prompt = self.fl.load_latest_version(mlflow_model_name)
-            else: 
-                raise ValueError("No MLFlow model URI or name and version provided")
-
+            prompt = self._load_prompt_from_mlflow(config)
             prompt_signature = self.fl.get_prompt_signature(prompt)
             prompt = PromptFactory.get_single_prompt(prompt_signature, config["prompt"]["class"], config["prompt"]["type"], config["prompt"]["metric"])
             return prompt
@@ -234,11 +238,9 @@ class GraphDoc:
     
     def nested_prompt_from_mlflow(self, config_path: Union[str, Path], metric_config_path: Union[str, Path]):
         config = load_yaml_config(config_path)
-        # metric_config = load_yaml_config(metric_config_path)
         try:
             metric_prompt = self.prompt_from_mlflow(metric_config_path)
-            mlflow_model_uri = config["prompt"]["mlflow_uri"]
-            prompt = self.fl.load_model_by_uri(mlflow_model_uri)
+            prompt = self._load_prompt_from_mlflow(config)
             prompt_signature = self.fl.get_prompt_signature(prompt)
             prompt = PromptFactory.get_single_prompt(prompt_signature, config["prompt"]["class"], config["prompt"]["type"], metric_prompt)
             return prompt
