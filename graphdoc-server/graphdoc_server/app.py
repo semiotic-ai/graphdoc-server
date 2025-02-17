@@ -1,14 +1,19 @@
-from flask import Flask, request, jsonify
+# system
+import os
+import json
 import logging
 from pathlib import Path
-import os
-from typing import Optional, Dict, Any
-import json
 import werkzeug.exceptions
+from typing import Optional, Dict, Any
 
+# internal
 from graphdoc import GraphDoc, load_yaml_config
-import mlflow
+
+# external 
 import dspy
+import mlflow
+from mlflow import MlflowClient
+from flask import Flask, request, jsonify
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -197,6 +202,14 @@ def main():
     # Create and run the app
     app = create_app()
     with mlflow.start_run():
+
+        uri = "http://localhost:5000"
+        client = MlflowClient(tracking_uri=uri)
+        registered_models = client.search_registered_models()
+        log.info(f"Registered models: {registered_models}")
+        for model in registered_models:
+            log.info(f"Registered model: {model.name}")
+
         app.run(host="0.0.0.0", port=args.port)
 
 

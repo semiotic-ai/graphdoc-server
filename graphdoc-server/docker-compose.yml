@@ -1,12 +1,14 @@
 version: '3.8'
 
 x-common-config: &common-config
+  env_file:
+    - ../.env
   ports:
     - "${PORT:-6000}:${PORT:-6000}"
   environment:
     - OPENAI_API_KEY=${OPENAI_API_KEY}
     - HF_DATASET_KEY=${HF_DATASET_KEY}
-    - MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI}
+    - MLFLOW_TRACKING_URI=http://localhost:5000
     - GRAPHDOC_CONFIG_PATH=/app/configs/server/single_prompt_schema_doc_generator_module.yaml # this works for now, but could be something that we change later to function with cloud run. 
     - GRAPHDOC_METRIC_CONFIG_PATH=/app/configs/server/single_prompt_schema_doc_quality_trainer.yaml
     - PORT=${PORT:-6000}
