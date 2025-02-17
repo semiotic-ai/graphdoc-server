@@ -8,7 +8,7 @@ x-common-config: &common-config
   environment:
     - OPENAI_API_KEY=${OPENAI_API_KEY}
     - HF_DATASET_KEY=${HF_DATASET_KEY}
-    - MLFLOW_TRACKING_URI=http://localhost:5000
+    - MLFLOW_TRACKING_URI=http://host.docker.internal:5000
     - GRAPHDOC_CONFIG_PATH=/app/configs/server/single_prompt_schema_doc_generator_module.yaml # this works for now, but could be something that we change later to function with cloud run. 
     - GRAPHDOC_METRIC_CONFIG_PATH=/app/configs/server/single_prompt_schema_doc_quality_trainer.yaml
     - PORT=${PORT:-6000}
@@ -28,7 +28,6 @@ services:
     build:
       context: ..
       dockerfile: graphdoc-server/Dockerfile.dev
-    network_mode: host
     profiles:
       - dev
 
@@ -38,6 +37,5 @@ services:
     build:
       context: ..
       dockerfile: graphdoc-server/Dockerfile.prod
-    network_mode: host
     profiles:
       - prod 
