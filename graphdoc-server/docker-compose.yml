@@ -28,6 +28,7 @@ services:
     build:
       context: ..
       dockerfile: graphdoc-server/Dockerfile.dev
+    network_mode: host
     profiles:
       - dev
 
@@ -37,5 +38,6 @@ services:
     build:
       context: ..
       dockerfile: graphdoc-server/Dockerfile.prod
+    network_mode: host
     profiles:
       - prod 

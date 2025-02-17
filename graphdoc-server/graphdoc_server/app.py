@@ -42,7 +42,6 @@ def init_model(config_path: str, metric_config_path: str) -> bool:
         # Set up MLflow
         mlflow_tracking_uri = loaded_config["trainer"]["mlflow_tracking_uri"]
         mlflow.set_tracking_uri(mlflow_tracking_uri)
-        mlflow.set_experiment(loaded_config["module"]["experiment_name"])
         log.info(f"MLflow tracking URI: {mlflow_tracking_uri}")
         log.info(f"MLflow experiment name: {loaded_config['module']['experiment_name']}")
 
@@ -201,16 +200,7 @@ def main():
 
     # Create and run the app
     app = create_app()
-    with mlflow.start_run():
-
-        uri = "http://localhost:5000"
-        client = MlflowClient(tracking_uri=uri)
-        registered_models = client.search_registered_models()
-        log.info(f"Registered models: {registered_models}")
-        for model in registered_models:
-            log.info(f"Registered model: {model.name}")
-
-        app.run(host="0.0.0.0", port=args.port)
+    app.run(host="0.0.0.0", port=args.port)
 
 
 if __name__ == "__main__":
