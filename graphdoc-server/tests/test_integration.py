@@ -37,7 +37,7 @@ def test_server_health(server):
 
 def test_server_inference(server):
     """Test the inference endpoint on the running server."""
-    test_schema = "CREATE TABLE users (id INT PRIMARY KEY, name VARCHAR(255));"
+    test_schema = "type TestEntity @entity { id: Bytes! }"
     response = requests.post(
         "http://localhost:6000/inference", json={"database_schema": test_schema}
     )
@@ -45,3 +45,6 @@ def test_server_inference(server):
     data = response.json()
     assert "prediction" in data
     assert data["status"] == "success"
+
+# curl -X POST http://localhost:6000/inference -H "Content-Type: application/json" -d '{"database_schema": "type TestEntity @entity { id: Bytes! }"}'
+# 2025-02-17 13:47:13 graphdoc-server-dev-1  | WARNING:graphdoc.modules.schema_doc_generator:Error generating schema: 'LM' object has no attribute 'cache_in_memory'

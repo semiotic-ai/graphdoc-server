@@ -7,12 +7,12 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "3.13.0"
-dspy = {version = "^2.6.0rc8", allow-prereleases = true}
+dspy = "2.6.3"
+litellm = "1.61.6"
 datasets-sql = "0.4.0"
 graphql-core = "3.2.5"
 mlflow = "2.20.0"
-virtualenv = "^20.29.2"
-
+virtualenv = "20.29.2"
 
 [tool.poetry.group.dev.dependencies]
 jupyter = "1.1.1"

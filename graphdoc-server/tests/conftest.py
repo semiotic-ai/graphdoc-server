@@ -15,12 +15,14 @@ def app():
         project_root
         / "assets"
         / "configs"
+        / "server"
         / "single_prompt_schema_doc_generator_module.yaml"
     )
     os.environ["GRAPHDOC_METRIC_CONFIG_PATH"] = str(
         project_root
         / "assets"
         / "configs"
+        / "server"
         / "single_prompt_schema_doc_quality_trainer.yaml"
     )
 

@@ -53,7 +53,7 @@ def init_model(config_path: str, metric_config_path: str) -> bool:
             cache=loaded_config["language_model"]["cache"],
             mlflow_tracking_uri=mlflow_tracking_uri,
         )
-
+        
         # Load the module
         module = graph_doc.doc_generator_module_from_mlflow(
             config_path, metric_config_path
