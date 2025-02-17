@@ -1,0 +1,39 @@
+FROM python:3.13.0-slim
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    POETRY_VERSION=1.7.1 \
+    POETRY_HOME="/opt/poetry" \
+    POETRY_VIRTUALENVS_CREATE=false
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Poetry
+RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV PATH="${POETRY_HOME}/bin:$PATH"
+
+# Set working directory
+WORKDIR /app
+
+# Create necessary directories
+RUN mkdir -p /app/configs
+
+# Copy the entire project structure
+COPY graphdoc /app/graphdoc
+COPY graphdoc-server /app/graphdoc-server
+WORKDIR /app/graphdoc-server
+
+# Install dependencies including local graphdoc package
+RUN poetry install --no-interaction --no-ansi --no-root
+
+# Expose port
+EXPOSE 6000
+
+# Run the application
+CMD ["./docker-entrypoint.sh"] 

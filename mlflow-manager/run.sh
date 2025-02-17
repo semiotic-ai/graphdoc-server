@@ -31,15 +31,15 @@ start_mlflow_ui() {
     MLRUNS_PATH=$(get_mlruns_path)
     echo "Starting MLflow UI with backend store URI: $MLRUNS_PATH"
 
-    # Check if port 5000 is already in use
-    if lsof -i :5000 &> /dev/null; then
-        echo "Port 5000 is already in use. Killing existing processes..."
+    # Check if port 4000 is already in use
+    if lsof -i :4000 &> /dev/null; then
+        echo "Port 4000 is already in use. Killing existing processes..."
         kill_mlflow_ui
     fi
 
     # Start MLflow UI
-    poetry run mlflow ui --backend-store-uri "$MLRUNS_PATH" &
-    echo "MLflow UI started. Access it at http://localhost:5000"
+    poetry run mlflow ui --backend-store-uri "$MLRUNS_PATH" --port 4000 &
+    echo "MLflow UI started. Access it at http://localhost:4000"
 }
 
 kill_mlflow_ui() {
@@ -59,10 +59,10 @@ kill_mlflow_ui() {
         fi
     fi
 
-    # Ensure port 5000 is freed
-    if lsof -i :5000 &> /dev/null; then
-        echo "Port 5000 is still in use. Killing remaining processes..."
-        lsof -ti :5000 | xargs kill -9
+    # Ensure port 4000 is freed
+    if lsof -i :4000 &> /dev/null; then
+        echo "Port 4000 is still in use. Killing remaining processes..."
+        lsof -ti :4000 | xargs kill -9
     fi
 }
 
@@ -76,15 +76,35 @@ show_help() {
     echo "  kill-mlflow-ui         Kill the MLflow UI"
 }
 
+load_env_variables() {
+    if [ -f "../.env" ]; then
+        export $(grep -v '^#' ../.env | xargs)
+    else
+        echo ".env file not found. Please ensure it exists in the root directory."
+        exit 1
+    fi
+}
+
+print_env_variables() {
+    load_env_variables
+    printenv
+}
+
 if [ -z "$1" ]; then
     show_help
 else
     case "$1" in
         "python") python_command ;;
         "shell") shell_command ;;
+
+        # run mlflow ui locally 
         "mlruns-path") get_mlruns_path ;;
         "start-mlflow-ui") start_mlflow_ui ;;
         "kill-mlflow-ui") kill_mlflow_ui ;;
+
+        # env variables 
+        "load-env-variables") load_env_variables ;;
+        "print-env-variables") print_env_variables ;;
         *) show_help ;;
     esac
 fi

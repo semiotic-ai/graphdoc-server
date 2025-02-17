@@ -30,6 +30,10 @@ class FlowLoader:
         model_latest_version = self.mlflow_client.get_latest_versions(model_name)        
         return mlflow.dspy.load_model(model_latest_version[0].source)
     
+    def load_model_by_name_and_version(self, model_name: str, model_version: str):
+        model_version = self.mlflow_client.get_model_version(model_name, model_version)
+        return mlflow.dspy.load_model(model_version.source)
+    
     def load_model_by_uri(self, model_uri: str):
         try:
             return mlflow.dspy.load_model(model_uri)

@@ -18,6 +18,8 @@ prompt:
   metric: rating # The type of metric to use (rating, category)
   load_from_uri: false # Whether to load the prompt from an MLFlow URI
   mlflow_uri: null # The tracking URI for MLflow
+  mlflow_model_name: doc_quality_model # The name of the model in MLflow
+  mlflow_model_version: 1 # The version of the model in MLflow
 
 trainer: 
   class: DocQualityTrainer # The type of trainer to use (DocQualityTrainer)
