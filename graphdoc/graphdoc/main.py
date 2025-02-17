@@ -216,12 +216,13 @@ class GraphDoc:
         elif mlflow_model_name is not None:
             prompt = self.fl.load_latest_version(mlflow_model_name)
         else: 
-            raise ValueError("No MLFlow model URI or name and version provided")
+            log.warning("No MLFlow model URI or name and version provided")
+            return None
         
         return prompt
 
 
-    def prompt_from_mlflow(self, config_path: Union[str, Path]):
+    def prompt_from_mlflow(self, config_path: Union[str, Path], default_prompt: bool = True):
         # load_from_uri: false # Whether to load the prompt from an MLFlow URI
         # mlflow_uri: null # The tracking URI for MLflow
         config = load_yaml_config(config_path)
@@ -230,24 +231,41 @@ class GraphDoc:
                 if self.fl is None: 
                     raise ValueError("MLFlow tracking URI not set")
             prompt = self._load_prompt_from_mlflow(config)
-            prompt_signature = self.fl.get_prompt_signature(prompt)
+            
+            # TODO: we should refactor this
+            if prompt: 
+                prompt_signature = self.fl.get_prompt_signature(prompt)
+            
+            elif prompt is None and default_prompt:
+                prompt = self._get_single_prompt(config_path)
+                prompt_signature = prompt.prompt
+            
             prompt = PromptFactory.get_single_prompt(prompt_signature, config["prompt"]["class"], config["prompt"]["type"], config["prompt"]["metric"])
             return prompt
         except Exception as e:
             raise ValueError(f"Failed to load prompt from MLFlow: {e}")
     
-    def nested_prompt_from_mlflow(self, config_path: Union[str, Path], metric_config_path: Union[str, Path]):
+    def nested_prompt_from_mlflow(self, config_path: Union[str, Path], metric_config_path: Union[str, Path], default_prompt: bool = True):
         config = load_yaml_config(config_path)
         try:
-            metric_prompt = self.prompt_from_mlflow(metric_config_path)
+            metric_prompt = self.prompt_from_mlflow(metric_config_path, default_prompt)
             prompt = self._load_prompt_from_mlflow(config)
-            prompt_signature = self.fl.get_prompt_signature(prompt)
+
+            # TODO: we should refactor this
+            if prompt: 
+                prompt_signature = self.fl.get_prompt_signature(prompt)
+            
+            elif prompt is None and default_prompt:
+                prompt = self._get_single_prompt(config_path)
+                prompt_signature = prompt.prompt
+            # prompt_signature = self.fl.get_prompt_signature(prompt)
+            
             prompt = PromptFactory.get_single_prompt(prompt_signature, config["prompt"]["class"], config["prompt"]["type"], metric_prompt)
             return prompt
         except Exception as e:
             raise ValueError(f"Failed to load nested prompt from MLFlow: {e}")
         
-    def doc_generator_module_from_mlflow(self, config_path: Union[str, Path], metric_config_path: Union[str, Path]):
-        doc_generator_prompt = self.nested_prompt_from_mlflow(config_path, metric_config_path)
+    def doc_generator_module_from_mlflow(self, config_path: Union[str, Path], metric_config_path: Union[str, Path], default_prompt: bool = True):
+        doc_generator_prompt = self.nested_prompt_from_mlflow(config_path, metric_config_path, default_prompt)
         doc_generator_module = DocGeneratorModule(doc_generator_prompt)
         return doc_generator_module
