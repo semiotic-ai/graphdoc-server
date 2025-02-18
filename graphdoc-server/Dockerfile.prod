@@ -24,9 +24,13 @@ WORKDIR /app
 # Create necessary directories
 RUN mkdir -p /app/configs
 
-# Copy only the server files
-COPY graphdoc-server/pyproject.toml graphdoc-server/poetry.lock ./
-COPY graphdoc-server .
+# Copy configs
+COPY assets/configs /app/configs
+
+# Copy the entire project structure (development setup)
+COPY graphdoc /app/graphdoc
+COPY graphdoc-server /app/graphdoc-server
+WORKDIR /app/graphdoc-server
 
 # Install dependencies (will use GitHub version of graphdoc)
 RUN poetry install --no-interaction --no-ansi --no-root
