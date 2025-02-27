@@ -6,7 +6,7 @@ set -e
 # Default values
 CONFIG_PATH="../assets/configs/server/single_prompt_schema_doc_generator_module.yaml"
 METRIC_CONFIG_PATH="../assets/configs/server/single_prompt_schema_doc_quality_trainer.yaml"
-MLFLOW_TRACKING_URI="http://localhost:5000"
+MLFLOW_TRACKING_URI="http://localhost:5001"
 PORT=6000
 WORKERS=4
 
@@ -43,7 +43,8 @@ run_dev() {
     export GRAPHDOC_CONFIG_PATH="$CONFIG_PATH"
     export GRAPHDOC_METRIC_CONFIG_PATH="$METRIC_CONFIG_PATH"
     export MLFLOW_TRACKING_URI="$MLFLOW_TRACKING_URI"
-    python -m graphdoc_server.app --config-path "$CONFIG_PATH" --metric-config-path "$METRIC_CONFIG_PATH" --port "$PORT"
+    python -m graphdoc_server.app --config-path "$CONFIG_PATH" --port "$PORT"
+    # python -m graphdoc_server.app --config-path "$CONFIG_PATH" --metric-config-path "$METRIC_CONFIG_PATH" --port "$PORT"
 }
 
 # Function to run production server
