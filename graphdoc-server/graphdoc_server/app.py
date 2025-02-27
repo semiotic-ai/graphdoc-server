@@ -25,7 +25,8 @@ module: Optional[Any] = None
 config: Optional[Dict[str, Any]] = None
 
 
-def init_model(config_path: str, metric_config_path: str) -> bool:
+# def init_model(config_path: str, metric_config_path: str) -> bool:
+def init_model(config_path: str) -> bool:
     """Initialize the GraphDoc and load the module."""
     global graph_doc, module, config
 
@@ -35,33 +36,14 @@ def init_model(config_path: str, metric_config_path: str) -> bool:
         if not loaded_config:
             raise ValueError("Failed to load config")
 
-        metric_config = load_yaml_config(metric_config_path)
-        if not metric_config:
-            raise ValueError("Failed to load metric config")
-
-        # Set up MLflow
-        mlflow_tracking_uri = loaded_config["trainer"]["mlflow_tracking_uri"]
-        mlflow.set_tracking_uri(mlflow_tracking_uri)
-        log.info(f"MLflow tracking URI: {mlflow_tracking_uri}")
-        log.info(f"MLflow experiment name: {loaded_config['module']['experiment_name']}")
-
         # Initialize GraphDoc
-        graph_doc = GraphDoc(
-            model=loaded_config["language_model"]["lm_model_name"],
-            api_key=loaded_config["language_model"]["lm_api_key"],
-            hf_api_key=loaded_config["data"]["hf_api_key"],
-            cache=loaded_config["language_model"]["cache"],
-            mlflow_tracking_uri=mlflow_tracking_uri,
-        )
+        graph_doc = GraphDoc.from_dict(loaded_config)
         
         # Load the module
-        module = graph_doc.doc_generator_module_from_mlflow(
-            config_path, metric_config_path
-        )
+        module = graph_doc.doc_generator_module_from_yaml(config_path)
 
         # Only set the global config if everything succeeded
         config = loaded_config
-
         log.info("Successfully initialized model and loaded module")
         return True
     except Exception as e:
@@ -74,9 +56,7 @@ def create_app() -> Flask:
     app = Flask(__name__)
 
     config_path = os.getenv("GRAPHDOC_CONFIG_PATH")
-    metric_config_path = os.getenv("GRAPHDOC_METRIC_CONFIG_PATH")
     log.info(f"Config path: {config_path}")
-    log.info(f"Metric config path: {metric_config_path}")
 
     # Read and log the YAML config file contents
     try:
@@ -87,22 +67,16 @@ def create_app() -> Flask:
         else:
             log.warning("Config path is not set, cannot read config file")
             
-        if metric_config_path:
-            with open(metric_config_path, 'r') as file:
-                metric_config_contents = file.read()
-                log.info(f"Metric config file contents from {metric_config_path}:\n{metric_config_contents}")
-        else:
-            log.warning("Metric config path is not set, cannot read metric config file")
     except Exception as e:
         log.error(f"Error reading config files: {str(e)}")
 
-    if not config_path or not metric_config_path:
+    if not config_path:
         raise ValueError(
-            "Environment variables GRAPHDOC_CONFIG_PATH and GRAPHDOC_METRIC_CONFIG_PATH must be set"
+            "Environment variables GRAPHDOC_CONFIG_PATH must be set"
         )
 
     # Initialize the model
-    if not init_model(config_path, metric_config_path):
+    if not init_model(config_path):
         raise RuntimeError("Failed to initialize model")
 
     if not config:  # This should never happen due to the init_model check above
@@ -152,7 +126,7 @@ def create_app() -> Flask:
                 return jsonify({"error": "Missing database_schema in request"}), 400
 
             # Run inference
-            prediction = module.forward(data["database_schema"])
+            prediction = module.document_full_schema(data["database_schema"])
 
             # Convert prediction to string if it's not already
             if hasattr(prediction, "prediction"):
@@ -180,15 +154,9 @@ def main():
         help="Path to the configuration YAML file.",
     )
     parser.add_argument(
-        "--metric-config-path",
-        type=str,
-        required=True,
-        help="Path to the metric configuration YAML file.",
-    )
-    parser.add_argument(
         "--port",
         type=int,
-        default=5000,
+        default=6000,
         help="Port to run the server on.",
     )
 
@@ -196,7 +164,6 @@ def main():
 
     # Set environment variables for the app factory
     os.environ["GRAPHDOC_CONFIG_PATH"] = args.config_path
-    os.environ["GRAPHDOC_METRIC_CONFIG_PATH"] = args.metric_config_path
 
     # Create and run the app
     app = create_app()
