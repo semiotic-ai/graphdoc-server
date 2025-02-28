@@ -38,30 +38,32 @@ run_prod() {
 # run docker build 
 # TODO: add run_docker_build()
 
+# formatting and linting 
+format_command() {
+    poetry run black .
+}
+
+lint_command() {
+    poetry run pyright .
+}
+
 # run tests
 run_tests() {
-    pytest -v -W ignore
+    poetry run pytest -v -W ignore
 }
 
 # run code quality checks
 run_checks() {
-    echo "🔍 Running Black formatter..."
-    black .
-
-    echo "🔍 Running Pyright type checker..."
-    pyright
-
-    echo "🧪 Running tests..."
-    pytest -v
-
-    echo "✅ All checks passed!"
+    format_command
+    run_tests
+    lint_command
 }
 
 # parse command line arguments
 COMMAND=""
 while [[ $# -gt 0 ]]; do
     case $1 in
-        dev|prod|test|check)
+        dev|prod|test|commit|format|lint)
             COMMAND="$1"
             shift
             ;;
@@ -97,7 +99,9 @@ show_help() {
     echo "  dev         Run in development mode"
     echo "  prod        Run in production mode"
     echo "  test        Run tests"
-    echo "  check       Run code quality checks (black, pyright, tests)"
+    echo "  format      Format code (black)"
+    echo "  lint        Run linting (pyright)"
+    echo "  commit      Run code quality checks (black, pyright, tests)"
     echo ""
     echo "Options:"
     echo "  -c, --config PATH           Path to config file"
@@ -121,7 +125,9 @@ case "$COMMAND" in
 
     # test commands
     "test") run_tests ;;
-    "check") run_checks ;;
+    "format") format_command ;;
+    "lint") lint_command ;;
+    "commit") run_checks ;;
     
     "")
         echo "Error: No command specified"
