@@ -5,21 +5,26 @@ import signal
 import logging
 import requests
 import subprocess
+from pathlib import Path
 
 # internal packages 
+from graphdoc_server import KeyManager
 
 # external packages 
-import pytest
+from pytest import fixture
 
 # logging 
 log = logging.getLogger(__name__)
+
+# global variables 
+key_path = Path(__file__).parent.parent / "graphdoc_server" / "keys" / "api_key_config.json"
 
 ####################
 # fixtures         #
 ####################
 
 
-@pytest.fixture(scope="session")
+@fixture(scope="session")
 def server():
     """Start the server for all integration tests across multiple files."""
     server_process = subprocess.Popen(
@@ -47,3 +52,14 @@ def server():
     yield server_process
 
     os.killpg(os.getpgid(server_process.pid), signal.SIGTERM)
+
+@fixture 
+def key(server) -> KeyManager:
+    """Returns an instance of the KeyManager class."""
+    key_manager = KeyManager.get_instance(key_path)
+    return key_manager
+
+@fixture
+def admin(server, key): 
+    """Returns the admin key for the server. We import the server fixture so that the admin key is set up before this fixture is used."""
+    return key.get_admin_key()
