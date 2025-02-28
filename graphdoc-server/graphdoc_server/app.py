@@ -4,16 +4,21 @@ import json
 import logging
 from pathlib import Path
 import werkzeug.exceptions
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List, Set, Callable
+import secrets
+import functools
 
 # internal
 from graphdoc import GraphDoc, load_yaml_config
+from .keys import KeyManager
 
-# external 
+# from .key import load_api_keys, generate_api_key, require_api_key, require_admin_key, set_admin_key, get_admin_key
+
+# external
 import dspy
 import mlflow
 from mlflow import MlflowClient
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -23,9 +28,20 @@ log = logging.getLogger(__name__)
 graph_doc: Optional[GraphDoc] = None
 module: Optional[Any] = None
 config: Optional[Dict[str, Any]] = None
+app_dir = Path(os.path.dirname(os.path.abspath(__file__)))
+keys_dir = app_dir / "keys"
+keys_dir.mkdir(exist_ok=True)
+key_path = keys_dir / "api_key_config.json"
+
+# api keys
+# TODO: we would like to move this to a database in the future
+# api_keys: Set[str] = set()
+# api_config: Dict[str, Any] = {
+#     "api_keys": [],
+#     "admin_key": None
+# }
 
 
-# def init_model(config_path: str, metric_config_path: str) -> bool:
 def init_model(config_path: str) -> bool:
     """Initialize the GraphDoc and load the module."""
     global graph_doc, module, config
@@ -38,7 +54,7 @@ def init_model(config_path: str) -> bool:
 
         # Initialize GraphDoc
         graph_doc = GraphDoc.from_dict(loaded_config)
-        
+
         # Load the module
         module = graph_doc.doc_generator_module_from_yaml(config_path)
 
@@ -58,22 +74,23 @@ def create_app() -> Flask:
     config_path = os.getenv("GRAPHDOC_CONFIG_PATH")
     log.info(f"Config path: {config_path}")
 
+    # initialize the KeyManager
+    key_manager = KeyManager.get_instance(key_path)
+
     # Read and log the YAML config file contents
     try:
         if config_path:
-            with open(config_path, 'r') as file:
+            with open(config_path, "r") as file:
                 config_contents = file.read()
                 log.info(f"Config file contents from {config_path}:\n{config_contents}")
         else:
             log.warning("Config path is not set, cannot read config file")
-            
+
     except Exception as e:
         log.error(f"Error reading config files: {str(e)}")
 
     if not config_path:
-        raise ValueError(
-            "Environment variables GRAPHDOC_CONFIG_PATH must be set"
-        )
+        raise ValueError("Environment variables GRAPHDOC_CONFIG_PATH must be set")
 
     # Initialize the model
     if not init_model(config_path):
@@ -82,33 +99,30 @@ def create_app() -> Flask:
     if not config:  # This should never happen due to the init_model check above
         raise RuntimeError("Config is not initialized")
 
+    # Load API keys
+    # load_api_keys()
+
     @app.route("/health", methods=["GET"])
     def health_check():
         """Health check endpoint."""
         return jsonify({"status": "healthy", "model_loaded": module is not None})
 
     @app.route("/model/version", methods=["GET"])
+    @key_manager.require_api_key
     def model_version():
         """Get model version information."""
         if not module or not config:
             return jsonify({"error": "Model not loaded"}), 503
 
-        assert config is not None  # Help pyright understand config is not None
-        mlflow_module_path = (
-            Path(config["trainer"]["mlflow_tracking_uri"].replace("file://", ""))
-            / "modules"
-            / config["module"]["module_name"]
-        )
-
-        return jsonify(
+        assert config is not None
+        return jsonify(  # TODO: we can expand this more as we add tighter coupling between mlflow and the server
             {
-                "module_path": str(mlflow_module_path),
-                "model_name": config["module"]["module_name"],
-                "experiment_name": config["module"]["experiment_name"],
+                "model_name": config["prompt"]["prompt"],
             }
         )
 
     @app.route("/inference", methods=["POST"])
+    @key_manager.require_api_key
     def inference():
         """Run inference on the loaded model."""
         if not module:
@@ -139,6 +153,19 @@ def create_app() -> Flask:
             log.error(f"Error during inference: {str(e)}")
             return jsonify({"error": str(e), "status": "error"}), 500
 
+    @app.route("/api-keys/generate", methods=["POST"])
+    @key_manager.require_admin_key
+    def create_api_key():
+        """Create a new API key (admin only)."""
+        new_key = key_manager.generate_api_key()
+        return jsonify({"status": "success", "api_key": new_key})
+
+    @app.route("/api-keys/list", methods=["GET"])
+    @key_manager.require_admin_key
+    def list_api_keys():
+        """List all API keys (admin only)."""
+        return jsonify({"status": "success", "api_keys": list(key_manager.api_keys)})
+
     return app
 
 
@@ -159,11 +186,40 @@ def main():
         default=6000,
         help="Port to run the server on.",
     )
+    parser.add_argument(
+        "--admin-key",
+        type=str,
+        help="Admin API key for managing other API keys.",
+    )
 
     args = parser.parse_args()
 
     # Set environment variables for the app factory
     os.environ["GRAPHDOC_CONFIG_PATH"] = args.config_path
+
+    # initialize the KeyManager
+    key_manager = KeyManager.get_instance(key_path)
+    log.info(f"Keys: {key_manager.api_keys}")
+    log.info(f"Admin key: {key_manager.get_admin_key()}")
+
+    # Load existing API keys
+    # load_api_keys()
+
+    # Set admin key if provided
+    if args.admin_key:
+        key_manager.set_admin_key(args.admin_key)
+        log.info("Admin key set from command line argument")
+
+    # Create initial API key if none exists
+    if not key_manager.api_keys:
+        initial_key = key_manager.generate_api_key()
+        log.info(f"Created initial API key: {initial_key}")
+
+    # Create initial admin key if none exists
+    if not key_manager.get_admin_key():
+        admin_key = secrets.token_hex(32)
+        key_manager.set_admin_key(admin_key)
+        log.info(f"Created initial admin key: {admin_key}")
 
     # Create and run the app
     app = create_app()
