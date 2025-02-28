@@ -17,8 +17,11 @@ class TestApp:
         assert response.status_code == 200
         assert response.json() == {"status": "healthy", "model_loaded": True}
 
-    # def test_model_version(self):
-    #     pass 
+    def test_model_version(self, server, key_manager, admin):
+        """Test the model version endpoint."""
+        response = requests.get("http://localhost:6000/model/version", headers={"X-API-Key": admin})
+        assert response.status_code == 200
+        # assert response.json() == {"model_name": "test_model"}
     
     # def test_inference(self):
     #     pass 
