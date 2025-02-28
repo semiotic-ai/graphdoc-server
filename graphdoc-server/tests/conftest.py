@@ -1,42 +1,49 @@
-import pytest
-from graphdoc_server.app import create_app
+# system packages 
 import os
-from pathlib import Path
+import time
+import signal
+import logging
+import requests
+import subprocess
+
+# internal packages 
+
+# external packages 
+import pytest
+
+# logging 
+log = logging.getLogger(__name__)
+
+####################
+# fixtures         #
+####################
 
 
-@pytest.fixture
-def app():
-    """Create application for the tests."""
-    # Get the project root directory
-    project_root = Path(__file__).parent.parent.parent
-
-    # Set test configs with absolute paths
-    os.environ["GRAPHDOC_CONFIG_PATH"] = str(
-        project_root
-        / "assets"
-        / "configs"
-        / "server"
-        / "single_prompt_schema_doc_generator_module.yaml"
+@pytest.fixture(scope="session")
+def server():
+    """Start the server for all integration tests across multiple files."""
+    server_process = subprocess.Popen(
+        ["./run.sh", "dev"],
+        preexec_fn=os.setsid,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
-    os.environ["GRAPHDOC_METRIC_CONFIG_PATH"] = str(
-        project_root
-        / "assets"
-        / "configs"
-        / "server"
-        / "single_prompt_schema_doc_quality_trainer.yaml"
-    )
 
-    app = create_app()
-    return app
+    max_attempts = 30
+    for attempt in range(max_attempts):
+        try:
+            response = requests.get("http://localhost:6000/health", timeout=1)
+            if response.status_code == 200:
+                break
+        except requests.exceptions.RequestException:
+            pass
+        time.sleep(1)
+    else:
+        os.killpg(os.getpgid(server_process.pid), signal.SIGTERM)
+        log.warning(f"Server failed to start after {max_attempts} seconds")
+        log.warning(f"You may want to check to make sure that the mlflow server is running")
+        raise Exception(f"Server failed to start after {max_attempts} seconds")
 
+    yield server_process
 
-@pytest.fixture
-def client(app):
-    """Create a test client for the app."""
-    return app.test_client()
-
-
-@pytest.fixture
-def runner(app):
-    """Create a test runner for the app's CLI commands."""
-    return app.test_cli_runner()
+    os.killpg(os.getpgid(server_process.pid), signal.SIGTERM)
