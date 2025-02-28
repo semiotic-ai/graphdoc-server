@@ -199,6 +199,8 @@ def main():
 
     # initialize the KeyManager
     key_manager = KeyManager.get_instance(key_path)
+    log.info(f"Keys: {key_manager.api_keys}")
+    log.info(f"Admin key: {key_manager.get_admin_key()}")
     
     # Load existing API keys
     # load_api_keys()

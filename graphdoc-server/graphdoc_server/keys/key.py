@@ -35,6 +35,7 @@ class KeyManager:
             "api_keys": [],
             "admin_key": None
         }
+        self.admin_key: Optional[str] = None
         self.config_path = config_path
         self.load_api_keys()
     
@@ -53,6 +54,7 @@ class KeyManager:
         """
         if cls._instance is None:
             cls._instance = KeyManager(config_path)
+            cls._instance.load_api_keys()
         elif config_path is not None:
             cls._instance.config_path = config_path
             cls._instance.load_api_keys()
@@ -73,6 +75,9 @@ class KeyManager:
                 with open(self.config_path, 'r') as f:
                     self.api_config = json.load(f)
                     self.api_keys = set(self.api_config.get("api_keys", []))
+                    self.admin_key = self.api_config.get("admin_key")
+                    if self.admin_key:
+                        self.api_keys.add(self.admin_key)
                     log.info(f"Loaded {len(self.api_keys)} API keys from {self.config_path}")
             else:
                 log.warning(f"API config file not found at {self.config_path}")
