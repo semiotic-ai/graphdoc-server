@@ -1,14 +1,15 @@
-# system packages 
+# system packages
 import logging
 import requests
 
-# internal packages 
+# internal packages
 from graphdoc_server import KeyManager
 
-# external packages 
+# external packages
 
-# logging 
+# logging
 log = logging.getLogger(__name__)
+
 
 class TestConftest:
     """Test the conftest file."""
