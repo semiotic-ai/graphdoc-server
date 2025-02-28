@@ -1,16 +1,95 @@
 #!/bin/bash
 
-# Exit on error
+# exit on error
 set -e
 
-# Default values
+# default values
 CONFIG_PATH="../assets/configs/server/single_prompt_schema_doc_generator_module.yaml"
 METRIC_CONFIG_PATH="../assets/configs/server/single_prompt_schema_doc_quality_trainer.yaml"
 MLFLOW_TRACKING_URI="http://localhost:5001"
 PORT=6000
 WORKERS=4
 
-# Function to display usage
+# run development server
+run_dev() {
+    if [ -z "$CONFIG_PATH" ]; then
+        echo "Error: Config path is required for dev mode"
+        exit 1
+    fi
+    export GRAPHDOC_CONFIG_PATH="$CONFIG_PATH"
+    export MLFLOW_TRACKING_URI="$MLFLOW_TRACKING_URI"
+    python -m graphdoc_server.app --config-path "$CONFIG_PATH" --port "$PORT"
+}
+
+# run production server
+run_prod() {
+    if [ -z "$CONFIG_PATH" ]; then
+        echo "Error: Config path is required for prod mode"
+        exit 1
+    fi
+    export GRAPHDOC_CONFIG_PATH="$CONFIG_PATH"
+    gunicorn "graphdoc_server.app:create_app()" \
+        --bind "0.0.0.0:$PORT" \
+        --workers "$WORKERS" \
+        --access-logfile - \
+        --error-logfile -
+}
+
+# run docker build 
+# TODO: add run_docker_build()
+
+# run tests
+run_tests() {
+    pytest -v
+}
+
+# run code quality checks
+run_checks() {
+    echo "🔍 Running Black formatter..."
+    black .
+
+    echo "🔍 Running Pyright type checker..."
+    pyright
+
+    echo "🧪 Running tests..."
+    pytest -v
+
+    echo "✅ All checks passed!"
+}
+
+# parse command line arguments
+COMMAND=""
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        dev|prod|test|check)
+            COMMAND="$1"
+            shift
+            ;;
+        -c|--config)
+            CONFIG_PATH="$2"
+            shift 2
+            ;;
+        -p|--port)
+            PORT="$2"
+            shift 2
+            ;;
+        -w|--workers)
+            WORKERS="$2"
+            shift 2
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            show_help
+            exit 1
+            ;;
+    esac
+done
+
+# function to display usage
 show_help() {
     echo "Usage: ./run.sh [command] [options]"
     echo ""
@@ -34,103 +113,16 @@ show_help() {
     echo "  ./run.sh check"
 }
 
-# Function to run development server
-run_dev() {
-    if [ -z "$CONFIG_PATH" ] || [ -z "$METRIC_CONFIG_PATH" ]; then
-        echo "Error: Both config and metric config paths are required for dev mode"
-        exit 1
-    fi
-    export GRAPHDOC_CONFIG_PATH="$CONFIG_PATH"
-    export GRAPHDOC_METRIC_CONFIG_PATH="$METRIC_CONFIG_PATH"
-    export MLFLOW_TRACKING_URI="$MLFLOW_TRACKING_URI"
-    python -m graphdoc_server.app --config-path "$CONFIG_PATH" --port "$PORT"
-    # python -m graphdoc_server.app --config-path "$CONFIG_PATH" --metric-config-path "$METRIC_CONFIG_PATH" --port "$PORT"
-}
-
-# Function to run production server
-run_prod() {
-    if [ -z "$CONFIG_PATH" ] || [ -z "$METRIC_CONFIG_PATH" ]; then
-        echo "Error: Both config and metric config paths are required for prod mode"
-        exit 1
-    fi
-    export GRAPHDOC_CONFIG_PATH="$CONFIG_PATH"
-    export GRAPHDOC_METRIC_CONFIG_PATH="$METRIC_CONFIG_PATH"
-    gunicorn "graphdoc_server.app:create_app()" \
-        --bind "0.0.0.0:$PORT" \
-        --workers "$WORKERS" \
-        --access-logfile - \
-        --error-logfile -
-}
-
-# Function to run tests
-run_tests() {
-    pytest -v
-}
-
-# Function to run code quality checks
-run_checks() {
-    echo "🔍 Running Black formatter..."
-    black .
-
-    echo "🔍 Running Pyright type checker..."
-    pyright
-
-    echo "🧪 Running tests..."
-    pytest -v
-
-    echo "✅ All checks passed!"
-}
-
-# Parse command line arguments
-COMMAND=""
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        dev|prod|test|check)
-            COMMAND="$1"
-            shift
-            ;;
-        -c|--config)
-            CONFIG_PATH="$2"
-            shift 2
-            ;;
-        -m|--metric-config)
-            METRIC_CONFIG_PATH="$2"
-            shift 2
-            ;;
-        -p|--port)
-            PORT="$2"
-            shift 2
-            ;;
-        -w|--workers)
-            WORKERS="$2"
-            shift 2
-            ;;
-        -h|--help)
-            show_help
-            exit 0
-            ;;
-        *)
-            echo "Unknown option: $1"
-            show_help
-            exit 1
-            ;;
-    esac
-done
-
-# Execute the appropriate command
+# execute the appropriate command
 case "$COMMAND" in
-    "dev")
-        run_dev
-        ;;
-    "prod")
-        run_prod
-        ;;
-    "test")
-        run_tests
-        ;;
-    "check")
-        run_checks
-        ;;
+    # build and run commands
+    "dev") run_dev ;;
+    "prod") run_prod ;;
+
+    # test commands
+    "test") run_tests ;;
+    "check") run_checks ;;
+    
     "")
         echo "Error: No command specified"
         show_help
