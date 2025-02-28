@@ -40,7 +40,7 @@ run_prod() {
 
 # run tests
 run_tests() {
-    pytest -v
+    pytest -v -W ignore
 }
 
 # run code quality checks
