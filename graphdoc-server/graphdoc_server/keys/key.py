@@ -5,7 +5,7 @@ import secrets
 import logging
 import functools
 from pathlib import Path
-from typing import Optional, Callable, Set, Dict, Any
+from typing import Optional, Callable, Set, Dict, Any, Union
 
 # external packages 
 from flask import request, jsonify, Response
@@ -23,7 +23,7 @@ class KeyManager:
     
     _instance = None  # Class variable for singleton pattern
 
-    def __init__(self, config_path: Optional[Path] = None):
+    def __init__(self, config_path: Union[Path, str]):
         """
         Initialize the KeyManager with optional custom config path.
         
@@ -36,16 +36,13 @@ class KeyManager:
             "admin_key": None
         }
         self.config_path = config_path
-        if not self.config_path:
-            # Use default path if none provided
-            self.config_path = self.get_default_config_path()
         self.load_api_keys()
     
     ##################
     # class methods  #
     ##################
     @classmethod
-    def get_instance(cls, config_path: Optional[Path] = None) -> 'KeyManager':
+    def get_instance(cls, config_path: Union[Path, str]) -> 'KeyManager':
         """
         Get the singleton instance of KeyManager.
 
@@ -60,22 +57,6 @@ class KeyManager:
             cls._instance.config_path = config_path
             cls._instance.load_api_keys()
         return cls._instance
-    
-    ##################
-    # static methods #
-    ##################
-    @staticmethod
-    def get_default_config_path() -> Path:
-        """
-        Get the default path to the API configuration file.
-
-        :return: The default path to the API configuration file.
-        :rtype: Path
-        """
-        app_dir = Path(os.path.dirname(os.path.abspath(__file__)))
-        keys_dir = app_dir / "keys"
-        keys_dir.mkdir(exist_ok=True)
-        return keys_dir / "api_key_config.json"
     
     ####################
     # instance methods #
