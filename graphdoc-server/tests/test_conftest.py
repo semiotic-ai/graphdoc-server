@@ -19,11 +19,11 @@ class TestConftest:
         assert response.status_code == 200
         assert response.json() == {"status": "healthy", "model_loaded": True}
 
-    def test_key(self, key):
-        """Test that the key fixture returns a valid KeyManager instance."""
-        assert key is not None
-        assert isinstance(key, KeyManager)
-        assert key._get_test_key() == "test_key"
+    def test_key_manager(self, key_manager):
+        """Test that the key manager fixture returns a valid KeyManager instance."""
+        assert key_manager is not None
+        assert isinstance(key_manager, KeyManager)
+        assert key_manager._get_test_key() == "test_key"
 
     def test_admin(self, admin):
         """Test that the admin fixture returns a valid admin key."""

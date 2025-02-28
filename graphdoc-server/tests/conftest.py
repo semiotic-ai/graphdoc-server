@@ -17,7 +17,7 @@ from pytest import fixture
 log = logging.getLogger(__name__)
 
 # global variables 
-key_path = Path(__file__).parent.parent / "graphdoc_server" / "keys" / "api_key_config.json"
+key_path = Path(__file__).parent / "keys" / "api_key_config.json"
 
 ####################
 # fixtures         #
@@ -54,12 +54,12 @@ def server():
     os.killpg(os.getpgid(server_process.pid), signal.SIGTERM)
 
 @fixture 
-def key(server) -> KeyManager:
+def key_manager(server) -> KeyManager:
     """Returns an instance of the KeyManager class."""
     key_manager = KeyManager.get_instance(key_path)
     return key_manager
 
 @fixture
-def admin(server, key): 
+def admin(server, key_manager): 
     """Returns the admin key for the server. We import the server fixture so that the admin key is set up before this fixture is used."""
-    return key.get_admin_key()
+    return key_manager.get_admin_key()
