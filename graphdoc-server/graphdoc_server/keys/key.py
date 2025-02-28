@@ -111,6 +111,17 @@ class KeyManager:
         self.save_api_keys()
         return new_key
 
+    def delete_api_key(self, key: str) -> None:
+        """
+        Delete an API key from the configuration.
+
+        :param key: The API key to delete.
+        :type key: str
+        """
+        self.load_api_keys()
+        self.api_keys.remove(key)
+        self.save_api_keys()
+
     def get_admin_key(self) -> Optional[str]:
         """
         Get the admin key from configuration.
@@ -181,28 +192,3 @@ class KeyManager:
                 return jsonify({"error": "Admin access required"}), 403
             return func(*args, **kwargs)
         return wrapper
-
-# Create global functions that use the singleton for backward compatibility
-# def get_api_config_path() -> Path:
-#     return KeyManager.get_instance().config_path
-
-# def load_api_keys() -> None:
-#     KeyManager.get_instance().load_api_keys()
-
-# def save_api_keys() -> None:
-#     KeyManager.get_instance().save_api_keys()
-
-# def generate_api_key() -> str:
-#     return KeyManager.get_instance().generate_api_key()
-
-# def get_admin_key() -> Optional[str]:
-#     return KeyManager.get_instance().get_admin_key()
-
-# def set_admin_key(key: str) -> None:
-#     KeyManager.get_instance().set_admin_key(key)
-
-# def require_api_key(func: Callable) -> Callable:
-#     return KeyManager.get_instance().require_api_key(func)
-
-# def require_admin_key(func: Callable) -> Callable:
-#     return KeyManager.get_instance().require_admin_key(func)
