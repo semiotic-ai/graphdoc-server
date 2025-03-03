@@ -13,14 +13,14 @@ log = logging.getLogger(__name__)
 class TestApp:
     def test_health_check(self, server):
         """Test the health check endpoint."""
-        response = requests.get("http://localhost:6000/health")
+        response = requests.get("http://localhost:8080/health")
         assert response.status_code == 200
         assert response.json() == {"status": "healthy", "model_loaded": True}
 
     def test_model_version(self, server, admin):
         """Test the model version endpoint."""
         response = requests.get(
-            "http://localhost:6000/model/version", headers={"X-API-Key": admin}
+            "http://localhost:8080/model/version", headers={"X-API-Key": admin}
         )
         assert response.status_code == 200
         assert response.json() == {"model_name": "base_doc_gen"}
@@ -36,14 +36,14 @@ class TestApp:
         }
         """
         response = requests.post(
-            "http://localhost:6000/inference",
+            "http://localhost:8080/inference",
             headers={"X-API-Key": admin},
             json={"database_schema": test_schema},
         )
         assert response.status_code == 200
         assert response.json()["status"] == "success"
         response = requests.post(
-            "http://localhost:6000/inference",
+            "http://localhost:8080/inference",
             headers={"X-API-Key": next(iter(key_manager.api_keys))},
             json={"database_schema": test_schema},
         )
