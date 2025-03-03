@@ -159,7 +159,7 @@ def create_app() -> Flask:
         raise RuntimeError("Failed to initialize model")
 
     # make sure we have the correct authentication environment variables set (TODO: this should be redundant given the mdh, but we are having issues)
-    if graph_doc.mdh is not None: # type: ignore # we explicitely check for graphdoc.mdh is not None
+    if graph_doc.mdh is not None:  # type: ignore # we explicitely check for graphdoc.mdh is not None
         graph_doc.mdh.set_auth_env_vars()  # type: ignore # we explicitely check for graphdoc.mdh is not None
     else:
         raise ValueError(
@@ -217,7 +217,7 @@ def create_app() -> Flask:
                     return {"error": "Missing database_schema in request"}, 400
 
                 # make sure we have a client initialized
-                if graph_doc.mdh is None: # type: ignore # we explicitely check for graphdoc.mdh is not None
+                if graph_doc.mdh is None:  # type: ignore # we explicitely check for graphdoc.mdh is not None
                     raise ValueError(
                         "Ensure that GraphDoc is initialized with mlflow_tracking_uri, mlflow_tracking_username, and mlflow_tracking_password"
                     )
@@ -226,7 +226,7 @@ def create_app() -> Flask:
                 prediction = module.document_full_schema(
                     database_schema=data["database_schema"],
                     trace=True,
-                    client=graph_doc.mdh.mlflow_client, # type: ignore # we explicitely check for graphdoc.mdh is not None
+                    client=graph_doc.mdh.mlflow_client,  # type: ignore # we explicitely check for graphdoc.mdh is not None
                     expirement_name=config_contents["server"]["mlflow_experiment_name"],
                     api_key=request.headers[
                         "X-API-Key"
