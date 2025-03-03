@@ -80,9 +80,8 @@ def create_app() -> Flask:
     # Read and log the YAML config file contents
     try:
         if config_path:
-            with open(config_path, "r") as file:
-                config_contents = file.read()
-                log.info(f"Config file contents from {config_path}:\n{config_contents}")
+            config_contents = load_yaml_config(config_path)
+            log.info(f"Config file contents from {config_path}:\n{config_contents}")
         else:
             log.warning("Config path is not set, cannot read config file")
 
@@ -96,8 +95,9 @@ def create_app() -> Flask:
     if not init_model(config_path):
         raise RuntimeError("Failed to initialize model")
 
-    if not config:  # This should never happen due to the init_model check above
-        raise RuntimeError("Config is not initialized")
+    # Set dspy and mlflow tracking for traces
+    mlflow.dspy.autolog()
+    mlflow.set_experiment(config_contents["server"]["mlflow_experiment_name"])
 
     # Load API keys
     # load_api_keys()

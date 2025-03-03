@@ -66,5 +66,6 @@ module:
   fill_empty_descriptions: true                         # Whether to fill the empty descriptions in the schema
 
 server: 
-  serve: true # Whether to serve the module
-  port: 5000 # The port to serve the module on
+  serve: true                                           # Whether to serve the module
+  port: 5000                                            # The port to serve the module on
+  mlflow_experiment_name: doc_generator_00              # The name of the experiment in MLflow
