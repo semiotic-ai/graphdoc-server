@@ -69,18 +69,15 @@ class KeyManager:
         :rtype: None
         """
         try:
-            if self.config_path.exists():
-                with open(self.config_path, "r") as f:
-                    self.api_config = json.load(f)
-                    self.api_keys = set(self.api_config.get("api_keys", []))
-                    self.admin_key = self.api_config.get("admin_key")
-                    if self.admin_key:
-                        self.api_keys.add(self.admin_key)
-                    log.info(
-                        f"Loaded {len(self.api_keys)} API keys from {self.config_path}"
-                    )
-            else:
-                log.warning(f"API config file not found at {self.config_path}")
+            with open(self.config_path, "r") as f:
+                self.api_config = json.load(f)
+                self.api_keys = set(self.api_config.get("api_keys", []))
+                self.admin_key = self.api_config.get("admin_key")
+                if self.admin_key:
+                    self.api_keys.add(self.admin_key)
+                log.info(
+                    f"Loaded {len(self.api_keys)} API keys from {self.config_path}"
+                )
         except Exception as e:
             log.error(f"Error loading API keys: {str(e)}")
 
@@ -168,7 +165,7 @@ class KeyManager:
         """
 
         @functools.wraps(func)
-        def wrapper(*args, **kwargs) -> Response:
+        def wrapper(*args, **kwargs):
             api_key = request.headers.get("X-API-Key")
             if not api_key:
                 return jsonify({"error": "API key required"}), 401
@@ -188,7 +185,7 @@ class KeyManager:
         """
 
         @functools.wraps(func)
-        def wrapper(*args, **kwargs) -> Response:
+        def wrapper(*args, **kwargs):
             admin_key = self.get_admin_key()
             if not admin_key:
                 return jsonify({"error": "Admin key not configured on server"}), 500
