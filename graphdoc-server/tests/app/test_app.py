@@ -28,8 +28,11 @@ class TestApp:
     def test_inference(self, server, key_manager, admin):
         """Test the inference endpoint."""
         test_schema = """
-        type TestEntity @entity {
+        type UserEntity @entity {
             id: Bytes!
+            first_name: String!
+            last_name: String!
+            email: String!
         }
         """
         response = requests.post(
