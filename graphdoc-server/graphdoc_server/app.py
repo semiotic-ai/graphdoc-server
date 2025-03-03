@@ -94,6 +94,9 @@ def create_app() -> Flask:
     # Initialize the model
     if not init_model(config_path):
         raise RuntimeError("Failed to initialize model")
+    
+    # make sure we have the correct authentication environment variables set (TODO: this should be redundant given the mdh, but we are having issues)
+    graph_doc.mdh.set_auth_env_vars()
 
     # Set dspy and mlflow tracking for traces
     mlflow.dspy.autolog()
@@ -139,8 +142,18 @@ def create_app() -> Flask:
             if not data or "database_schema" not in data:
                 return jsonify({"error": "Missing database_schema in request"}), 400
 
-            # Run inference
-            prediction = module.document_full_schema(data["database_schema"])
+            # make sure we have a client initialized
+            if graph_doc.mdh is None: 
+                raise ValueError("Ensure that GraphDoc is initialized with mlflow_tracking_uri, mlflow_tracking_username, and mlflow_tracking_password")
+
+            # run the inference with tracing
+            prediction = module.document_full_schema(
+                database_schema=data["database_schema"],
+                trace=True,
+                client=graph_doc.mdh.mlflow_client,
+                expirement_name=config_contents["server"]["mlflow_experiment_name"],
+                api_key=request.headers["X-API-Key"], # record the api key that made the request
+            )
 
             # Convert prediction to string if it's not already
             if hasattr(prediction, "prediction"):
