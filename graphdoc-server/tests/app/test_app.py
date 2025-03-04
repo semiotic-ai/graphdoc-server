@@ -53,5 +53,10 @@ class TestApp:
     # def test_create_api_key(self):
     #     pass
 
-    # def test_list_api_keys(self):
-    #     pass
+    def test_list_api_keys(self, server, admin):
+        """Test the list API keys endpoint."""
+        response = requests.get(
+            "http://localhost:8080/api-keys/list", headers={"X-API-Key": admin}
+        )
+        assert response.status_code == 200
+        assert response.json()["status"] == "success"
