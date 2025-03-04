@@ -7,15 +7,18 @@ authors = ["Your Name <your.email@example.com>"]
 [tool.poetry.dependencies]
 python = "3.13.0"
 flask = "^2.0.0"
-graphdoc = {path = "../graphdoc", develop = true}  # For local development
 mlflow = "2.20.0"
 dspy = "2.6.3"
 litellm = "1.61.6"
 gunicorn = "22.0.0"
+graphdoc = {path = "../graphdoc", develop = true}  # For local development
+# graphdoc = {git = "https://github.com/semiotic-ai/graphdoc.git", subdirectory = "graphdoc"}
+flask-restx = "^1.3.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "8.0.0"  # Latest version with better Python 3.13 support
 black = "^22.0.0"
+pyright = "1.1.392.post0"
 flake8 = "^4.0.0"
 pytest-flask = "^1.3.0"
 requests = "^2.31.0"

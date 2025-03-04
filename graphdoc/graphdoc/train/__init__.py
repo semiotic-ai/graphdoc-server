@@ -1,28 +1,25 @@
+# Copyright 2025-, Semiotic AI, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
 # system packages
-from typing import Any, Dict, List
+import logging
 
 # internal packages
-from .single_prompt_trainer import SinglePromptTrainerRunner
-from .doc_quality_trainer import DocQualityTrainer
-from .doc_generator_trainer import DocGeneratorTrainer
-from ..prompts import SinglePrompt
+from .optimizers import *
+from .single_prompt_trainer import *
+from .doc_quality_trainer import *
+from .doc_generator_trainer import *
 
 # external packages
 import dspy
 
-# optimizer:
-#   optimizer_type: miprov2
-#   # metric: this is set in the prompt
-#   auto: light # miprov2 setting
-#   # student: this is the prompt.infer object
-#   # trainset: this is the dataset we are working with
-#   max_labeled_demos: 0
-#   max_bootstrapped_demos: 4
+# logging
+log = logging.getLogger(__name__)
 
 
 class TrainerFactory:
     @staticmethod
-    def get_single_prompt_trainer(
+    def single_trainer(
         trainer_class: str,
         prompt: SinglePrompt,
         optimizer_type: str,

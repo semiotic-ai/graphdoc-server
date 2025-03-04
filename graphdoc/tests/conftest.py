@@ -1,139 +1,167 @@
+# Copyright 2025-, Semiotic AI, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
 # system packages
 import os
 import logging
+from enum import Enum
 from pathlib import Path
 
 # internal packages
-from graphdoc import GraphDoc
-from graphdoc import DocQuality
 from graphdoc import Parser
-from graphdoc import DataHelper
-from graphdoc import FlowLoader
+from graphdoc import GraphDoc
+from graphdoc import LocalDataHelper
+from graphdoc import DocGeneratorPrompt, DocQualityPrompt
 
 # external packages
-from graphdoc.generate import DocGeneratorEval
 from pytest import fixture
 from dotenv import load_dotenv
-from dspy import Example
+import mlflow
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+# logging
 log = logging.getLogger(__name__)
 
-# Global Variables
-load_dotenv("../.env")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-HF_DATASET_KEY = os.getenv("HF_DATASET_KEY")
-CACHE = True
+# define test asset paths
+TEST_DIR = Path(__file__).resolve().parent
+ASSETS_DIR = TEST_DIR / "assets"
+MLRUNS_DIR = ASSETS_DIR / "mlruns"
+ENV_PATH = TEST_DIR / ".env"
 
-# Define the base directory (project root)
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-SCHEMA_DIR = BASE_DIR / "graphdoc" / "tests" / "assets" / "schemas"
-MLFLOW_DIR = Path(BASE_DIR) / "graphdoc" / "tests" / "assets" / "mlruns"
-
-
-#############################
-# Internal Package Fixtures #
-#############################
-def pytest_addoption(parser):
-    parser.addoption(
-        "--fire",
-        action="store_true",
-        default=False,
-        help="Make external API calls and save responses locally",
-    )
-
-    parser.addoption(
-        "--dry-fire",
-        action="store_true",
-        default=False,
-        help="Load locally saved data instead of making API calls",
-    )
-
-    parser.addoption(
-        "--write",
-        action="store_true",
-        default=False,
-        help="Make external write call",
-    )
-
-    parser.addoption(
-        "--run-evaluator",
-        action="store_true",
-        default=False,
-        help="Run the evaluator",
-    )
+# Check if .env file exists
+if not ENV_PATH.exists():
+    log.error(f".env file not found at {ENV_PATH}")
+else:
+    log.info(f".env file found at {ENV_PATH}")
+    load_dotenv(dotenv_path=ENV_PATH, override=True)
 
 
-@fixture
-def fire(request):
-    return request.config.getoption("--fire")
+# Set default environment variables if not present
+def ensure_env_vars():
+    """Ensure all required environment variables are set with defaults if needed."""
+    env_defaults = {
+        "OPENAI_API_KEY": None,  # No default, must be provided
+        "HF_DATASET_KEY": None,  # No default, must be provided
+        "MLFLOW_TRACKING_URI": str(MLRUNS_DIR),
+    }
+    log.info(f"Environment variable path: {ENV_PATH}")
+
+    for key in env_defaults:
+        value = os.environ.get(key, "NOT SET")
+        if value != "NOT SET":
+            if "API_KEY" in key or "DATASET_KEY" in key:
+                log.info(f"Environment variable {key}: SET (value masked)")
+            else:
+                log.info(f"Environment variable {key}: SET to {value}")
+        else:
+            log.info(f"Environment variable {key}: NOT SET")
+
+    for key, default in env_defaults.items():
+        if key not in os.environ and default is not None:
+            os.environ[key] = default
+            log.info(f"Setting default for {key}: {default}")
+        elif key not in os.environ and default is None:
+            log.warning(f"Required environment variable {key} not set")
 
 
-@fixture
-def dry_fire(request):
-    return request.config.getoption("--dry-fire")
+@fixture(autouse=True, scope="session")
+def setup_env():
+    """Fixture to ensure environment is properly set up before each test."""
+    if ENV_PATH.exists():
+        load_dotenv(dotenv_path=ENV_PATH, override=True)
+    ensure_env_vars()
 
 
-@fixture
-def write(request):
-    return request.config.getoption("--write")
+class OverwriteSchemaCategory(Enum):
+    PERFECT = "perfect (TEST)"
+    ALMOST_PERFECT = "almost perfect (TEST)"
+    POOR_BUT_CORRECT = "poor but correct (TEST)"
+    INCORRECT = "incorrect (TEST)"
+    BLANK = "blank (TEST)"
 
 
-@fixture
-def run_evaluator(request):
-    return request.config.getoption("--run-evaluator")
+class OverwriteSchemaRating(Enum):
+    FOUR = "8"
+    THREE = "6"
+    TWO = "4"
+    ONE = "2"
+    ZERO = "0"
 
 
-@fixture
-def gd() -> GraphDoc:
-    if OPENAI_API_KEY and HF_DATASET_KEY:
-        return GraphDoc(
-            model="openai/gpt-4o-mini",
-            api_key=OPENAI_API_KEY,
-            hf_api_key=HF_DATASET_KEY,
-            cache=CACHE,
-            mlflow_tracking_uri=MLFLOW_DIR,
-        )
-    else:
-        log.warning(
-            "Missing OPENAI_API_KEY or HF_DATASET_KEY. Ensure .env is properly set."
-        )
-        return GraphDoc(
-            model="openai/gpt-4o-mini",
-            api_key="filler api key",
-            hf_api_key="filler api key",
-            cache=CACHE,
-        )
+class OverwriteSchemaCategoryRatingMapping:
+    def get_rating(self, category: OverwriteSchemaCategory) -> OverwriteSchemaRating:
+        mapping = {
+            OverwriteSchemaCategory.PERFECT: OverwriteSchemaRating.FOUR,
+            OverwriteSchemaCategory.ALMOST_PERFECT: OverwriteSchemaRating.THREE,
+            OverwriteSchemaCategory.POOR_BUT_CORRECT: OverwriteSchemaRating.TWO,
+            OverwriteSchemaCategory.INCORRECT: OverwriteSchemaRating.ONE,
+            OverwriteSchemaCategory.BLANK: OverwriteSchemaRating.ZERO,
+        }
+        return mapping.get(category, OverwriteSchemaRating.ZERO)
 
 
 @fixture
 def par() -> Parser:
-    schema_directory_path = BASE_DIR / "graphdoc" / "tests" / "assets" / "schemas"
-    return Parser(schema_directory_path=str(schema_directory_path))
+    return Parser()
 
 
 @fixture
-def dh() -> DataHelper:
-    log.debug(f"HF_DATASET_KEY: {HF_DATASET_KEY}")
-    return DataHelper(hf_api_key=HF_DATASET_KEY, schema_directory_path=str(SCHEMA_DIR))
+def default_ldh() -> LocalDataHelper:
+    return LocalDataHelper()
 
 
 @fixture
-def dge() -> DocGeneratorEval:
-    dh = DataHelper(hf_api_key=HF_DATASET_KEY)
-    return DocGeneratorEval(dh)
+def overwrite_ldh() -> LocalDataHelper:
+    return LocalDataHelper(
+        categories=OverwriteSchemaCategory,
+        ratings=OverwriteSchemaRating,
+        categories_ratings=OverwriteSchemaCategoryRatingMapping.get_rating,
+    )
 
 
 @fixture
-def trainset(dh: DataHelper) -> list[Example]:
-    graphdoc_ds = dh._folder_of_folders_to_dataset(parse_objects=False)
-    examples = dh._create_graph_doc_example_trainset(graphdoc_ds)
-    return examples
+def gd() -> GraphDoc:
+    """Fixture for GraphDoc with proper environment setup."""
+    # Ensure environment is set up correctly
+    if ENV_PATH.exists():
+        load_dotenv(dotenv_path=ENV_PATH, override=True)
+    ensure_env_vars()
+
+    api_key = os.environ.get("OPENAI_API_KEY")
+    mlflow_tracking_username = os.environ.get("MLFLOW_TRACKING_USERNAME")
+    mlflow_tracking_password = os.environ.get("MLFLOW_TRACKING_PASSWORD")
+    if not api_key:
+        log.error("OPENAI_API_KEY still not available after loading .env file")
+
+    return GraphDoc(
+        model_args={
+            "model": "gpt-4o-mini",
+            "api_key": api_key,
+            "cache": True,
+        },
+        mlflow_tracking_uri=MLRUNS_DIR,
+        mlflow_tracking_username=mlflow_tracking_username,
+        mlflow_tracking_password=mlflow_tracking_password,
+        log_level="INFO",
+    )
+
 
 @fixture
-def fl() -> FlowLoader:
-    return FlowLoader(mlflow_tracking_uri=MLFLOW_DIR)
+def dqp():
+    return DocQualityPrompt(
+        prompt="doc_quality",
+        prompt_type="predict",
+        prompt_metric="rating",
+    )
+
+
+@fixture
+def dgp():
+    return DocGeneratorPrompt(
+        prompt="base_doc_gen",
+        prompt_type="chain_of_thought",
+        prompt_metric=DocQualityPrompt(
+            prompt="doc_quality",
+            prompt_type="predict",
+            prompt_metric="rating",
+        ),
+    )

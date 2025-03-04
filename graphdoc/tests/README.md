@@ -1,18 +1,29 @@
-# Setup
+# GraphDoc Tests
 
-Ensure that you have the following environment variables set:
-
-- OPENAI_API_KEY
-- HF_DATASET_KEY
+## Setup
 
 ```bash
-export OPENAI_API_KEY=<your_openai_api_key>
-export HF_DATASET_KEY=<your_hf_dataset_key>
+# navigate to the graphdoc/tests directory
+cd graphdoc/graphdoc/tests
+
+# copy the .env.example file to .env and set the environment variables
+cp .env.example .env
+
+# (optional) set environment variables directly in the shell
+export OPENAI_API_KEY="<your-openai-api-key>"
+export MLFLOW_TRACKING_URI="<your-mlflow-tracking-uri>"
+export HF_DATASET_KEY="<your-huggingface-dataset-key>"
+
+# navigate to the graphdoc package root
+cd..
+
+# make sure the run.sh script is executable
+chmod +x run.sh
+
+# run the tests
+./run.sh test
+
+# optionally, run with linting and formatting
+./run.sh commit
 ```
 
-Or, you can set the environment variables in a `.env` file in the root directory.
-
-```text
-OPENAI_API_KEY=<your_openai_api_key>
-HF_DATASET_KEY=<your_hf_dataset_key>
-```

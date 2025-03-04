@@ -1,10 +1,13 @@
+# Copyright 2025-, Semiotic AI, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
 # system packages
-from typing import Optional, Union
+import logging
 
 # internal packages
-from .schema_doc_quality import DocQualityPrompt, DocQualitySignature
-from .schema_doc_generation import DocGeneratorPrompt, DocGeneratorSignature
-from .single_prompt import SinglePrompt
+from .single_prompt import *
+from .schema_doc_quality import *
+from .schema_doc_generation import *
 
 # external packages
 import dspy
@@ -12,17 +15,28 @@ import dspy
 
 class PromptFactory:
     @staticmethod
-    def get_single_prompt(
-        prompt: Union[str, dspy.Signature],
+    def single_prompt(
+        prompt: Union[str, dspy.Signature, dspy.SignatureMeta],
         prompt_class: str,
         prompt_type: str,
         prompt_metric: Union[str, DocQualityPrompt, SinglePrompt],
     ) -> SinglePrompt:
         """
-        Returns an instance of the specified prompt class.
+        Returns an instance of the specified prompt class. Allows for the user to pass in their own dspy signature.
+
+        :param prompt: The prompt to use.
+        :type prompt: Union[str, dspy.Signature]
+        :param prompt_class: The class of the prompt to use.
+        :type prompt_class: str
+        :param prompt_type: The type of the prompt to use.
+        :type prompt_type: str
+        :param prompt_metric: The metric to use for the prompt.
+        :type prompt_metric: Union[str, DocQualityPrompt, SinglePrompt]
+        :return: An instance of the specified prompt class.
+        :rtype: SinglePrompt
         """
         prompt_classes = {
-            "SchemaDocQualityPrompt": DocQualityPrompt,
+            "DocQualityPrompt": DocQualityPrompt,
             "DocGeneratorPrompt": DocGeneratorPrompt,
         }
         if prompt_class not in prompt_classes:
@@ -30,11 +44,7 @@ class PromptFactory:
         try:
             # TODO: we should be able to have better type checking here
             return prompt_classes[prompt_class](
-                prompt=prompt, type=prompt_type, metric_type=prompt_metric  # type: ignore
+                prompt=prompt, prompt_type=prompt_type, prompt_metric=prompt_metric
             )
         except Exception as e:
             raise ValueError(f"Failed to initialize prompt class ({prompt_class}): {e}")
-
-
-# David Cheriton(?) - one of the first google developers
-# avoid uneccessary verbs (get_single_prompt -> single_prompt): this is a readability thing. oop is nouns, not verbs.

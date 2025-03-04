@@ -1,16 +1,18 @@
+# Copyright 2025-, Semiotic AI, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
 # system packages
 import logging
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Callable, Dict, List, Literal, Union
 
 # internal packages
+from graphdoc import Parser
 from .single_prompt import SinglePrompt
 from .schema_doc_quality import DocQualityPrompt
-from ..parser import Parser
 
 # external packages
 import dspy
-from graphql import parse, print_ast
-from dspy.utils.parallelizer import ParallelExecutor
+from graphql import parse
 
 # logging
 log = logging.getLogger(__name__)
@@ -83,15 +85,29 @@ class BadDocGeneratorSignature(dspy.Signature):
     )
 
 
-def doc_gen_factory(key: Union[str, dspy.Signature]):
-    if not isinstance(key, str):  # TODO: we can handle this in a much better way
+def doc_gen_factory(
+    key: Union[str, dspy.Signature, dspy.SignatureMeta]
+) -> Union[dspy.Signature, dspy.SignatureMeta]:
+    """
+    Factory function to return the correct signature based on the key. Currently only supports three signatures (zero_shot_doc_gen, doc_gen_helper, bad_doc_gen).
+
+    :param key: The key to return the signature for.
+    :type key: Union[str, dspy.Signature]
+    :return: The signature for the given key.
+    :rtype: Union[dspy.Signature, dspy.SignatureMeta]
+    """
+    # allow the user to pass in their own dspy signature
+    if isinstance(key, dspy.Signature) or isinstance(key, dspy.SignatureMeta):
         return key
     factory = {
-        "zero_shot_doc_gen": DocGeneratorSignature,
+        "base_doc_gen": DocGeneratorSignature,
         "doc_gen_helper": DocGeneratorHelperSignature,
         "bad_doc_gen": BadDocGeneratorSignature,
     }
-    return factory[key]
+    signature = factory.get(key, None)
+    if signature is None:
+        raise ValueError(f"Invalid signature (type: {type(key)}): {key}")
+    return signature
 
 
 #######################
@@ -100,31 +116,35 @@ def doc_gen_factory(key: Union[str, dspy.Signature]):
 class DocGeneratorPrompt(SinglePrompt):
     def __init__(
         self,
-        metric_type: DocQualityPrompt,  # factory function here would unify our types
-        type: Literal["predict", "chain_of_thought"] = "chain_of_thought",
-        prompt: Union[str, dspy.Signature] = "zero_shot_doc_gen",
-        # prompt: Optional[dspy.Signature] = None,
+        prompt: Union[str, dspy.Signature, dspy.SignatureMeta],
+        prompt_type: Union[Literal["predict", "chain_of_thought"], Callable],
+        prompt_metric: DocQualityPrompt,
     ) -> None:
-        # if prompt is None:
-        # prompt = DocGeneratorSignature  # type: ignore
         prompt_signature = doc_gen_factory(prompt)
-        super().__init__(prompt=prompt_signature, type=type, metric_type=metric_type)  # type: ignore
+        super().__init__(
+            prompt=prompt_signature,
+            prompt_type=prompt_type,
+            prompt_metric=prompt_metric,
+        )
 
-        # initialize the parser
-        self.par = Parser()
-
-    # metric functions
+    #######################
+    # Class Methods       #
+    #######################
     def evaluate_documentation_quality(
-        self, schema: dspy.Example, pred: dspy.Prediction, trace=None
+        self, schema: dspy.Example, pred: dspy.Prediction, trace=None, scalar=True
     ) -> int:
         """
-        A helper function to evaluate the quality of the documentation.
+        Evaluate the quality of the documentation. Utilizes the instantiated metric type to evaluate the quality of the documentation.
 
-        :param pred: The prediction to evaluate
-        :type pred: Prediction
-        :param trace: The trace of the prediction
-        :type trace: Optional[str]
-        :return: The quality of the documentation
+        :param schema: The schema to evaluate the documentation for.
+        :type schema: dspy.Example
+        :param pred: The predicted documentation.
+        :type pred: dspy.Prediction
+        :param trace: The trace of the prediction.
+        :type trace: Any
+        :param scalar: Whether to return a squared score or the full evaluation object.
+        :type scalar: bool
+        :return: The squared score or the full evaluation object.
         :rtype: int
         """
         try:
@@ -135,80 +155,71 @@ class DocGeneratorPrompt(SinglePrompt):
                 f"evaluate_documentation_quality: An exception occurred while parsing the schema: {e}"
             )
             return 1
-        if not self.par.schema_equality_check(gold_schema, pred_schema):
+        if not Parser.schema_equality_check(gold_schema, pred_schema):
             log.warning("evaluate_documentation_quality: Schema equality check failed")
             return 1
 
         # we use the instantiated metric type to evaluate the quality of the documentation
-        evaluation = self.metric_type.infer(database_schema=pred.documented_schema)
+        # TODO: we could add a check to make sure an LM object is initialized
+        evaluation = self.prompt_metric.infer(database_schema=pred.documented_schema)
         log.info(f"evaluate_documentation_quality: Evaluation: {evaluation.rating}")
-        return (
-            evaluation.rating**2
-        )  # MSE: not really, but the same idea, scale the value based on difference from descired score
 
-    # abstract methods
+        if scalar:
+            return evaluation.rating**2
+        else:
+            return evaluation.rating
+
+    #######################
+    # Abstract Methods    #
+    #######################
     def evaluate_metric(
         self, example: dspy.Example, prediction: dspy.Prediction, trace=None
     ) -> Any:
+        # TODO: we should expose a way to adjust the scalar value if we want to
         return self.evaluate_documentation_quality(example, prediction, trace)
 
-    def _format_metric(  # this should be public
+    def format_metric(
         self,
         examples: List[dspy.Example],
         overall_score: float,
         results: List,
         scores: List,
     ) -> Dict[str, Any]:
+        """
+        Format the metric results into a dictionary.
+
+        :param examples: The examples used to evaluate the metric.
+        :type examples: List[dspy.Example]
+        :param overall_score: The overall score of the metric.
+        :type overall_score: float
+        :param results: The results of the metric.
+        :type results: List
+        :param scores: The scores of the metric.
+        :type scores: List
+        """
+        # TODO: we can expand this to further parse out the results and scores
         return {
             "overall_score": overall_score,
             "scores": scores,
             "results": results,
-        }  # WIP
+        }
 
-    def _compare_metrics(
-        self, base_metrics, optimized_metrics, comparison_value: str = "overall_score"
+    def compare_metrics(
+        self,
+        base_metrics: Any,
+        optimized_metrics: Any,
+        comparison_value: str = "overall_score",
     ) -> bool:
+        """
+        Compare the base and optimized metrics.
+
+        :param base_metrics: The base metrics.
+        :type base_metrics: Any
+        :param optimized_metrics: The optimized metrics.
+        """
         if comparison_value == "overall_score":
-            return optimized_metrics["overall_score"] > base_metrics["overall_score"]
+            return optimized_metrics.get("overall_score", 0) > base_metrics.get(
+                "overall_score", 0
+            )
         else:
             raise ValueError(f"Invalid comparison value: {comparison_value}")
-
-    #########################################
-    # Schema Generation
-    #########################################
-    def decompose_and_document_schema(self, schema: str) -> Union[str, None]:
-        """
-        Decompose the schema into smaller components and document each component.
-        """
-        try:
-            components = parse(schema)
-            examples = []
-            for component in components.definitions:
-                component = self.par.fill_empty_descriptions(component)
-                example = dspy.Example(database_schema=component, documented_schema="")
-                examples.append(example)
-
-            executor = ParallelExecutor(
-                num_threads=4,
-                disable_progress_bar=False,
-                max_errors=4,
-                provide_traceback=False,
-                compare_results=False,
-            )
-
-            def process_item(example):
-                prediction = self.infer(**example.inputs())
-                if not self.par.schema_equality_check(
-                    example.database_schema, prediction.documented_schema
-                ):
-                    log.warning("Schema equality check failed")
-                    prediction = self.infer(
-                        **example.inputs()
-                    )  # we should handle retry logic better
-                return prediction
-
-            results = executor.execute(process_item, examples)
-            # for result in
-
-        except Exception as e:
-            raise ValueError(f"An exception occurred while parsing the schema: {e}")

@@ -1,29 +1,12 @@
+#!/bin/bash
+
+# development and installation commands
 python_command() {
     poetry run python
 }
 
 shell_command() {
     poetry shell
-}
-
-format_command() {
-    poetry run black .
-}
-
-lint_command() {
-    poetry run pyright .
-}
-
-test_fire_command() {
-    poetry run pytest --fire 
-}
-
-test_dry_command() {
-    poetry run pytest --dry-fire 
-}
-
-test_command() {
-    poetry run pytest 
 }
 
 install_command() {
@@ -34,139 +17,122 @@ dev_command() {
     poetry install --with dev
 }
 
+requirements_command() {
+    poetry export -f requirements.txt --without-hashes --with dev,docs --output requirements.txt
+}
+
+format_command() {
+    poetry run black .
+}
+
+lint_command() {
+    poetry run pyright .
+}
+
+test_command() {
+    poetry run pytest --testmon -p no:warnings
+}
+
 commit_command() {
     format_command
     lint_command
     test_command
+    requirements_command
 }
 
-commit_fire_command() {
-    format_command
-    lint_command
-    test_fire_command
+# Documentation commands
+docs() {
+    echo "Building documentation..."
+    cd docs && make clean html
+    echo "Documentation built in docs/build/html"
 }
 
-commit_dry_command() {
-    format_command
-    lint_command
-    test_dry_command
+docs_init() {
+    echo "Initializing Sphinx documentation..."
+    # Remove existing docs directory if it exists
+    rm -rf docs
+    # Create fresh docs directory
+    mkdir -p docs
+    cd docs
+    sphinx-quickstart -q \
+        -p GraphDoc \
+        -a "Semiotic Labs" \
+        -v 1.0 \
+        -r 1.0 \
+        -l en \
+        --ext-autodoc \
+        --ext-viewcode \
+        --makefile \
+        --batchfile
+    # Create necessary directories
+    mkdir -p source/_static source/_templates
+    echo "Sphinx documentation initialized"
 }
 
-commit_ci_command() {
-    format_command
-    test_dry_command
+# train commands
+doc_quality_train_command() {
+    poetry run python runners/train/single_prompt_trainer.py --config-path assets/configs/single_prompt_doc_quality_trainer.yaml
 }
 
-# training scripts 
-train_single_prompt_quality_command() {
-    poetry run python runners/train/doc_quality_trainer.py --config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
+doc_generator_train_command() {
+    poetry run python runners/train/single_prompt_trainer.py --config-path assets/configs/single_prompt_doc_generator_trainer.yaml
 }
 
-train_single_prompt_generator_command() {
-    poetry run python runners/train/doc_generator_trainer.py --config-path ../assets/configs/single_prompt_schema_doc_generator_trainer.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
+# eval commands
+doc_generator_eval_command() {
+    poetry run python runners/eval/eval_doc_generator_module.py --config-path assets/configs/single_prompt_doc_generator_module_eval.yaml
 }
 
-# eval scripts
-eval_single_prompt_doc_generator_command() {
-    poetry run python runners/eval/eval_doc_generator_prompt.py --config-path ../assets/configs/single_prompt_schema_doc_generator_trainer.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
-}
-
-eval_single_prompt_doc_quality_command() {
-    poetry run python runners/eval/eval_doc_quality_prompt.py --config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
-}
-
-eval_module_doc_generator_command() {
-    poetry run python runners/eval/eval_doc_generator_module.py --config-path ../assets/configs/single_prompt_schema_doc_generator_trainer.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
-}
-
-# data scripts
-local_data_update_command() {
-    poetry run python runners/data/local_data_update.py --repo-card False
-}
-
-generate_bad_data_command() {
-    poetry run python runners/data/bad_data_generator.py --config-path ../assets/configs/single_prompt_schema_bad_doc_generator_trainer.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
-}
-
-generate_poor_data_command() {
-    poetry run python runners/data/poor_data_generator.py --config-path ../assets/configs/single_prompt_schema_bad_doc_generator_trainer.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml
-}
-
-# serve scripts
-serve_doc_generator_module_command() {
-    poetry run python runners/serve/serve_doc_generator_module.py --config-path ../assets/configs/single_prompt_schema_doc_generator_module.yaml --metric-config-path ../assets/configs/single_prompt_schema_doc_quality_trainer.yaml 
-}
-
+# help menu
 show_help() {
     echo "Usage: ./nli [option]"
     echo "Options:"
+    
+    # development and installation commands
     echo "  python                 Run Python"
-    echo "  shell                  Run a shell in the virtual environment"
+    echo "  shell                  Run shell"
+    echo "  install                Install dependencies"
+    echo "  dev                    Install dependencies with dev"
+    echo "  requirements           Generate requirements.txt"
     echo "  format                 Format the code"
     echo "  lint                   Lint the code"
-    echo "  test                   Run tests"
-    echo "  test-fire              Run tests with external calls"
-    echo "  test-dry               Run tests without external calls"
-    echo "  commit                 Run format, lint and test"
-    echo "  commit-fire            Run format, lint and test-fire"
-    echo "  commit-dry             Run format, lint and test-dry"
-    echo "  commit-ci              Run format and test-dry"
-    echo "  install                Install dependencies"
-    echo "  dev                    Install development dependencies"
+    echo "  test                   Run the tests"
+    echo "  commit                 Format, lint, and test the code"
+    echo "  docs                   Build the documentation"
+    echo "  docs-init              Initialize the Sphinx documentation"
 
-    # training scripts
-    echo "  train-single-prompt-quality Run single prompt quality training"
-    echo "  train-single-prompt-generator Run single prompt quality training"
+    # train commands
+    echo "  doc-quality-train      Train a document quality model"
+    echo "  doc-generator-train    Train a document generator model"
 
-    # eval scripts
-    echo "  eval-single-prompt-doc-generator Run single prompt doc generator evaluation"
-    echo "  eval-single-prompt-doc-quality Run single prompt doc quality evaluation"
-    echo "  eval-module-doc-generator Run single module doc generator evalution"
-
-    # data scripts
-    echo "  local-data-update       Upload local data to the Hugging Face Hub"
-    echo "  generate-bad-data       Generate bad data for evaluation"
-    echo "  generate-poor-data      Generate poor data for evaluation"
-
-    # serve scripts
-    echo "  serve-doc-generator-module Run the doc generator module"
+    # eval commands
+    echo "  doc-generator-eval     Evaluate a document generator model"
 }
 
+# handle command line arguments
 if [ -z "$1" ]; then
     show_help
 else
     case "$1" in
+
+        # development and installation commands
         "python") python_command ;;
         "shell") shell_command ;;
+        "install") install_command ;;
+        "dev") dev_command ;;
+        "requirements") requirements_command ;;
         "format") format_command ;;
         "lint") lint_command ;;
         "test") test_command ;;
-        "test-fire") test_fire_command ;;
-        "test-dry") test_dry_command ;;
         "commit") commit_command ;;
-        "commit-fire") commit_fire_command ;;
-        "commit-dry") commit_dry_command ;;
-        "commit-ci") commit_ci_command ;;
-        "install") install_command ;;
-        "dev") dev_command ;;
-
-        # training scripts
-        "train-single-prompt-quality") train_single_prompt_quality_command ;;
-        "train-single-prompt-generator") train_single_prompt_generator_command ;;
-
-
-        # eval scripts
-        "eval-single-prompt-doc-generator") eval_single_prompt_doc_generator_command ;;
-        "eval-single-prompt-doc-quality") eval_single_prompt_doc_quality_command ;;
-        "eval-module-doc-generator") eval_module_doc_generator_command;;
-
-        # data scripts
-        "local-data-update") local_data_update_command ;;
-        "generate-bad-data") generate_bad_data_command ;;
-        "generate-poor-data") generate_poor_data_command ;;
-
-        # serve scripts
-        "serve-doc-generator-module") serve_doc_generator_module_command ;;
-        *) show_help ;;
+        "docs") docs ;;
+        "docs-init") docs_init ;;
+        "doc-quality-train") doc_quality_train_command ;;
+        "doc-generator-train") doc_generator_train_command ;;
+        "doc-generator-eval") doc_generator_eval_command ;;
+        *)
+            echo "Usage: $0 {test|lint|format|docs|docs-init|doc-quality-train|doc-generator-train|doc-generator-eval}"
+            exit 1
+            ;;
     esac
 fi
