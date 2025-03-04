@@ -1367,7 +1367,7 @@ optional = false
 python-versions = "3.13.0"
 groups = ["main"]
 files = []
-develop = false
+develop = true
 
 [package.dependencies]
 dspy = "2.6.3"
@@ -1376,11 +1376,8 @@ mlflow = "2.20.0"
 responses = "^0.25.6"
 
 [package.source]
-type = "git"
-url = "https://github.com/semiotic-ai/graphdoc.git"
-reference = "HEAD"
-resolved_reference = "35a6f056ea64b5fdacbbe21c9de44162203102b4"
-subdirectory = "graphdoc"
+type = "directory"
+url = "../graphdoc"
 
 [[package]]
 name = "graphene"
@@ -4931,4 +4928,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "3.13.0"
-content-hash = "9ffa94a9e5ae4db02d1b461db5b73da31e29ed12104dcf509bc3deeb3ebfb122"
+content-hash = "6e82c78729aac277d88fff4b76eee0b7b95e49488863b1fe569197abf645f989"
