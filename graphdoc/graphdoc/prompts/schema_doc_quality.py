@@ -1,8 +1,10 @@
+# Copyright 2025-, Semiotic AI, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
 # system packages
 import logging
-from abc import abstractmethod
 from collections import defaultdict
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Callable, Dict, List, Literal, Union
 
 # internal packages
 from .single_prompt import SinglePrompt
@@ -29,9 +31,9 @@ class DocQualitySignature(dspy.Signature):
     """
 
     database_schema: str = dspy.InputField()
-    category: Literal["perfect", "almost perfect", "poor but correct", "incorrect"] = (
-        dspy.OutputField()
-    )
+    category: Literal[
+        "perfect", "almost perfect", "poor but correct", "incorrect"
+    ] = dspy.OutputField()
     rating: Literal[4, 3, 2, 1] = dspy.OutputField()
 
 
@@ -67,20 +69,33 @@ class DocQualityDemonstrationSignature(dspy.Signature):
     """
 
     database_schema: str = dspy.InputField()
-    category: Literal["perfect", "almost perfect", "poor but correct", "incorrect"] = (
-        dspy.OutputField()
-    )
+    category: Literal[
+        "perfect", "almost perfect", "poor but correct", "incorrect"
+    ] = dspy.OutputField()
     rating: Literal[4, 3, 2, 1] = dspy.OutputField()
 
 
-def doc_quality_factory(key: Union[str, dspy.Signature]):
-    if not isinstance(key, str):  # TODO: we could handle this in a much better way
+def doc_quality_factory(
+    key: Union[str, dspy.Signature, dspy.SignatureMeta]
+) -> Union[dspy.Signature, dspy.SignatureMeta]:
+    """
+    Factory function to return the correct signature based on the key. Currently only supports two signatures (doc_quality and doc_quality_demo).
+
+    :param key: The key to return the signature for.
+    :type key: Union[str, dspy.Signature]
+    :return: The signature for the given key.
+    """
+    # allow the user to pass in their own dspy signature
+    if isinstance(key, dspy.Signature) or isinstance(key, dspy.SignatureMeta):
         return key
     factory = {
         "doc_quality": DocQualitySignature,
         "doc_quality_demo": DocQualityDemonstrationSignature,
     }
-    return factory[key]
+    signature = factory.get(key, None)
+    if signature is None:
+        raise ValueError(f"Invalid signature (type: {type(key)}): {key}")
+    return signature
 
 
 #######################
@@ -89,21 +104,37 @@ def doc_quality_factory(key: Union[str, dspy.Signature]):
 class DocQualityPrompt(SinglePrompt):
     def __init__(
         self,
-        type: Literal["predict", "chain_of_thought"] = "predict",
-        metric_type: Literal[
-            "rating", "category"
-        ] = "rating",  # this could be a factory function instead
-        prompt: Union[str, dspy.Signature] = "doc_quality",
-        # prompt: Optional[dspy.Signature] = None,
+        prompt: Union[
+            Literal["doc_quality", "doc_quality_demo"],
+            dspy.Signature,
+            dspy.SignatureMeta,
+        ] = "doc_quality",
+        prompt_type: Union[
+            Literal["predict", "chain_of_thought"], Callable
+        ] = "predict",
+        prompt_metric: Union[Literal["rating", "category"], Callable] = "rating",
     ) -> None:
-        # TODO: we should type this better
-        # if prompt is None:
-        # prompt = DocQualitySignature  # type: ignore
+        # TODO: we should think about if we want to add checks on any provided dspy.Signature
+        """
+        Initialize the DocQualityPrompt. This is a single prompt that can be used to evaluate the quality of the documentation for a given schema. This is a wrapper around the SinglePrompt class that implements the abstract methods.
+
+        :param prompt: The prompt to use. Can either be a string that maps to a defined signature, as set in the doc_quality_factory, or a dspy.Signature.
+        :type prompt: Union[str, dspy.Signature]
+        :param prompt_type: The type of prompt to use.
+        :type prompt_type: Union[Literal["predict", "chain_of_thought"], Callable]
+        :param prompt_metric: The metric to use. Can either be a string that maps to a defined metric, as set in the doc_quality_factory, or a custom callable function. Function must have the signature (example: dspy.Example, prediction: dspy.Prediction) -> bool.
+        :type prompt_metric: Union[Literal["rating", "category"], Callable]
+        """
         prompt_signature = doc_quality_factory(prompt)
-        super().__init__(prompt=prompt_signature, type=type, metric_type=metric_type)  # type: ignore
+        super().__init__(
+            prompt=prompt_signature,
+            prompt_type=prompt_type,
+            prompt_metric=prompt_metric,
+        )
 
-    # def _evaluate_rating_diff() # with a lot of data...
-
+    #######################
+    # Internal Methods    #
+    #######################
     def _evaluate_rating_metric(
         self, example: dspy.Example, prediction: dspy.Prediction
     ) -> bool:
@@ -114,76 +145,138 @@ class DocQualityPrompt(SinglePrompt):
     ) -> bool:
         return example.category == prediction.category
 
-    # abstract methods
-    def evaluate_metric(  # this could be a factory function instead that we map to the metric function
+    #######################
+    # Abstract Methods    #
+    #######################
+    def evaluate_metric(
         self, example: dspy.Example, prediction: dspy.Prediction, trace=None
-    ) -> bool:  # factory function here would remove rtti
-        if self.metric_type == "rating":
-            return self._evaluate_rating_metric(example, prediction)
-        elif self.metric_type == "category":
-            return self._evaluate_category_metric(example, prediction)
-        else:
-            raise ValueError(f"Invalid metric type: {self.metric_type}")
+    ) -> bool:
+        """
+        Evaluate the metric for the given example and prediction.
 
-    def _format_metric(  # this should be public
+        :param example: The example to evaluate the metric on.
+        :type example: dspy.Example
+        :param prediction: The prediction to evaluate the metric on.
+        :type prediction: dspy.Prediction
+        :param trace: Used for DSPy.
+        :type trace: Any
+        :return: The result of the evaluation. A boolean for if the metric is correct.
+        :rtype: bool
+        """
+        evaluation_mapping = {
+            "rating": self._evaluate_rating_metric,
+            "category": self._evaluate_category_metric,
+        }
+        if isinstance(self.prompt_metric, str):
+            evaluation_function = evaluation_mapping.get(self.prompt_metric)
+            if evaluation_function is None:
+                raise ValueError(f"Invalid metric type: {self.prompt_metric}")
+        else:
+            evaluation_function = self.prompt_metric
+        return evaluation_function(example, prediction)
+
+    def format_metric(
         self,
         examples: List[dspy.Example],
         overall_score: float,
         results: List,
         scores: List,
     ) -> Dict[str, Any]:
-        """This takes the results from the evaluate_evalset and does any necessary formatting"""
+        """
+        Formats evaluation metrics into a structured report containing:
+        - Overall score across all categories
+        - Percentage correct per category
+        - Detailed results for each evaluation
 
-        formatted_results = {
-            "overall_score": overall_score,
-            "per_category_scores": {},
-            "details": [],
-        }
-        category_stats = defaultdict(lambda: {"correct": 0, "total": 0})
+        :param examples: The examples to evaluate the metric on.
+        :type examples: List[dspy.Example]
+        :param overall_score: The overall score across all categories.
+        :type overall_score: float
+        :param results: The results of the evaluation.
+        :type results: List
+        :param scores: The scores of the evaluation.
+        :type scores: List
+        :return: A dictionary containing the overall score, per category scores, and details. { "overall_score": 0, "per_category_scores": {}, "details": [], "results": [] }
+        :rtype: Dict[str, Any]
+        """
 
-        for result, score in zip(results, scores):
+        def _initialize_formatted_results() -> Dict[str, Any]:
+            """Initialize the results structure with empty containers"""
+            return {
+                "overall_score": overall_score,
+                "per_category_scores": {},
+                "details": [],
+                "results": results,
+            }
+
+        def _process_single_result(result: tuple, score: Any) -> Dict[str, Any]:
+            """Process individual result to extract metadata and update statistics"""
             example, prediction, is_correct = result
-            example_data = {key: value for key, value in example.items()}
+            example_data = dict(example.items())
 
-            category = example_data.get("category", "unknown")
+            expected_category = example_data.get("category", "unknown")
             expected_rating = example_data.get("rating", None)
-
             predicted_category = getattr(prediction, "category", "unknown")
             predicted_rating = getattr(prediction, "rating", None)
 
-            category_stats[category]["total"] += 1
+            category_stats[expected_category]["total"] += 1
             if is_correct:
-                category_stats[category]["correct"] += 1
+                category_stats[expected_category]["correct"] += 1
 
-            detail_entry = {
-                "expected_category": category,
+            return {
+                "expected_category": expected_category,
                 "expected_rating": expected_rating,
                 "predicted_category": predicted_category,
                 "predicted_rating": predicted_rating,
                 "is_correct": is_correct,
             }
-            formatted_results["details"].append(detail_entry)
 
-        for category, stats in category_stats.items():
-            percent_correct = (
-                (stats["correct"] / stats["total"]) * 100 if stats["total"] > 0 else 0
-            )
-            formatted_results["per_category_scores"][category] = {
-                "percent_correct": percent_correct,
-                "total": stats["total"],
-                "correct": stats["correct"],
+        def _calculate_percent_correct(correct: int, total: int) -> float:
+            """Calculate percentage correct with safe division"""
+            return (correct / total) * 100 if total > 0 else 0.0
+
+        def _calculate_per_category_scores() -> Dict[str, Dict]:
+            """Convert category statistics to percentage scores"""
+            return {
+                category: {
+                    "percent_correct": _calculate_percent_correct(
+                        stats["correct"], stats["total"]
+                    ),
+                    "total": stats["total"],
+                    "correct": stats["correct"],
+                }
+                for category, stats in category_stats.items()
             }
 
-        formatted_results["results"] = results
+        # processing flow
+        formatted_results = _initialize_formatted_results()
+        category_stats = defaultdict(lambda: {"correct": 0, "total": 0})
+
+        # process all results and collect details
+        formatted_results["details"] = [
+            _process_single_result(result, score)
+            for result, score in zip(results, scores)
+        ]
+
+        # calculate final scores per category
+        formatted_results["per_category_scores"] = _calculate_per_category_scores()
 
         return formatted_results
 
-    def _compare_metrics(
-        self, base_metrics, optimized_metrics, comparison_value: str = "overall_score"
+    def compare_metrics(
+        self,
+        base_metrics: Any,
+        optimized_metrics: Any,
+        comparison_value: str = "overall_score",
     ) -> bool:
-        """Compare the metrics of the base and optimized models
+        """
+        Compare the metrics of the base and optimized models. Returns true if the optimized model is better than the base model.
 
-        returns true if the optimized model is better than the base model
+        :param base_metrics: The metrics of the base model.
+        :type base_metrics: Any
+        :param optimized_metrics: The metrics of the optimized model.
+        :type optimized_metrics: Any
+        :param comparison_value: The value to compare.
         """
         if comparison_value == "overall_score":
             return optimized_metrics["overall_score"] > base_metrics["overall_score"]

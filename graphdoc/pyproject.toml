@@ -1,28 +1,37 @@
-[tool.poetry]
+[project]
 name = "graphdoc"
 version = "0.1.0"
 description = ""
-authors = ["denver <denver@semiotic.ai>"]
+authors = [
+    {name = "denver",email = "denver@semiotic.ai"}
+]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "3.13.0"
 dspy = "2.6.3"
-litellm = "1.61.6"
-datasets-sql = "0.4.0"
-graphql-core = "3.2.5"
 mlflow = "2.20.0"
-virtualenv = "20.29.2"
+litellm = "1.61.6"
+responses = "^0.25.6"
+
 
 [tool.poetry.group.dev.dependencies]
-jupyter = "1.1.1"
-ipykernel = "6.29.5"
 pytest = "8.3.4"
-pytest-asyncio = "0.25.2"
 black = "24.10.0"
 pyright = "1.1.392.post0"
-python-dotenv = "1.0.1"
+pytest-testmon = "2.1.3"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+Sphinx = "^7.2.6"
+sphinx-rtd-theme = "^2.0.0"
+sphinx-autodoc-typehints = "^1.25.2"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.requires-plugins]
+poetry-plugin-export = ">=1.8"

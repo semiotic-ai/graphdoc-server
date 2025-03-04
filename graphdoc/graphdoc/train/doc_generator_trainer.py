@@ -1,25 +1,28 @@
+# Copyright 2025-, Semiotic AI, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
 # system packages
-import io
 import logging
 import math
-from typing import Any, Dict, List, Tuple
+from typing import Dict, Any, List, Optional, Tuple
 
 # internal packages
-from .single_prompt_trainer import SinglePromptTrainerRunner
 from ..prompts import DocGeneratorPrompt
+from .optimizers import optimizer_compile
+from ..data import DspyDataHelper
+from ..data.dspy_data import GenerationDataHelper
+from .single_prompt_trainer import SinglePromptTrainer
 
 # external packages
 import dspy
 import mlflow
-import pandas as pd
-from mlflow.models import infer_signature
 from mlflow.models import ModelSignature
 
 # logging
 log = logging.getLogger(__name__)
 
 
-class DocGeneratorTrainer(SinglePromptTrainerRunner):
+class DocGeneratorTrainer(SinglePromptTrainer):
     def __init__(
         self,
         prompt: DocGeneratorPrompt,
@@ -31,26 +34,50 @@ class DocGeneratorTrainer(SinglePromptTrainerRunner):
         trainset: List[dspy.Example],
         evalset: List[dspy.Example],
     ):
+        """
+        Initialize the DocGeneratorTrainer.
+
+        :param prompt: The prompt to train.
+        :type prompt: DocGeneratorPrompt
+        :param optimizer_type: The type of optimizer to use.
+        :type optimizer_type: str
+        :param optimizer_kwargs: The keyword arguments for the optimizer.
+        :type optimizer_kwargs: Dict[str, Any]
+        :param mlflow_model_name: The name of the model in mlflow.
+        :type mlflow_model_name: str
+        :param mlflow_experiment_name: The name of the experiment in mlflow.
+        :type mlflow_experiment_name: str
+        :param mlflow_tracking_uri: The uri of the mlflow tracking server.
+        :type mlflow_tracking_uri: str
+        :param trainset: The training set.
+        :type trainset: List[dspy.Example]
+        :param evalset: The evaluation set.
+        :type evalset: List[dspy.Example]
+        """
         super().__init__(
-            prompt=prompt,
-            optimizer_type=optimizer_type,
-            optimizer_kwargs=optimizer_kwargs,
-            mlflow_model_name=mlflow_model_name,
-            mlflow_experiment_name=mlflow_experiment_name,
-            mlflow_tracking_uri=mlflow_tracking_uri,
-            trainset=trainset,
-            evalset=evalset,
+            prompt,
+            optimizer_type,
+            optimizer_kwargs,
+            mlflow_model_name,
+            mlflow_experiment_name,
+            mlflow_tracking_uri,
+            trainset,
+            evalset,
         )
+        # Cast to DocGeneratorPrompt for type checking
+        if not isinstance(prompt, DocGeneratorPrompt):
+            raise TypeError(f"Expected DocGeneratorPrompt, got {type(prompt)}")
+        self.doc_generator_prompt = prompt
 
-    def get_signature(self) -> ModelSignature:
-        example = self.trainset[0].toDict()
-        example.pop("documented_schema")
-        return infer_signature(example)
+    def _calculate_average_score(self, evaluation: dict) -> float:
+        """
+        Given a dictionary of evaluation results, calculate the average score.
 
-    # def get_prompt_signature(self, prompt) -> dspy.Signature:
-    #     pass
-
-    def _calculate_average_score(self, evaluation):
+        :param evaluation: The evaluation results.
+        :type evaluation: Dict[str, Any]
+        :return: The average score.
+        :rtype: float
+        """
         examples = evaluation["results"]
         total = 0
         for ex in examples:
@@ -58,7 +85,17 @@ class DocGeneratorTrainer(SinglePromptTrainerRunner):
             total += rating
         return round(total / len(examples), 6)
 
-    def _log_evaluation_metrics(self, base_evaluation, optimized_evaluation) -> None:
+    def evaluation_metrics(
+        self, base_evaluation: Dict[str, Any], optimized_evaluation: Dict[str, Any]
+    ) -> None:
+        """
+        Log evaluation metrics to mlflow.
+
+        :param base_evaluation: The evaluation metrics of the base model.
+        :type base_evaluation: Dict[str, Any]
+        :param optimized_evaluation: The evaluation metrics of the optimized model.
+        :type optimized_evaluation: Dict[str, Any]
+        """
         base_evaluation_overall_score = self._calculate_average_score(base_evaluation)
         optimized_evaluation_overall_score = self._calculate_average_score(
             optimized_evaluation
@@ -78,60 +115,92 @@ class DocGeneratorTrainer(SinglePromptTrainerRunner):
     def evaluate_training(
         self, base_model, optimized_model
     ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+        """
+        Evaluate the training of the model. Comparing the base and optimized models.
+
+        :param base_model: The base model.
+        :type base_model: Any
+        :param optimized_model: The optimized model.
+        :type optimized_model: Any
+        """
         base_prompt = DocGeneratorPrompt(
-            prompt=self.get_prompt_signature(base_model),
-            type=self.prompt.type,  # type: ignore
-            metric_type=self.prompt.metric_type,  # type: ignore
+            prompt=DspyDataHelper.prompt_signature(base_model),
+            prompt_type=self.doc_generator_prompt.prompt_type,  # type: ignore # TODO: we should have better type checking here
+            prompt_metric=self.doc_generator_prompt.prompt_metric,  # type: ignore # TODO: we should have better type checking here
         )
+
         optimized_prompt = DocGeneratorPrompt(
-            prompt=self.get_prompt_signature(optimized_model),
-            type=self.prompt.type,  # type: ignore
-            metric_type=self.prompt.metric_type,  # type: ignore
+            prompt=DspyDataHelper.prompt_signature(optimized_model),
+            prompt_type=self.doc_generator_prompt.prompt_type,  # type: ignore # TODO: we should have better type checking here
+            prompt_metric=self.doc_generator_prompt.prompt_metric,  # type: ignore # TODO: we should have better type checking here
         )
+
         base_evaluation = base_prompt.evaluate_evalset(self.evalset)
         optimized_evaluation = optimized_prompt.evaluate_evalset(self.evalset)
 
-        log.info(f"base_evaluation: {base_evaluation}")
-        log.info(f"optimized_evaluation: {optimized_evaluation}")
-        self._log_evaluation_metrics(base_evaluation, optimized_evaluation)
+        self.evaluation_metrics(base_evaluation, optimized_evaluation)
         return base_evaluation, optimized_evaluation
 
-    def run_training(self, load_model: bool = True, save_model: bool = True):
-        if load_model:
-            log.info("Loading model from mlflow")
-            base_model = self.load_model()
-            self.prompt = DocGeneratorPrompt(
-                type=self.prompt.type,  # type: ignore
-                metric_type=self.prompt.metric_type,  # type: ignore
-                prompt=self.get_prompt_signature(
-                    base_model
-                ),  # TODO: double check this is what we want, but i am pretty sure it is
-            )  # we could have this be compained with run_trainer to have one function mapped together
-        else:
-            base_model = self.prompt.infer
+    def train(
+        self, load_model_args: Optional[Dict[str, Any]] = None, save_model: bool = True
+    ):
+        """
+        Train the document generator model.
 
-        optimized_model = self.run_trainer()
+        :param load_model_args: The arguments to load the model.
+        :type load_model_args: Optional[Dict[str, Any]]
+        :param save_model: Whether to save the model.
+        :type save_model: bool
+        :return: The trained model.
+        :rtype: dspy.ChainOfThought
+        """
+        # if model args are provided, load the model from mlflow
+        if load_model_args:
+            base_model = self.mlflow_data_helper.model_by_args(load_model_args)
+        else:
+            base_model = self.doc_generator_prompt.infer
+
+        # make sure the optimizer_kwargs include the student, overwriting whatever was provided if necessary
+        self.optimizer_kwargs["student"] = base_model
+
+        # run the optimizer
+        log.info(f"Running {self.optimizer_type} optimizer...")
+        optimized_model = optimizer_compile(self.optimizer_type, self.optimizer_kwargs)
+
+        # evaluate the training
         base_evaluation, optimized_evaluation = self.evaluate_training(
             base_model, optimized_model
         )
 
         # log the prompts
-        base_signature = self.get_prompt_signature(base_model)
-        optimized_signature = self.get_prompt_signature(optimized_model)
-        base_prompt = self.par.format_signature_prompt(
-            signature=base_signature, signature_type="doc_generation"
+        base_signature = DspyDataHelper.prompt_signature(base_model)
+        optimized_signature = DspyDataHelper.prompt_signature(optimized_model)
+
+        base_prompt = DspyDataHelper.formatted_signature(
+            base_signature, GenerationDataHelper.example_example()
         )
-        optimized_prompt = self.par.format_signature_prompt(
-            signature=optimized_signature, signature_type="doc_generation"
+        optimized_prompt = DspyDataHelper.formatted_signature(
+            optimized_signature, GenerationDataHelper.example_example()
         )
+
         mlflow.log_text(base_prompt, "base_prompt.txt")
         mlflow.log_text(optimized_prompt, "optimized_prompt.txt")
 
-        if save_model and optimized_model:
-            self.save_model(optimized_model)
+        # save the model
+        if save_model:
+            model_signature = GenerationDataHelper.model_signature()
+            self.mlflow_data_helper.save_model(
+                optimized_model, model_signature, self.mlflow_model_name
+            )
 
-        if self._compare_models(base_evaluation, optimized_evaluation):
-            log.info("Model training successful, saving model")
+        # compare the models
+        if self.doc_generator_prompt.compare_metrics(
+            base_evaluation, optimized_evaluation
+        ):  # TODO: we should enable the passing of different comparison metrics
+            log.info(
+                "Model training successful, optimized model performs better than base model"
+            )
         else:
             log.info("Trained model did not improve on base model")
+
         return optimized_model
