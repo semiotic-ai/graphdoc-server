@@ -96,6 +96,7 @@ class DocGeneratorModule(dspy.Module):
 
             # if the rating is above the threshold, return the documentation
             if rating >= self.rating_threshold:
+                log.info(f"Rating is above threshold, returning documented schema component")
                 if retries > 0:
                     log.info(
                         f"Retry improved rating quality to meet threshold (attempt #{retries + 1})"
@@ -120,6 +121,7 @@ class DocGeneratorModule(dspy.Module):
                 )
 
             # prepare for the next retry
+            log.info(f"Preparing for the next retry with the following database schema: {reason_database_schema}")
             database_schema = reason_database_schema
             retries += 1
 
@@ -257,6 +259,7 @@ class DocGeneratorModule(dspy.Module):
             document_ast = parse(database_schema)
         except Exception as e:
             raise ValueError(f"Invalid GraphQL schema provided: {e}")
+        log.info(f"parsed database schema successfully")
 
         # parse the schema into examples
         examples = []
@@ -279,10 +282,13 @@ class DocGeneratorModule(dspy.Module):
             log.info(f"created trace: {root_trace}")
 
         # batch generate the documentation
+        log.info(f"batching documentation generation")
         documented_examples = self.batch(examples, num_threads=32)
+        log.info(f"batching documentation generation complete: ({len(documented_examples)} examples)")
         document_ast.definitions = tuple(
             parse(ex.documented_schema) for ex in documented_examples  # type: ignore # TODO: we should have better type handling, but we know this works
         )
+        log.info(f"compiled document parts back into a single schema successfully")
 
         # check that the generated schema matches the original schema
         if self.par.schema_equality_check(parse(database_schema), document_ast):
