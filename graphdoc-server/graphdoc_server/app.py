@@ -71,7 +71,7 @@ def create_app() -> Flask:
         app,
         version="1.0",
         title="GraphDoc API",
-        description="API for the GraphDoc server",
+        description="API for the GraphDoc server. Use this API to generate a documented GraphQL schema from a database schema.",
         doc="/swagger",
         authorizations=authorizations,
         security="apikey",
@@ -81,19 +81,19 @@ def create_app() -> Flask:
     health_ns = Namespace("health", description="Health check operations")
     model_ns = Namespace("model", description="Model information operations")
     inference_ns = Namespace("inference", description="Inference operations")
-    api_keys_ns = Namespace("api-keys", description="API key management operations")
 
     api.add_namespace(health_ns, path="")
     api.add_namespace(model_ns, path="")
     api.add_namespace(inference_ns, path="")
-    api.add_namespace(api_keys_ns, path="")
 
     # models for request/response
     inference_request = api.model(
         "InferenceRequest",
         {
             "database_schema": fields.String(
-                required=True, description="Database schema to document"
+                required=True,
+                description="Database schema to document",
+                example="""type UserEntity @entity { id: Bytes! first_name: String! last_name: String! email: String! }""",
             )
         },
     )
@@ -201,7 +201,7 @@ def create_app() -> Flask:
         @inference_ns.response(503, "Service Unavailable", error_response)
         @key_manager.require_api_key
         def post(self):
-            """Run inference on the loaded model."""
+            """Generate a documented schema given a GraphQL schema."""
             if not module:
                 return {"error": "Model not loaded"}, 503
 
@@ -244,24 +244,18 @@ def create_app() -> Flask:
                 log.error(f"Error during inference: {str(e)}")
                 return {"error": str(e), "status": "error"}, 500
 
-    @api_keys_ns.route("/generate")
-    class CreateApiKey(Resource):
-        @api_keys_ns.doc("create_api_key")
-        @api_keys_ns.response(200, "Success", key_response)
-        @key_manager.require_admin_key
-        def post(self):
-            """Create a new API key (admin only)."""
-            new_key = key_manager.generate_api_key()
-            return {"status": "success", "api_key": new_key}
+    @app.route("/api-keys/generate", methods=["POST"])
+    @key_manager.require_admin_key
+    def create_api_key():
+        """Create a new API key (admin only)."""
+        new_key = key_manager.generate_api_key()
+        return jsonify({"status": "success", "api_key": new_key})
 
-    @api_keys_ns.route("/list")
-    class ListApiKeys(Resource):
-        @api_keys_ns.doc("list_api_keys")
-        @api_keys_ns.response(200, "Success", keys_list_response)
-        @key_manager.require_admin_key
-        def get(self):
-            """List all API keys (admin only)."""
-            return {"status": "success", "api_keys": list(key_manager.api_keys)}
+    @app.route("/api-keys/list", methods=["GET"])
+    @key_manager.require_admin_key
+    def list_api_keys():
+        """List all API keys (admin only)."""
+        return jsonify({"status": "success", "api_keys": list(key_manager.api_keys)})
 
     return app
 
