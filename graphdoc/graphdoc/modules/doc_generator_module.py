@@ -283,7 +283,7 @@ class DocGeneratorModule(dspy.Module):
 
         # batch generate the documentation
         log.info(f"batching documentation generation")
-        documented_examples = self.batch(examples, num_threads=32)
+        documented_examples = self.batch(examples, num_threads=2)
         log.info(f"batching documentation generation complete: ({len(documented_examples)} examples)")
         document_ast.definitions = tuple(
             parse(ex.documented_schema) for ex in documented_examples  # type: ignore # TODO: we should have better type handling, but we know this works

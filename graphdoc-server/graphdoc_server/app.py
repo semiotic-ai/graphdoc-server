@@ -221,7 +221,9 @@ def create_app() -> Flask:
                     raise ValueError(
                         "Ensure that GraphDoc is initialized with mlflow_tracking_uri, mlflow_tracking_username, and mlflow_tracking_password"
                     )
-                log.info(f"submitting request with api key: {request.headers['X-API-Key']}")
+                log.info(
+                    f"submitting request with api key: {request.headers['X-API-Key']}"
+                )
                 # run the inference with tracing
                 prediction = module.document_full_schema(
                     database_schema=data["database_schema"],
