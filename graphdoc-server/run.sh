@@ -7,7 +7,7 @@ set -e
 CONFIG_PATH="../assets/configs/server/single_prompt_schema_doc_generator_module.yaml"
 METRIC_CONFIG_PATH="../assets/configs/server/single_prompt_schema_doc_quality_trainer.yaml"
 MLFLOW_TRACKING_URI="http://localhost:5001"
-PORT=6000
+PORT=8080
 WORKERS=4
 
 # run development server

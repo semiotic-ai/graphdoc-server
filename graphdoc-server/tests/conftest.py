@@ -37,7 +37,7 @@ def server():
     max_attempts = 30
     for attempt in range(max_attempts):
         try:
-            response = requests.get("http://localhost:6000/health", timeout=1)
+            response = requests.get("http://localhost:8080/health", timeout=1)
             if response.status_code == 200:
                 break
         except requests.exceptions.RequestException:
