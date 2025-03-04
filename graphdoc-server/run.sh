@@ -3,10 +3,26 @@
 # exit on error
 set -e
 
+# load variables from .env file if it exists
+if [ -f "./.env" ]; then
+  echo "Loading environment from ./.env"
+  set -a  # automatically export all variables
+  source "./.env"
+  set +a
+elif [ -f "../.env" ]; then
+  echo "Loading environment from ../.env"
+  set -a  # automatically export all variables
+  source "../.env"
+  set +a
+fi
+
 # default values
 CONFIG_PATH="../assets/configs/server/single_prompt_schema_doc_generator_module.yaml"
 METRIC_CONFIG_PATH="../assets/configs/server/single_prompt_schema_doc_quality_trainer.yaml"
 MLFLOW_TRACKING_URI="http://localhost:5001"
+MLFLOW_DOCKER_URI="http://host.docker.internal:5001"
+MLFLOW_TRACKING_USERNAME=admin
+MLFLOW_TRACKING_PASSWORD=password
 PORT=8080
 WORKERS=4
 
@@ -36,7 +52,28 @@ run_prod() {
 }
 
 # run docker build 
-# TODO: add run_docker_build()
+docker_prod_build() {
+    cd ..
+    docker build -t graphdoc-server:local -f graphdoc-server/Dockerfile.prod .
+}
+
+docker_prod_run() {
+    docker run -p 8080:8080 \
+        -e PORT=8080 \
+        -e GRAPHDOC_CONFIG_PATH=/app/configs/server/single_prompt_schema_doc_generator_module.yaml \
+        -e GRAPHDOC_METRIC_CONFIG_PATH=/app/configs/server/single_prompt_schema_doc_quality_trainer.yaml \
+        -e MLFLOW_TRACKING_URI=$MLFLOW_DOCKER_URI \
+        -e MLFLOW_TRACKING_USERNAME=$MLFLOW_TRACKING_USERNAME \
+        -e MLFLOW_TRACKING_PASSWORD=$MLFLOW_TRACKING_PASSWORD \
+        -e OPENAI_API_KEY=${OPENAI_API_KEY:-""} \
+        -e HF_DATASET_KEY=${HF_DATASET_KEY:-""} \
+        graphdoc-server:local
+}
+
+docker_prod_build_and_run() {
+    docker_prod_build
+    docker_prod_run
+}
 
 # formatting and linting 
 format_command() {
@@ -63,7 +100,7 @@ run_checks() {
 COMMAND=""
 while [[ $# -gt 0 ]]; do
     case $1 in
-        dev|prod|test|commit|format|lint)
+        dev|prod|test|commit|format|lint|docker-prod|docker-prod-run)
             COMMAND="$1"
             shift
             ;;
@@ -96,13 +133,14 @@ show_help() {
     echo "Usage: ./run.sh [command] [options]"
     echo ""
     echo "Commands:"
-    echo "  dev         Run in development mode"
-    echo "  prod        Run in production mode"
-    echo "  test        Run tests"
-    echo "  format      Format code (black)"
-    echo "  lint        Run linting (pyright)"
-    echo "  commit      Run code quality checks (black, pyright, tests)"
-    echo ""
+    echo "  dev             Run in development mode"
+    echo "  prod            Run in production mode"
+    echo "  test            Run tests"
+    echo "  format          Format code (black)"
+    echo "  lint            Run linting (pyright)"
+    echo "  commit          Run code quality checks (black, pyright, tests)"
+    echo "  docker-prod     Run docker prod build and run"
+    echo "  docker-prod-run Run docker prod build and run"
     echo "Options:"
     echo "  -c, --config PATH           Path to config file"
     echo "  -m, --metric-config PATH    Path to metric config file"
@@ -122,6 +160,10 @@ case "$COMMAND" in
     # build and run commands
     "dev") run_dev ;;
     "prod") run_prod ;;
+
+    # docker commands
+    "docker-prod") docker_prod_build_and_run ;;
+    "docker-prod-run") docker_prod_run ;;
 
     # test commands
     "test") run_tests ;;
