@@ -167,7 +167,7 @@ def create_app() -> Flask:
         )
 
     # Set dspy and mlflow tracking for traces
-    mlflow.dspy.autolog()
+    # mlflow.dspy.autolog()
     mlflow.set_experiment(config_contents["server"]["mlflow_experiment_name"])
 
     @health_ns.route("")

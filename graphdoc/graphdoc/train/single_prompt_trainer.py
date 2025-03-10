@@ -58,7 +58,7 @@ class SinglePromptTrainer(ABC):
         log.info("Setting MLFlow tracking URI to " + str(self.mlflow_tracking_uri))
         log.info("---------------------------------------------------------")
 
-        mlflow.dspy.autolog()
+        # mlflow.dspy.autolog()
         self.mlflow_data_helper = MlflowDataHelper(self.mlflow_tracking_uri)
         experiment = mlflow.set_experiment(self.mlflow_experiment_name)
 
