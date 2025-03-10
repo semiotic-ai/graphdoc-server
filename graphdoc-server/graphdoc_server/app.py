@@ -227,7 +227,7 @@ def create_app() -> Flask:
                 # run the inference with tracing
                 prediction = module.document_full_schema(
                     database_schema=data["database_schema"],
-                    trace=False,
+                    trace=True,
                     client=graph_doc.mdh.mlflow_client,  # type: ignore # we explicitely check for graphdoc.mdh is not None
                     expirement_name=config_contents["server"]["mlflow_experiment_name"],
                     api_key=request.headers[
