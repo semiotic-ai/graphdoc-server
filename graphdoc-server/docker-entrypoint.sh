@@ -29,5 +29,6 @@ exec gunicorn "graphdoc_server.app:create_app()" \
     --bind "0.0.0.0:${PORT:-6000}" \
     --workers "${WORKERS:-4}" \
     --timeout "${TIMEOUT:-240}" \
+    --log-level=debug \
     --access-logfile - \
     --error-logfile - 
