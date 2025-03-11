@@ -10,7 +10,8 @@ import functools
 
 # internal packages
 from .keys import KeyManager
-from graphdoc import GraphDoc, load_yaml_config
+from graphdoc import load_yaml_config
+from graphdoc.config import doc_generator_module_from_yaml, mlflow_data_helper_from_yaml
 
 # external packages
 import dspy
@@ -24,7 +25,6 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 # global variables
-graph_doc: Optional[GraphDoc] = None
 module: Optional[Any] = None
 config: Optional[Dict[str, Any]] = None
 app_dir = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -35,7 +35,7 @@ key_path = keys_dir / "api_key_config.json"
 
 def init_model(config_path: str) -> bool:
     """Initialize the GraphDoc and load the module."""
-    global graph_doc, module, config
+    global module, mdh, config
 
     try:
         # Load configs
@@ -43,11 +43,9 @@ def init_model(config_path: str) -> bool:
         if not loaded_config:
             raise ValueError("Failed to load config")
 
-        # Initialize GraphDoc
-        graph_doc = GraphDoc.from_dict(loaded_config)
-
         # Load the module
-        module = graph_doc.doc_generator_module_from_yaml(config_path)
+        module = doc_generator_module_from_yaml(config_path)
+        mdh = mlflow_data_helper_from_yaml(config_path)
 
         # Only set the global config if everything succeeded
         config = loaded_config
@@ -159,8 +157,8 @@ def create_app() -> Flask:
         raise RuntimeError("Failed to initialize model")
 
     # make sure we have the correct authentication environment variables set (TODO: this should be redundant given the mdh, but we are having issues)
-    if graph_doc.mdh is not None:  # type: ignore # we explicitely check for graphdoc.mdh is not None
-        graph_doc.mdh.set_auth_env_vars()  # type: ignore # we explicitely check for graphdoc.mdh is not None
+    if mdh is not None:  # type: ignore # we explicitely check for graphdoc.mdh is not None
+        mdh.set_auth_env_vars()  # type: ignore # we explicitely check for graphdoc.mdh is not None
     else:
         raise ValueError(
             "GraphDoc is not initialized with a MlflowDataHelper and therefore cannot connect to MLflow"
@@ -217,7 +215,7 @@ def create_app() -> Flask:
                     return {"error": "Missing database_schema in request"}, 400
 
                 # make sure we have a client initialized
-                if graph_doc.mdh is None:  # type: ignore # we explicitely check for graphdoc.mdh is not None
+                if mdh is None:  # type: ignore # we explicitely check for graphdoc.mdh is not None
                     raise ValueError(
                         "Ensure that GraphDoc is initialized with mlflow_tracking_uri, mlflow_tracking_username, and mlflow_tracking_password"
                     )
@@ -228,7 +226,7 @@ def create_app() -> Flask:
                 prediction = module.document_full_schema(
                     database_schema=data["database_schema"],
                     trace=True,
-                    client=graph_doc.mdh.mlflow_client,  # type: ignore # we explicitely check for graphdoc.mdh is not None
+                    client=mdh.mlflow_client,  # type: ignore # we explicitely check for graphdoc.mdh is not None
                     expirement_name=config_contents["server"]["mlflow_experiment_name"],
                     api_key=request.headers[
                         "X-API-Key"
