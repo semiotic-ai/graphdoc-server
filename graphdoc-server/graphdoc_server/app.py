@@ -312,18 +312,19 @@ def main():
         app = create_app()
         app.run(host="0.0.0.0", port=args.port)
 
-    # set up mlflow tracking 
+    # set up mlflow tracking
     # TODO: unify config handling between this and create_app()
     config = load_yaml_config(args.config_path)
     mlflow.set_experiment(config["server"]["mlflow_experiment_name"])
     mlflow.dspy.autolog()
     mlflow_run_name = config["server"]["mlflow_run_name"]
-    
+
     # TODO: we will rework this to be more elegant when we land on a more permanent solution for handling versioned runs
-    with mlflow.start_run(run_name=mlflow_run_name): # , run_id=mlflow_run_id
+    with mlflow.start_run(run_name=mlflow_run_name):  # , run_id=mlflow_run_id
         log_config = load_yaml_config_redacted(args.config_path)
         mlflow.log_params(log_config)
         _run_app()
+
 
 if __name__ == "__main__":
     main()
