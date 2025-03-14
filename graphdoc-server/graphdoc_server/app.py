@@ -91,7 +91,7 @@ def create_app() -> Flask:
             "database_schema": fields.String(
                 required=True,
                 description="Database schema to document",
-                example="""type UserEntity @entity { id: Bytes! first_name: String! last_name: String! email: String! }""",
+                example="""type UserEntity @entity { id: Bytes! first_name: String! last_name: String! email: String! } type PersonEntity @entity { id: Bytes! first_name: String! last_name: String! email: String! }""",
             )
         },
     )
@@ -312,7 +312,7 @@ def main():
 
     # create and run the app
     app = create_app()
-    app.run(host="0.0.0.0", port=args.port)
+    app.run(host="0.0.0.0", port=args.port, debug=True, use_reloader=True)
 
 
 if __name__ == "__main__":
