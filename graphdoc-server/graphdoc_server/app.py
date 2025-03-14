@@ -3,6 +3,7 @@ import os
 import json
 import logging
 from pathlib import Path
+from graphdoc.data.helper import load_yaml_config_redacted
 import werkzeug.exceptions
 from typing import Optional, Dict, Any, List, Set, Callable
 import secrets
@@ -164,10 +165,6 @@ def create_app() -> Flask:
             "GraphDoc is not initialized with a MlflowDataHelper and therefore cannot connect to MLflow"
         )
 
-    # Set dspy and mlflow tracking for traces
-    # mlflow.dspy.autolog()
-    mlflow.set_experiment(config_contents["server"]["mlflow_experiment_name"])
-
     @health_ns.route("")
     class HealthCheck(Resource):
         @health_ns.doc("health_check")
@@ -310,10 +307,23 @@ def main():
         key_manager.set_admin_key(admin_key)
         log.info(f"Created initial admin key: {admin_key}")
 
-    # create and run the app
-    app = create_app()
-    app.run(host="0.0.0.0", port=args.port, debug=True, use_reloader=True)
+    def _run_app():
+        # create and run the app
+        app = create_app()
+        app.run(host="0.0.0.0", port=args.port)
 
+    # set up mlflow tracking 
+    # TODO: unify config handling between this and create_app()
+    config = load_yaml_config(args.config_path)
+    mlflow.set_experiment(config["server"]["mlflow_experiment_name"])
+    mlflow.dspy.autolog()
+    mlflow_run_name = config["server"]["mlflow_run_name"]
+    
+    # TODO: we will rework this to be more elegant when we land on a more permanent solution for handling versioned runs
+    with mlflow.start_run(run_name=mlflow_run_name): # , run_id=mlflow_run_id
+        log_config = load_yaml_config_redacted(args.config_path)
+        mlflow.log_params(log_config)
+        _run_app()
 
 if __name__ == "__main__":
     main()
