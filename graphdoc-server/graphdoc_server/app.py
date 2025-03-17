@@ -151,7 +151,9 @@ def create_app() -> Flask:
     ###################################
 
     # initialize the KeyManager
-    key_manager = KeyManager.get_instance(key_path)
+    require_api_key = config_contents["server"]["require_api_key"]
+    require_admin_key = config_contents["server"]["require_admin_key"]
+    key_manager = KeyManager.get_instance(key_path, require_api_key, require_admin_key)
 
     # Initialize the model
     if not init_model(config_path):
@@ -284,8 +286,13 @@ def main():
     # set environment variables for the app factory
     os.environ["GRAPHDOC_CONFIG_PATH"] = args.config_path
 
+    # load the config
+    config = load_yaml_config(args.config_path)
+    require_api_key = config["server"]["require_api_key"]
+    require_admin_key = config["server"]["require_admin_key"]
+
     # initialize the KeyManager
-    key_manager = KeyManager.get_instance(key_path)
+    key_manager = KeyManager.get_instance(key_path, require_api_key, require_admin_key)
     log.info(f"Keys: {key_manager.api_keys}")
     log.info(f"Admin key: {key_manager.get_admin_key()}")
 
