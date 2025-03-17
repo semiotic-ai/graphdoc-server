@@ -24,7 +24,12 @@ class KeyManager:
 
     _instance = None  # Class variable for singleton pattern
 
-    def __init__(self, config_path: Union[Path, str]):
+    def __init__(
+        self,
+        config_path: Union[Path, str],
+        require_api_key: bool = True,
+        require_admin_key: bool = True,
+    ):
         """
         Initialize the KeyManager with optional custom config path.
 
@@ -35,13 +40,20 @@ class KeyManager:
         self.api_config: Dict[str, Any] = {"api_keys": [], "admin_key": None}
         self.admin_key: Optional[str] = None
         self.config_path = config_path
+        self.require_api_key_flag: bool = require_api_key
+        self.require_admin_key_flag: bool = require_admin_key
         self.load_api_keys()
 
     ##################
     # class methods  #
     ##################
     @classmethod
-    def get_instance(cls, config_path: Union[Path, str]) -> "KeyManager":
+    def get_instance(
+        cls,
+        config_path: Union[Path, str],
+        require_api_key: bool = True,
+        require_admin_key: bool = True,
+    ) -> "KeyManager":
         """
         Get the singleton instance of KeyManager.
 
@@ -51,7 +63,7 @@ class KeyManager:
         :rtype: KeyManager
         """
         if cls._instance is None:
-            cls._instance = KeyManager(config_path)
+            cls._instance = KeyManager(config_path, require_api_key, require_admin_key)
             cls._instance.load_api_keys()
         elif config_path is not None:
             cls._instance.config_path = config_path
@@ -166,6 +178,9 @@ class KeyManager:
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
+            if not self.require_api_key_flag:
+                return func(*args, **kwargs)
+
             api_key = request.headers.get("X-API-Key")
             if not api_key:
                 return jsonify({"error": "API key required"}), 401
@@ -186,6 +201,9 @@ class KeyManager:
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
+            if not self.require_admin_key_flag:
+                return func(*args, **kwargs)
+
             admin_key = self.get_admin_key()
             if not admin_key:
                 return jsonify({"error": "Admin key not configured on server"}), 500
