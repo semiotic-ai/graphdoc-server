@@ -216,18 +216,16 @@ def create_app() -> Flask:
                     raise ValueError(
                         "Ensure that GraphDoc is initialized with mlflow_tracking_uri, mlflow_tracking_username, and mlflow_tracking_password"
                     )
-                log.info(
-                    f"submitting request with api key: {request.headers['X-API-Key']}"
-                )
+
+                client_ip = request.remote_addr
+                log.info(f"submitting request from ip: {client_ip}")
                 # run the inference with tracing
                 prediction = module.document_full_schema(
                     database_schema=data["database_schema"],
                     trace=True,
                     client=mdh.mlflow_client,  # type: ignore # we explicitely check for graphdoc.mdh is not None
                     expirement_name=config_contents["server"]["mlflow_experiment_name"],
-                    logging_id=request.headers[
-                        "X-API-Key"
-                    ],  # record the api key that made the request
+                    logging_id=client_ip,
                 )
                 log.info(f"prediction generated for request: {prediction}")
 
