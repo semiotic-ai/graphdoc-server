@@ -225,7 +225,7 @@ def create_app() -> Flask:
                     trace=True,
                     client=mdh.mlflow_client,  # type: ignore # we explicitely check for graphdoc.mdh is not None
                     expirement_name=config_contents["server"]["mlflow_experiment_name"],
-                    api_key=request.headers[
+                    logging_id=request.headers[
                         "X-API-Key"
                     ],  # record the api key that made the request
                 )
