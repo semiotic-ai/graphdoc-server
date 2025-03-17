@@ -3,6 +3,7 @@
 
 # system packages
 import logging
+import queue
 from typing import Any, Literal, Optional, Union
 
 # external packages
@@ -12,6 +13,7 @@ from graphql import parse, print_ast
 
 # internal packages
 from graphdoc.data import Parser
+from graphdoc.modules.token_tracker import TokenTracker
 from graphdoc.prompts import DocGeneratorPrompt, SinglePrompt
 
 # logging
@@ -26,6 +28,7 @@ class DocGeneratorModule(dspy.Module):
         retry_limit: int = 1,
         rating_threshold: int = 3,
         fill_empty_descriptions: bool = True,
+        token_tracker: Optional[TokenTracker] = None,
     ) -> None:
         """Initialize the DocGeneratorModule. A module for generating documentation for
         a given GraphQL schema. Schemas are decomposed and individually used to generate
@@ -44,6 +47,9 @@ class DocGeneratorModule(dspy.Module):
         :param rating_threshold: The minimum rating for a generated document to be
                                  considered valid.
         :type rating_threshold: int
+        :param fill_empty_descriptions: Whether to fill empty descriptions with
+                                        generated documentation.
+        :type fill_empty_descriptions: bool
 
         """
         super().__init__()
@@ -56,6 +62,7 @@ class DocGeneratorModule(dspy.Module):
         # we should move to a dict like structure for passing in those parameters
         self.fill_empty_descriptions = fill_empty_descriptions
         self.par = Parser()
+        self.token_tracker = TokenTracker() if token_tracker is None else token_tracker
 
         # ensure that the doc generator prompt metric is set to rating
         if self.prompt.prompt_metric.prompt_metric != "rating":
@@ -64,12 +71,53 @@ class DocGeneratorModule(dspy.Module):
             )
             self.prompt.prompt_metric.prompt_metric = "rating"
 
+    #######################
+    # MLFLOW TRACING      #
+    #######################
+    # TODO: we will break this out into a separate class later
+    # when we have need for it elsewhere
+    def _start_trace(
+        self,
+        client: mlflow.MlflowClient,
+        expirement_name: str,
+        trace_name: str,
+        inputs: dict,
+        attributes: dict,
+    ):
+        # set the experiment name so that everything is logged to the same experiment
+        mlflow.set_experiment(expirement_name)
+
+        # start the trace
+        trace = client.start_trace(
+            name=trace_name,
+            inputs=inputs,
+            attributes=attributes,
+            # experiment_id=expirement_name,
+        )
+
+        return trace
+
+    def _end_trace(
+        self,
+        client: mlflow.MlflowClient,
+        trace: Any,  # TODO: trace: mlflow.Span,
+        # E   AttributeError: module 'mlflow' has no attribute 'Span'
+        outputs: dict,
+        status: Literal["OK", "ERROR"],
+    ):
+        client.end_trace(request_id=trace.request_id, outputs=outputs, status=status)
+
+    #######################
+    # MODULE FUNCTIONS    #
+    #######################
     def _retry_by_rating(self, database_schema: str) -> str:
         """Retry the generation if the quality check fails. Rating threshold is
         determined at initialization.
 
-        :param database_schema: The database schema to generate documentation for. :type
-        database_schema: str :return: The generated documentation. :rtype: str
+        :param database_schema: The database schema to generate documentation for.
+        :type database_schema: str
+        :return: The generated documentation.
+        :rtype: str
 
         """
 
@@ -174,10 +222,13 @@ class DocGeneratorModule(dspy.Module):
         if self.fill_empty_descriptions:
             updated_ast = self.par.fill_empty_descriptions(database_ast)
             database_schema = print_ast(updated_ast)
+        else:
+            database_schema = print_ast(database_ast)
 
         # try to generate the schema
         try:
             prediction = self.prompt.infer(database_schema=database_schema)
+            log.info("Generated schema: " + str(prediction.documented_schema))
         except Exception as e:
             log.warning("Error generating schema: " + str(e))
             return dspy.Prediction(documented_schema=database_schema)
@@ -200,52 +251,27 @@ class DocGeneratorModule(dspy.Module):
         """Given a database schema, generate a documented schema. If retry is True, the
         generation will be retried if the quality check fails.
 
-        :param database_schema: The database schema to generate documentation for. :type
-        database_schema: str :return: The generated documentation. :rtype:
-        dspy.Prediction
+        :param database_schema: The database schema to generate documentation for.
+        :type database_schema: str
+        :return: The generated documentation.
+        :rtype: dspy.Prediction
 
         """
+
+        def _update_active_tasks():
+            with self.token_tracker.callback_lock:
+                self.token_tracker.active_tasks -= 1
+                if self.token_tracker.active_tasks == 0:
+                    self.token_tracker.all_tasks_done.set()
+
         if self.retry:
             database_schema = self._retry_by_rating(database_schema=database_schema)
+            _update_active_tasks()
             return dspy.Prediction(documented_schema=database_schema)
         else:
-            return self._predict(database_schema=database_schema)
-
-    #######################
-    # MLFLOW TRACING      #
-    #######################
-    # TODO: we will break this out into a separate class later
-    # when we have need for it elsewhere
-    def _start_trace(
-        self,
-        client: mlflow.MlflowClient,
-        expirement_name: str,
-        trace_name: str,
-        inputs: dict,
-        attributes: dict,
-    ):
-        # set the experiment name so that everything is logged to the same experiment
-        mlflow.set_experiment(expirement_name)
-
-        # start the trace
-        trace = client.start_trace(
-            name=trace_name,
-            inputs=inputs,
-            attributes=attributes,
-            # experiment_id=expirement_name,
-        )
-
-        return trace
-
-    def _end_trace(
-        self,
-        client: mlflow.MlflowClient,
-        trace: Any,  # TODO: trace: mlflow.Span,
-        # E   AttributeError: module 'mlflow' has no attribute 'Span'
-        outputs: dict,
-        status: Literal["OK", "ERROR"],
-    ):
-        client.end_trace(request_id=trace.request_id, outputs=outputs, status=status)
+            prediction = self._predict(database_schema=database_schema)
+            _update_active_tasks()
+            return prediction
 
     def document_full_schema(
         self,
@@ -253,14 +279,23 @@ class DocGeneratorModule(dspy.Module):
         trace: bool = False,
         client: Optional[mlflow.MlflowClient] = None,
         expirement_name: Optional[str] = None,
-        api_key: Optional[str] = None,
+        logging_id: Optional[str] = None,
     ) -> dspy.Prediction:
         """Given a database schema, parse out the underlying components and document on
         a per-component basis.
 
-        :param database_schema: The database schema to generate documentation for. :type
-        database_schema: str :return: The generated documentation. :rtype:
-        dspy.Prediction
+        :param database_schema: The database schema to generate documentation for.
+        :type database_schema: str
+        :param trace: Whether to trace the generation.
+        :type trace: bool
+        :param client: The mlflow client.
+        :type client: mlflow.MlflowClient
+        :param expirement_name: The name of the experiment.
+        :type expirement_name: str
+        :param logging_id: The id to use for logging. Maps back to the user request.
+        :type logging_id: str
+        :return: The generated documentation.
+        :rtype: dspy.Prediction
 
         """
         # if we are tracing, make sure make sure we have everything needed to log to mlflow
@@ -269,8 +304,8 @@ class DocGeneratorModule(dspy.Module):
                 raise ValueError("client must be provided if trace is True")
             if expirement_name is None:
                 raise ValueError("expirement_name must be provided if trace is True")
-            if api_key is None:
-                raise ValueError("api_key must be provided if trace is True")
+            if logging_id is None:
+                raise ValueError("logging_id must be provided if trace is True")
 
         # check that the graphql is valid
         try:
@@ -296,9 +331,13 @@ class DocGeneratorModule(dspy.Module):
                 # TODO: we should have better type handling, but we check at the top
                 trace_name="document_full_schema",
                 inputs={"database_schema": database_schema},
-                attributes={"api_key": api_key},
+                attributes={"logging_id": logging_id},
             )
             log.info("created trace: " + str(root_trace))
+
+        # token tracker details
+        self.token_tracker.active_tasks = len(examples)
+        self.token_tracker.all_tasks_done.clear()
 
         # batch generate the documentation
         documented_examples = self.batch(examples, num_threads=32)
@@ -307,6 +346,26 @@ class DocGeneratorModule(dspy.Module):
             for ex in documented_examples  # type: ignore
             # TODO: we should have better type handling, but we know this works
         )
+
+        # token tracker details
+        self.token_tracker.all_tasks_done.wait()
+        callbacks_during_run = 0
+        while True:
+            try:
+                data = self.token_tracker.callback_queue.get(timeout=2)
+                with self.token_tracker.callback_lock:
+                    self.token_tracker.api_call_count += 1
+                    self.token_tracker.model_name = data.get("model", "unknown")
+                    self.token_tracker.completion_tokens += data.get(
+                        "completion_tokens", 0
+                    )
+                    self.token_tracker.prompt_tokens += data.get("prompt_tokens", 0)
+                    self.token_tracker.total_tokens += data.get("total_tokens", 0)
+                callbacks_during_run += 1
+                self.token_tracker.callback_queue.task_done()
+            except queue.Empty:
+                log.info("Queue empty after timeout, assuming all callbacks processed")
+                break
 
         # check that the generated schema matches the original schema
         if self.par.schema_equality_check(parse(database_schema), document_ast):
@@ -319,7 +378,7 @@ class DocGeneratorModule(dspy.Module):
                 updated_ast = self.par.fill_empty_descriptions(document_ast)
                 return_schema = print_ast(updated_ast)
             else:
-                return_schema = database_schema
+                return_schema = print_ast(document_ast)
             status = "ERROR"
 
         if trace:
@@ -330,9 +389,16 @@ class DocGeneratorModule(dspy.Module):
                 trace=root_trace,  # type: ignore
                 # TODO: we should have better type handling, but i believe we will get an
                 # error if root_trace has an issue during the start_trace call
-                outputs={"documented_schema": return_schema},
+                outputs={
+                    "documented_schema": return_schema,
+                    "token_tracker": self.token_tracker.stats(),
+                },
                 status=status,
             )
             log.info("ended trace: " + str(root_trace))  # type: ignore
             # TODO: we should have better type handling, but we check at the top
+
+        # clear the token tracker
+        self.token_tracker.clear()
+
         return dspy.Prediction(documented_schema=return_schema)

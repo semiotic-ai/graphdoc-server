@@ -23,17 +23,19 @@ log = logging.getLogger(__name__)
 ###################
 class DocGeneratorSignature(dspy.Signature):
     """
-    ### TASK: Given a GraphQL Schema, generate a precise description for the columns of the tables in the database.
+    ### TASK:
+    Analyze the provided GraphQL Schema and generate detailed yet concise descriptions for each field within the database tables and enums.
 
     ### Requirements:
-    - Focus solely on confirmed details from the provided schema.
-    - Keep the description concise and factual.
-    - Exclude any speculative or additional commentary.
-    - DO NOT return the phrase "in the { table } table" in your description.
+    - Utilize only the verified information from the schema to ensure accuracy.
+    - Descriptions should be factual, straightforward, and avoid any speculative language.
+    - Refrain from using the phrase "in the { table } table" within your descriptions.
+    - Ensure that the documentation adheres to standard schema formatting without modifying the underlying schema structure.
+    - Make sure that the entities themselves are documented.
 
-    ### Formatting
-    - Ensure that the schema maintains proper documentation formatting, as is provided.
-
+    ### Formatting:
+    - Maintain consistency with the existing documentation style and structure.
+    - Focus on clarity and precision to aid developers and system architects in understanding the schema's components effectively.
     """  # noqa: B950
 
     database_schema: str = dspy.InputField()
@@ -115,6 +117,8 @@ def doc_gen_factory(
 # Single Prompt Class #
 #######################
 class DocGeneratorPrompt(SinglePrompt):
+    """DocGeneratorPrompt class for generating documentation for GraphQL schemas."""
+
     def __init__(
         self,
         prompt: Union[str, dspy.Signature, dspy.SignatureMeta],
@@ -190,10 +194,14 @@ class DocGeneratorPrompt(SinglePrompt):
     ) -> Dict[str, Any]:
         """Format the metric results into a dictionary.
 
-        :param examples: The examples used to evaluate the metric. :type examples:
-        List[dspy.Example] :param overall_score: The overall score of the metric. :type
-        overall_score: float :param results: The results of the metric. :type results:
-        List :param scores: The scores of the metric. :type scores: List
+        :param examples: The examples used to evaluate the metric.
+        :type examples: List[dspy.Example]
+        :param overall_score: The overall score of the metric.
+        :type overall_score: float
+        :param results: The results of the metric.
+        :type results: List
+        :param scores: The scores of the metric.
+        :type scores: List
 
         """
         # TODO: we can expand this to further parse out the results and scores
@@ -211,8 +219,12 @@ class DocGeneratorPrompt(SinglePrompt):
     ) -> bool:
         """Compare the base and optimized metrics.
 
-        :param base_metrics: The base metrics. :type base_metrics: Any :param
-        optimized_metrics: The optimized metrics.
+        :param base_metrics: The base metrics.
+        :type base_metrics: Any
+        :param optimized_metrics: The optimized metrics.
+        :type optimized_metrics: Any
+        :param comparison_value: The value to compare.
+        :type comparison_value: str
 
         """
         if comparison_value == "overall_score":
