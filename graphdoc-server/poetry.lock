@@ -1417,7 +1417,7 @@ responses = "^0.25.6"
 
 [package.source]
 type = "directory"
-url = "../../graphdoc/graphdoc"
+url = "../graphdoc"
 
 [[package]]
 name = "graphene"
@@ -4979,4 +4979,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "3.13.0"
-content-hash = "5a21b359e72f75ab70e571e3afeaed4cd51fea67e52e3941f3f73944dcdebdbd"
+content-hash = "55dcb5d959d1ca783f06e86e58f9a7aee4f26596f58d55b463d7e01230a45336"
