@@ -74,3 +74,6 @@ server:
   serve: true                                           # Whether to serve the module
   port: 5000                                            # The port to serve the module on
   mlflow_experiment_name: doc_generator_00              # The name of the experiment in MLflow
+  mlflow_run_name: doc_generator_00                     # The name of the run in MLflow
+  require_api_key: false                                # Whether to require an API key
+  require_admin_key: true                               # Whether to require an admin key
