@@ -3,6 +3,7 @@ import os
 import json
 import logging
 from pathlib import Path
+from graphdoc.data.helper import load_yaml_config_redacted
 import werkzeug.exceptions
 from typing import Optional, Dict, Any, List, Set, Callable
 import secrets
@@ -10,7 +11,8 @@ import functools
 
 # internal packages
 from .keys import KeyManager
-from graphdoc import GraphDoc, load_yaml_config
+from graphdoc import load_yaml_config
+from graphdoc.config import doc_generator_module_from_yaml, mlflow_data_helper_from_yaml
 
 # external packages
 import dspy
@@ -24,7 +26,6 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 # global variables
-graph_doc: Optional[GraphDoc] = None
 module: Optional[Any] = None
 config: Optional[Dict[str, Any]] = None
 app_dir = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -35,7 +36,7 @@ key_path = keys_dir / "api_key_config.json"
 
 def init_model(config_path: str) -> bool:
     """Initialize the GraphDoc and load the module."""
-    global graph_doc, module, config
+    global module, mdh, config
 
     try:
         # Load configs
@@ -43,11 +44,9 @@ def init_model(config_path: str) -> bool:
         if not loaded_config:
             raise ValueError("Failed to load config")
 
-        # Initialize GraphDoc
-        graph_doc = GraphDoc.from_dict(loaded_config)
-
         # Load the module
-        module = graph_doc.doc_generator_module_from_yaml(config_path)
+        module = doc_generator_module_from_yaml(config_path)
+        mdh = mlflow_data_helper_from_yaml(config_path)
 
         # Only set the global config if everything succeeded
         config = loaded_config
@@ -93,7 +92,7 @@ def create_app() -> Flask:
             "database_schema": fields.String(
                 required=True,
                 description="Database schema to document",
-                example="""type UserEntity @entity { id: Bytes! first_name: String! last_name: String! email: String! }""",
+                example="""type UserEntity @entity { id: Bytes! first_name: String! last_name: String! email: String! } type PersonEntity @entity { id: Bytes! first_name: String! last_name: String! email: String! }""",
             )
         },
     )
@@ -152,23 +151,21 @@ def create_app() -> Flask:
     ###################################
 
     # initialize the KeyManager
-    key_manager = KeyManager.get_instance(key_path)
+    require_api_key = config_contents["server"]["require_api_key"]
+    require_admin_key = config_contents["server"]["require_admin_key"]
+    key_manager = KeyManager.get_instance(key_path, require_api_key, require_admin_key)
 
     # Initialize the model
     if not init_model(config_path):
         raise RuntimeError("Failed to initialize model")
 
     # make sure we have the correct authentication environment variables set (TODO: this should be redundant given the mdh, but we are having issues)
-    if graph_doc.mdh is not None:  # type: ignore # we explicitely check for graphdoc.mdh is not None
-        graph_doc.mdh.set_auth_env_vars()  # type: ignore # we explicitely check for graphdoc.mdh is not None
+    if mdh is not None:  # type: ignore # we explicitely check for graphdoc.mdh is not None
+        mdh.set_auth_env_vars()  # type: ignore # we explicitely check for graphdoc.mdh is not None
     else:
         raise ValueError(
             "GraphDoc is not initialized with a MlflowDataHelper and therefore cannot connect to MLflow"
         )
-
-    # Set dspy and mlflow tracking for traces
-    # mlflow.dspy.autolog()
-    mlflow.set_experiment(config_contents["server"]["mlflow_experiment_name"])
 
     @health_ns.route("")
     class HealthCheck(Resource):
@@ -217,22 +214,20 @@ def create_app() -> Flask:
                     return {"error": "Missing database_schema in request"}, 400
 
                 # make sure we have a client initialized
-                if graph_doc.mdh is None:  # type: ignore # we explicitely check for graphdoc.mdh is not None
+                if mdh is None:  # type: ignore # we explicitely check for graphdoc.mdh is not None
                     raise ValueError(
                         "Ensure that GraphDoc is initialized with mlflow_tracking_uri, mlflow_tracking_username, and mlflow_tracking_password"
                     )
-                log.info(
-                    f"submitting request with api key: {request.headers['X-API-Key']}"
-                )
+
+                client_ip = request.remote_addr
+                log.info(f"submitting request from ip: {client_ip}")
                 # run the inference with tracing
                 prediction = module.document_full_schema(
                     database_schema=data["database_schema"],
                     trace=True,
-                    client=graph_doc.mdh.mlflow_client,  # type: ignore # we explicitely check for graphdoc.mdh is not None
+                    client=mdh.mlflow_client,  # type: ignore # we explicitely check for graphdoc.mdh is not None
                     expirement_name=config_contents["server"]["mlflow_experiment_name"],
-                    api_key=request.headers[
-                        "X-API-Key"
-                    ],  # record the api key that made the request
+                    logging_id=client_ip,
                 )
                 log.info(f"prediction generated for request: {prediction}")
 
@@ -291,8 +286,13 @@ def main():
     # set environment variables for the app factory
     os.environ["GRAPHDOC_CONFIG_PATH"] = args.config_path
 
+    # load the config
+    config = load_yaml_config(args.config_path)
+    require_api_key = config["server"]["require_api_key"]
+    require_admin_key = config["server"]["require_admin_key"]
+
     # initialize the KeyManager
-    key_manager = KeyManager.get_instance(key_path)
+    key_manager = KeyManager.get_instance(key_path, require_api_key, require_admin_key)
     log.info(f"Keys: {key_manager.api_keys}")
     log.info(f"Admin key: {key_manager.get_admin_key()}")
 
@@ -312,9 +312,23 @@ def main():
         key_manager.set_admin_key(admin_key)
         log.info(f"Created initial admin key: {admin_key}")
 
-    # create and run the app
-    app = create_app()
-    app.run(host="0.0.0.0", port=args.port)
+    def _run_app():
+        # create and run the app
+        app = create_app()
+        app.run(host="0.0.0.0", port=args.port)
+
+    # set up mlflow tracking
+    # TODO: unify config handling between this and create_app()
+    config = load_yaml_config(args.config_path)
+    mlflow.set_experiment(config["server"]["mlflow_experiment_name"])
+    mlflow.dspy.autolog()
+    mlflow_run_name = config["server"]["mlflow_run_name"]
+
+    # TODO: we will rework this to be more elegant when we land on a more permanent solution for handling versioned runs
+    with mlflow.start_run(run_name=mlflow_run_name):  # , run_id=mlflow_run_id
+        log_config = load_yaml_config_redacted(args.config_path)
+        mlflow.log_params(log_config)
+        _run_app()
 
 
 if __name__ == "__main__":

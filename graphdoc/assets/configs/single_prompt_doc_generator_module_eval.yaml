@@ -4,6 +4,11 @@ graphdoc:
   mlflow_tracking_username: !env MLFLOW_TRACKING_USERNAME # The username for the mlflow tracking server
   mlflow_tracking_password: !env MLFLOW_TRACKING_PASSWORD # The password for the mlflow tracking server
 
+mlflow: 
+  mlflow_tracking_uri: !env MLFLOW_TRACKING_URI           # The tracking URI for MLflow
+  mlflow_tracking_username: !env MLFLOW_TRACKING_USERNAME # The username for the mlflow tracking server
+  mlflow_tracking_password: !env MLFLOW_TRACKING_PASSWORD # The password for the mlflow tracking server
+
 language_model: 
   model: openai/gpt-4o                                  # Must be a valid dspy language model
   api_key: !env OPENAI_API_KEY                          # Must be a valid dspy language model API key
@@ -20,6 +25,7 @@ data:
   trainset_size: 10                                     # The size of the trainset
   evalset_ratio: 0.1                                    # The proportionate size of the evalset
   data_helper_type: generation                          # Type of data helper to use (quality, generation)
+  seed: 42                                              # The seed for the random number generator
 
 prompt:
   prompt: base_doc_gen                                  # Which prompt signature to use

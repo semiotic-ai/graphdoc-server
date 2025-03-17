@@ -4,6 +4,11 @@ graphdoc:
   mlflow_tracking_username: !env MLFLOW_TRACKING_USERNAME # The username for the mlflow tracking server
   mlflow_tracking_password: !env MLFLOW_TRACKING_PASSWORD # The password for the mlflow tracking server
 
+mlflow: 
+  mlflow_tracking_uri: !env MLFLOW_TRACKING_URI         # The tracking URI for MLflow
+  mlflow_tracking_username: !env MLFLOW_TRACKING_USERNAME # The username for the mlflow tracking server
+  mlflow_tracking_password: !env MLFLOW_TRACKING_PASSWORD # The password for the mlflow tracking server
+
 language_model: 
   model: openai/gpt-4o                                  # Must be a valid dspy language model
   api_key: !env OPENAI_API_KEY                          # Must be a valid dspy language model API key
@@ -69,3 +74,6 @@ server:
   serve: true                                           # Whether to serve the module
   port: 5000                                            # The port to serve the module on
   mlflow_experiment_name: doc_generator_00              # The name of the experiment in MLflow
+  mlflow_run_name: doc_generator_00                     # The name of the run in MLflow
+  require_api_key: false                                # Whether to require an API key
+  require_admin_key: true                               # Whether to require an admin key

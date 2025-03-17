@@ -16,14 +16,11 @@ submit a PR, if you have any questions or feedback. Thanks!
 
 License: `Apache License 2.0 <Apache License 2.0_>`_
 
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    modules
-   graphdoc
-   graphdoc.prompts
 
 Indices and tables
 ==================
