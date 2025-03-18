@@ -150,6 +150,10 @@ def create_app() -> Flask:
     # initialize objects              #
     ###################################
 
+    # set mlflow tracking
+    mlflow.set_experiment(config_contents["server"]["mlflow_experiment_name"])
+    mlflow.dspy.autolog()
+
     # initialize the KeyManager
     require_api_key = config_contents["server"]["require_api_key"]
     require_admin_key = config_contents["server"]["require_admin_key"]
