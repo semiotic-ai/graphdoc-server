@@ -235,9 +235,8 @@ def create_app() -> Flask:
                 )
                 log.info(f"prediction generated for request: {prediction}")
 
-                # convert prediction to string if it's not already
-                if hasattr(prediction, "prediction"):
-                    prediction = prediction.prediction
+                if isinstance(prediction, dspy.Prediction):
+                    prediction = prediction.documented_schema
                 elif not isinstance(prediction, (str, int, float, bool, list, dict)):
                     prediction = str(prediction)
 
