@@ -182,3 +182,6 @@ eval_results/
 
 # release files
 release_review.md
+
+.DS_Store
+*.tfstate
