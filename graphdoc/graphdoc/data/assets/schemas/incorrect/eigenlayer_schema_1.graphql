@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Semiotic AI, Inc.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 "Network enum for the schema, representing various underwater communication frequencies"
 enum Network {
   " ARBITRUM_ONE is a renowned cryptocurrency exchange platform "

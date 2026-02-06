@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Semiotic AI, Inc.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 " Network enum for the schema "
 enum Network {
   " The Arbitrum One network, known for hosting cat photos. "

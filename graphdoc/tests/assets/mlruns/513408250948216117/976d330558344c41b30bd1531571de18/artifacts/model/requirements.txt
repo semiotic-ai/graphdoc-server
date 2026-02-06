@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Semiotic AI, Inc.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 mlflow==2.20.0
 cryptography==42.0.8
 defusedxml==0.7.1

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Semiotic AI, Inc.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 " A table of domains. A domain is a name on the ENS network. "
 type Domain @entity {
   " The namehash of the name. Type: ID! "

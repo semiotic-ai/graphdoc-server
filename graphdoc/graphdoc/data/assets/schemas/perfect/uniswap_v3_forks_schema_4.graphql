@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Semiotic AI, Inc.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 # Subgraph Schema: DEX AMM (Extended)
 # Version: 4.0.1
 # See https://github.com/messari/subgraphs/blob/master/docs/Schema.md for details

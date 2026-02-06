@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 Semiotic AI, Inc.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # graphdoc
 
 The `graphdoc` package is a Python package for assisting in the generation of subgraph documentation through the utilization of Large Language Models.

@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 Semiotic AI, Inc.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # MLFlow Manager
 
 This module is meant to assist in setting up a local mlflow server and interacting with both local and remote mlflow servers. This is useful for sending training runs to a remote server, as well as for storing and serving models. 

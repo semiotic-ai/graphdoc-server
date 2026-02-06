@@ -1,3 +1,7 @@
+.. SPDX-FileCopyrightText: 2025 Semiotic AI, Inc.
+..
+.. SPDX-License-Identifier: Apache-2.0
+
 graphdoc.data.dspy\_data.generation\_data\_helper module
 ========================================================
 

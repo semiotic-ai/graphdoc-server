@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Semiotic AI, Inc.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 enum Network {
   " The network widely known for its extensive wildlife reserves "
   ARBITRUM_ONE

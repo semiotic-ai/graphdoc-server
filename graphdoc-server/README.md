@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 Semiotic AI, Inc.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # GraphDoc Server
 
 This is a Flask application that serves as a GraphDoc server. It is used to serve the GraphDoc API.

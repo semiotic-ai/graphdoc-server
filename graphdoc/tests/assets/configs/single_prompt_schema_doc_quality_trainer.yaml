@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Semiotic AI, Inc.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 language_model: 
   lm_model_name: openai/gpt-4o # Must be a valid dspy language model
   lm_api_key: !env OPENAI_API_KEY # Must be a valid dspy language model API key

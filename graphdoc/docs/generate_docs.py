@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+# SPDX-FileCopyrightText: 2025 Semiotic AI, Inc.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Script to automatically generate Sphinx documentation RST files.
 Run this script before building the documentation to ensure all RST files are up-to-date.

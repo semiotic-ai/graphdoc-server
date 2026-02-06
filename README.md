@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 Semiotic AI, Inc.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 # graphdoc
