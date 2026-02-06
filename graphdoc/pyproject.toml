@@ -3,7 +3,7 @@ name = "graphdoc"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "denver",email = "denver@semiotic.ai"}
+    {name = "Denver Baumgartner",email = "denver@semiotic.ai"}
 ]
 readme = "README.md"
 

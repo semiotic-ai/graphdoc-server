@@ -17,7 +17,7 @@ from pytest import fixture
 log = logging.getLogger(__name__)
 
 # global variables
-key_path = Path(__file__).parent / "keys" / "api_key_config.json"
+key_path = Path(__file__).parent / "keys" / "api_key_config.json" # must be initialized from the example file
 
 ####################
 # fixtures         #

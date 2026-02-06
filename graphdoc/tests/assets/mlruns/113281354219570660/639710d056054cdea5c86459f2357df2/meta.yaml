@@ -1,4 +1,4 @@
-artifact_uri: file:///Users/denver/Documents/code/graph/graphdoc-mono/graphdoc/graphdoc/tests/assets/mlruns/113281354219570660/639710d056054cdea5c86459f2357df2/artifacts
+artifact_uri: ./113281354219570660/639710d056054cdea5c86459f2357df2/artifacts
 end_time: 1738824320092
 entry_point_name: ''
 experiment_id: '113281354219570660'
@@ -12,4 +12,4 @@ source_version: ''
 start_time: 1738822020077
 status: 3
 tags: []
-user_id: denver
+user_id: ""

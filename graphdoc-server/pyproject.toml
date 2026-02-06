@@ -2,7 +2,7 @@
 name = "graphdoc-server"
 version = "0.1.0"
 description = "API server for serving GraphDoc models"
-authors = ["Your Name <your.email@example.com>"]
+authors = ["Denver Baumgartner <denver@semiotic.ai>"]
 
 [tool.poetry.dependencies]
 python = "3.13.0"
