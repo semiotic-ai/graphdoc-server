@@ -1,1 +1,0 @@
-{"documented_schema": "\"Represents a transaction signer entity that is immutable.\"\ntype _TxSigner @entity(immutable: true) {\n  \"Unique identifier for the transaction signer.\"\n  id: ID!\n}"}

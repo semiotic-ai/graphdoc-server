@@ -1,1 +1,0 @@
-{"documented_schema": "\"Description for table: _LiquidityGauge\"\ntype _LiquidityGauge @entity {\n  \"Unique identifier for the liquidity gauge.\"\n  id: ID!\n  \"Reference to the associated vault.\"\n  vault: Vault!\n}"}

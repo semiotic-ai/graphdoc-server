@@ -1,1 +1,0 @@
-{"database_schema": "\"Description for enum type: RiskType\"\nenum RiskType {\n  \"Description for column: GLOBAL\"\n  GLOBAL\n  \"Description for column: ISOLATED\"\n  ISOLATED\n}"}

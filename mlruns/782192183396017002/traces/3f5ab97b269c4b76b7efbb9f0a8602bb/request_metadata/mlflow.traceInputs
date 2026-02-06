@@ -1,1 +1,0 @@
-{"database_schema": "\"Description for enum type: CrosschainTokenType\"\nenum CrosschainTokenType {\n  \"Description for column: WRAPPED\"\n  WRAPPED\n  \"Description for column: CANONICAL\"\n  CANONICAL\n}"}

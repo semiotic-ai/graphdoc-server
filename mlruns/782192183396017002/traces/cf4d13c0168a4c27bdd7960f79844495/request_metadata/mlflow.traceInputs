@@ -1,1 +1,0 @@
-{"database_schema": "\"Description for enum type: PollChoice\"\nenum PollChoice @entity {\n  \"Represents an affirmative choice\"\n  Yes\n  \"Represents a negative choice\"\n  No\n}"}

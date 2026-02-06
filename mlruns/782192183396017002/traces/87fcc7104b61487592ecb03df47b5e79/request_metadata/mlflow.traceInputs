@@ -1,1 +1,0 @@
-{"database_schema": "\"Description for enum type: PoolType\"\nenum PoolType {\n  \"Description for column: EIGEN_POD\"\n  EIGEN_POD\n  \"Description for column: STRATEGY\"\n  STRATEGY\n}"}

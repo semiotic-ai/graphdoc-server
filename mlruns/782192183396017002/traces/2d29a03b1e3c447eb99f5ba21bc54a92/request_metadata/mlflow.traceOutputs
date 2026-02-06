@@ -1,1 +1,0 @@
-{"documented_schema": "\"Description for table: _ActiveAccount\"\ntype _ActiveAccount @entity(immutable: true) {\n  \"Unique identifier for the active account, cannot be null.\"\n  id: ID!\n}"}

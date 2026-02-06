@@ -1,1 +1,0 @@
-{"database_schema": "\"Description for enum type: InterestRateType\"\nenum InterestRateType {\n  \"Description for column: STABLE\"\n  STABLE\n  \"Description for column: VARIABLE\"\n  VARIABLE\n  \"Description for column: FIXED\"\n  FIXED\n}"}

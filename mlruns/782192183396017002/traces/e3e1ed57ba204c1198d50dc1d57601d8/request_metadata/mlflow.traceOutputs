@@ -1,1 +1,0 @@
-{"documented_schema": "\"Description for table: _Item\"\ntype _Item @entity {\n  \"Description for column: id\"\n  id: ID!\n}"}

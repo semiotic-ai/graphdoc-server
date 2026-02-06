@@ -1,1 +1,0 @@
-{"documented_schema": "\"Description for table: ActiveAccount\"\ntype ActiveAccount @entity(immutable: true) {\n  \"Unique identifier for the active account, represented as a byte array.\"\n  id: Bytes!\n}"}

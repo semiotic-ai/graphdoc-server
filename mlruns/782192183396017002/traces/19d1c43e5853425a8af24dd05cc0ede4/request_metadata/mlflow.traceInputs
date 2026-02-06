@@ -1,1 +1,0 @@
-{"database_schema": "\"Description for enum type: NftStandard\"\nenum NftStandard {\n  \"Description for column: ERC721\"\n  ERC721\n  \"Description for column: ERC1155\"\n  ERC1155\n  \"Description for column: UNKNOWN\"\n  UNKNOWN\n}"}

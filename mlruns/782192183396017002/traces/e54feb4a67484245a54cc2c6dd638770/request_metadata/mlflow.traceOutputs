@@ -1,1 +1,0 @@
-{"documented_schema": "\"Description for enum type: NameSystem\"\nenum NameSystem {\n  \"Ethereum Name Service\"\n  ENS\n}"}
