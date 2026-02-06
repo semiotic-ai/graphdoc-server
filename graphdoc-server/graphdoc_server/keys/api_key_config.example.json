@@ -1,0 +1,8 @@
+{
+  "api_keys": [
+    "<sha256-hash-of-your-api-key-1>",
+    "<sha256-hash-of-your-api-key-2>"
+  ],
+  "admin_key": "<sha256-hash-of-your-admin-key>",
+  "test_key": "test_key"
+}
