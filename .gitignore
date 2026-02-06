@@ -169,6 +169,13 @@ assets/ignore/
 
 # mlruns 
 mlruns/0/traces
+mlruns/
 
 # other outputs 
 eval_results/
+
+# API key configs (use .example.json as template)
+**/api_key_config.json
+
+# release files
+release_review.md
