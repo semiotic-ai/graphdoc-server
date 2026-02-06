@@ -163,6 +163,9 @@ cython_debug/
 
 # local testing files 
 assets/ignore/
+.testmondata
+.testmondata-shm
+.testmondata-wal
 
 # ignore the notebooks unless specifically added 
 *.ipynb
